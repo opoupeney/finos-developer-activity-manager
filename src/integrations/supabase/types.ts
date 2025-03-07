@@ -48,10 +48,10 @@ export type Database = {
         Row: {
           created_at: string
           custom_id: string | null
-          date: string
-          end_date: string
+          date: string | null
+          end_date: string | null
           id: string
-          kick_off_date: string
+          kick_off_date: string | null
           location: string
           marketing_campaign: string
           marketing_description: string
@@ -63,10 +63,10 @@ export type Database = {
         Insert: {
           created_at?: string
           custom_id?: string | null
-          date: string
-          end_date: string
+          date?: string | null
+          end_date?: string | null
           id?: string
-          kick_off_date: string
+          kick_off_date?: string | null
           location: string
           marketing_campaign: string
           marketing_description: string
@@ -78,10 +78,10 @@ export type Database = {
         Update: {
           created_at?: string
           custom_id?: string | null
-          date?: string
-          end_date?: string
+          date?: string | null
+          end_date?: string | null
           id?: string
-          kick_off_date?: string
+          kick_off_date?: string | null
           location?: string
           marketing_campaign?: string
           marketing_description?: string

@@ -3,9 +3,9 @@ export interface Masterclass {
   id: string;
   title: string;
   type: string;
-  date: string;
-  kickOffDate: string;
-  endDate: string;
+  date: string; // ISO string for timestamp
+  kickOffDate: string; // ISO string for timestamp
+  endDate: string; // ISO string for timestamp
   location: string;
   marketingCampaign: string;
   marketingDescription: string;

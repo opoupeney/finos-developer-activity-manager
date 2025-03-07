@@ -18,6 +18,7 @@ interface DatePickerProps {
   onDateChange: (date: Date | undefined) => void;
   placeholder?: string;
   disabled?: boolean;
+  dateFormat?: string;
 }
 
 export function DatePicker({
@@ -25,6 +26,7 @@ export function DatePicker({
   onDateChange,
   placeholder = "Select date",
   disabled = false,
+  dateFormat = "PPP", // This is the default format from date-fns (e.g., "April 29th, 2023")
 }: DatePickerProps) {
   return (
     <Popover>
@@ -38,7 +40,7 @@ export function DatePicker({
             )}
             disabled={disabled}
           >
-            {date ? format(date, "PPP") : <span>{placeholder}</span>}
+            {date ? format(date, dateFormat) : <span>{placeholder}</span>}
             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
           </Button>
         </FormControl>

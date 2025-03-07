@@ -79,30 +79,24 @@ const EventForm: React.FC<EventFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const parseDateString = (dateString?: string): Date | undefined => {
-    if (!dateString) return undefined;
-    try {
-      return parse(dateString, 'MMMM do yyyy', new Date());
-    } catch (error) {
-      try {
-        return parse(dateString, 'MMMM yyyy', new Date());
-      } catch (error) {
-        try {
-          return new Date(dateString);
-        } catch (error) {
-          console.error("Could not parse date:", dateString, error);
-          return undefined;
-        }
-      }
-    }
+  const parseDate = (dateValue: string | Date | null | undefined): Date | undefined => {
+    if (!dateValue) return undefined;
+    
+    if (dateValue instanceof Date) return dateValue;
+    
+    const date = new Date(dateValue);
+    if (!isNaN(date.getTime())) return date;
+    
+    console.error("Could not parse date:", dateValue);
+    return undefined;
   };
 
   const defaultValues: Partial<EventFormValues> = {
     title: initialData?.title || '',
     type: initialData?.type || '',
-    date: parseDateString(initialData?.date) || undefined,
-    kickOffDate: parseDateString(initialData?.kickOffDate) || undefined,
-    endDate: parseDateString(initialData?.endDate) || undefined,
+    date: parseDate(initialData?.date) || undefined,
+    kickOffDate: parseDate(initialData?.kickOffDate) || undefined,
+    endDate: parseDate(initialData?.endDate) || undefined,
     location: initialData?.location || '',
     marketingCampaign: initialData?.marketingCampaign || '',
     marketingDescription: initialData?.marketingDescription || '',
@@ -141,9 +135,9 @@ const EventForm: React.FC<EventFormProps> = ({
         id: initialData?.id || '',
         title: values.title,
         type: values.type,
-        date: format(values.date, 'MMMM yyyy'),
-        kickOffDate: format(values.kickOffDate, 'MMMM do yyyy'),
-        endDate: format(values.endDate, 'MMMM do yyyy'),
+        date: values.date.toISOString(),
+        kickOffDate: values.kickOffDate.toISOString(),
+        endDate: values.endDate.toISOString(),
         location: values.location,
         marketingCampaign: values.marketingCampaign,
         marketingDescription: values.marketingDescription,
@@ -307,11 +301,12 @@ const EventForm: React.FC<EventFormProps> = ({
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date</FormLabel>
+                    <FormLabel>Month/Year</FormLabel>
                     <DatePicker 
                       date={field.value} 
                       onDateChange={field.onChange}
-                      placeholder="Select event date" 
+                      placeholder="Select event month/year" 
+                      dateFormat="MMMM yyyy"
                     />
                     <FormMessage />
                   </FormItem>
