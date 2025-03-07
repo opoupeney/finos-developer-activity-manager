@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { getMasterclassByID } from '../services/masterclassService';
-import { Masterclass } from '../types/masterclass';
 import FinosHeader from '../components/FinosHeader';
 import MasterclassHeader from '../components/MasterclassHeader';
 import MasterclassStats from '../components/MasterclassStats';
@@ -13,47 +13,35 @@ import { ArrowLeft } from "lucide-react";
 
 const MasterclassView = () => {
   const { id } = useParams<{ id: string }>();
-  const [masterclass, setMasterclass] = useState<Masterclass | null>(null);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchData = () => {
-      try {
-        setLoading(true);
-        if (!id) {
-          throw new Error("No masterclass ID provided");
-        }
-        
-        const data = getMasterclassByID(id);
-        
-        if (!data) {
-          throw new Error("Masterclass not found");
-        }
-        
-        setMasterclass(data);
-        
-        toast({
-          title: "Data loaded successfully",
-          description: "Masterclass information has been retrieved",
-        });
-      } catch (error) {
-        console.error("Error loading masterclass data:", error);
-        toast({
-          title: "Error loading data",
-          description: error instanceof Error ? error.message : "There was a problem retrieving the masterclass information",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
+  
+  const { data: masterclass, isLoading, error } = useQuery({
+    queryKey: ['masterclass', id],
+    queryFn: () => {
+      if (!id) {
+        throw new Error("No masterclass ID provided");
       }
-    };
-
-    fetchData();
-  }, [id, toast]);
+      return getMasterclassByID(id);
+    },
+    onError: (err: any) => {
+      console.error("Error loading masterclass data:", err);
+      toast({
+        title: "Error loading data",
+        description: err.message || "There was a problem retrieving the masterclass information",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Data loaded successfully",
+        description: "Masterclass information has been retrieved",
+      });
+    },
+    enabled: !!id // Only run the query if we have an ID
+  });
 
   // Loading state
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         <FinosHeader />
@@ -68,7 +56,7 @@ const MasterclassView = () => {
   }
 
   // If data is not available
-  if (!masterclass) {
+  if (!masterclass || error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         <FinosHeader />

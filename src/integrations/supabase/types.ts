@@ -9,7 +9,204 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      impacts: {
+        Row: {
+          id: string
+          masterclass_id: string
+          projects: string[]
+          strategic_initiative: string
+          targeted_personas: string[]
+          use_case: string
+        }
+        Insert: {
+          id?: string
+          masterclass_id: string
+          projects: string[]
+          strategic_initiative: string
+          targeted_personas: string[]
+          use_case: string
+        }
+        Update: {
+          id?: string
+          masterclass_id?: string
+          projects?: string[]
+          strategic_initiative?: string
+          targeted_personas?: string[]
+          use_case?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impacts_masterclass_id_fkey"
+            columns: ["masterclass_id"]
+            isOneToOne: false
+            referencedRelation: "masterclasses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      masterclasses: {
+        Row: {
+          created_at: string
+          custom_id: string | null
+          date: string
+          end_date: string
+          id: string
+          kick_off_date: string
+          location: string
+          marketing_campaign: string
+          marketing_description: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_id?: string | null
+          date: string
+          end_date: string
+          id?: string
+          kick_off_date: string
+          location: string
+          marketing_campaign: string
+          marketing_description: string
+          status: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_id?: string | null
+          date?: string
+          end_date?: string
+          id?: string
+          kick_off_date?: string
+          location?: string
+          marketing_campaign?: string
+          marketing_description?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      metrics: {
+        Row: {
+          current_participants: number
+          current_registrations: number
+          id: string
+          masterclass_id: string
+          participation_percentage: number
+          registration_percentage: number
+          targeted_participants: number
+          targeted_registrations: number
+        }
+        Insert: {
+          current_participants: number
+          current_registrations: number
+          id?: string
+          masterclass_id: string
+          participation_percentage: number
+          registration_percentage: number
+          targeted_participants: number
+          targeted_registrations: number
+        }
+        Update: {
+          current_participants?: number
+          current_registrations?: number
+          id?: string
+          masterclass_id?: string
+          participation_percentage?: number
+          registration_percentage?: number
+          targeted_participants?: number
+          targeted_registrations?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "metrics_masterclass_id_fkey"
+            columns: ["masterclass_id"]
+            isOneToOne: false
+            referencedRelation: "masterclasses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ownerships: {
+        Row: {
+          ambassador: string
+          channel: string
+          finos_lead: string
+          finos_team: string[]
+          id: string
+          marketing_liaison: string
+          masterclass_id: string
+          member_success_liaison: string
+          sponsors_partners: string[]
+          toc: string
+        }
+        Insert: {
+          ambassador: string
+          channel: string
+          finos_lead: string
+          finos_team: string[]
+          id?: string
+          marketing_liaison: string
+          masterclass_id: string
+          member_success_liaison: string
+          sponsors_partners: string[]
+          toc: string
+        }
+        Update: {
+          ambassador?: string
+          channel?: string
+          finos_lead?: string
+          finos_team?: string[]
+          id?: string
+          marketing_liaison?: string
+          masterclass_id?: string
+          member_success_liaison?: string
+          sponsors_partners?: string[]
+          toc?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ownerships_masterclass_id_fkey"
+            columns: ["masterclass_id"]
+            isOneToOne: false
+            referencedRelation: "masterclasses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          role?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
