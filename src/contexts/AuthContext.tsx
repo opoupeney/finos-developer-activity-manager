@@ -9,6 +9,7 @@ interface AuthContextProps {
   user: User | null;
   userDetails: { full_name?: string; email?: string; avatar_url?: string; role?: string } | null;
   loading: boolean;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextProps>({
   user: null,
   userDetails: null,
   loading: true,
+  signOut: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -26,6 +28,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userDetails, setUserDetails] = useState<{ full_name?: string; email?: string; avatar_url?: string; role?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setSession(null);
+      setUser(null);
+      setUserDetails(null);
+    } catch (error: any) {
+      console.error('Error signing out:', error.message);
+      toast({
+        title: 'Error',
+        description: 'Failed to sign out. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchUserDetails = async (userId: string) => {
@@ -78,6 +96,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      console.log('Auth state changed:', event, newSession?.user?.id);
+      
       setSession(newSession);
       setUser(newSession?.user ?? null);
       
@@ -101,6 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     userDetails,
     loading,
+    signOut
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
