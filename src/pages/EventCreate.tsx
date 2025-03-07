@@ -28,7 +28,12 @@ const EventCreate = () => {
   const handleSubmit = async (data: Masterclass) => {
     // Remove id because we're creating a new event
     const { id, ...eventWithoutId } = data;
-    return createMasterclass(eventWithoutId);
+    try {
+      await createMasterclass(eventWithoutId);
+    } catch (error) {
+      console.error("Error creating developer event:", error);
+      throw error;
+    }
   };
 
   return (

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Masterclass } from '@/types/masterclass';
@@ -19,7 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Trash } from 'lucide-react';
+import { Save, Trash, GraduationCap, Code } from 'lucide-react';
 
 // Define the form validation schema
 const eventFormSchema = z.object({
@@ -240,9 +239,27 @@ const EventForm: React.FC<EventFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Event Type" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select event type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Masterclass">
+                          <div className="flex items-center gap-2">
+                            <GraduationCap className="h-4 w-4" />
+                            <span>Masterclass</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Hackathon">
+                          <div className="flex items-center gap-2">
+                            <Code className="h-4 w-4" />
+                            <span>Hackathon</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +14,6 @@ const EventEdit = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Check if user is an admin
   React.useEffect(() => {
     if (userDetails && userDetails.role !== 'admin') {
       toast({
@@ -45,15 +43,24 @@ const EventEdit = () => {
   });
 
   const handleSubmit = async (data: Masterclass) => {
-    return updateMasterclass(data);
+    try {
+      await updateMasterclass(data);
+    } catch (error) {
+      console.error("Error updating developer event:", error);
+      throw error;
+    }
   };
 
   const handleDelete = async () => {
     if (!id) return;
-    return deleteMasterclass(id);
+    try {
+      await deleteMasterclass(id);
+    } catch (error) {
+      console.error("Error deleting developer event:", error);
+      throw error;
+    }
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -68,7 +75,6 @@ const EventEdit = () => {
     );
   }
 
-  // If data is not available
   if (!event || error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
