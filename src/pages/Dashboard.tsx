@@ -8,18 +8,20 @@ import StatusBadge from '../components/StatusBadge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Plus, Edit, ChartPieIcon, Calendar, Code, Mic, BookOpen, Trophy, Star, Activity, MapPin } from "lucide-react";
+import { Eye, Plus, Edit, ChartPieIcon, Calendar, Code, Mic, BookOpen, Trophy, Star, Activity, MapPin, Building, MessageSquareCode, PenTool, UserPlus, GraduationCap } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import PieCharts from '@/components/PieCharts';
 
-// Map of activity types to their corresponding icons
+// Map of activity types to their corresponding icons to match EventForm dropdown
 const typeToIconMap: Record<string, React.ReactNode> = {
-  'Workshop': <Code className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Workshop': <PenTool className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Hackathon': <Code className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Conference': <Building className="h-5 w-5 mr-2 text-finos-blue" />,
+  'TechTalk': <MessageSquareCode className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Masterclass': <GraduationCap className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Meetup': <UserPlus className="h-5 w-5 mr-2 text-finos-blue" />,
   'Webinar': <Mic className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Conference': <Calendar className="h-5 w-5 mr-2 text-finos-blue" />,
   'Training': <BookOpen className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Hackathon': <Trophy className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Meetup': <MapPin className="h-5 w-5 mr-2 text-finos-blue" />,
   'Awards': <Star className="h-5 w-5 mr-2 text-finos-blue" />,
 };
 
