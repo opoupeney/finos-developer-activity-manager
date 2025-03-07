@@ -8,9 +8,23 @@ import StatusBadge from '../components/StatusBadge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Plus, Edit, ChartPieIcon } from "lucide-react";
+import { Eye, Plus, Edit, ChartPieIcon, Calendar, Code, Mic, BookOpen, Trophy, Star, Activity, MapPin } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import PieCharts from '@/components/PieCharts';
+
+// Map of activity types to their corresponding icons
+const typeToIconMap: Record<string, React.ReactNode> = {
+  'Workshop': <Code className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Webinar': <Mic className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Conference': <Calendar className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Training': <BookOpen className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Hackathon': <Trophy className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Meetup': <MapPin className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Awards': <Star className="h-5 w-5 mr-2 text-finos-blue" />,
+};
+
+// Default icon for activity types not in the map
+const DefaultIcon = <Activity className="h-5 w-5 mr-2 text-finos-blue" />;
 
 const Dashboard = () => {
   const { user, userDetails } = useAuth();
@@ -99,7 +113,10 @@ const Dashboard = () => {
                 <Card key={activity.id} className="stats-card overflow-hidden animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl font-semibold">{activity.title}</CardTitle>
+                      <CardTitle className="text-xl font-semibold flex items-center">
+                        {typeToIconMap[activity.type] || DefaultIcon}
+                        {activity.title}
+                      </CardTitle>
                       <StatusBadge status={activity.status} />
                     </div>
                   </CardHeader>
