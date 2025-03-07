@@ -1,4 +1,3 @@
-
 import { Masterclass } from "../types/masterclass";
 
 export const getMasterclassData = (): Masterclass => {
@@ -40,8 +39,29 @@ export const getMasterclassData = (): Masterclass => {
   };
 };
 
+export const getMasterclassByID = (id: string): Masterclass | undefined => {
+  const defaultMasterclass = getMasterclassData();
+  
+  const variations: Masterclass[] = [
+    defaultMasterclass,
+    { ...defaultMasterclass, id: "mc-002", title: "Financial API Masterclass", status: "Pending", 
+      date: "June 2025", location: "New York + Virtual",
+      metrics: { ...defaultMasterclass.metrics, targetedRegistrations: 75, currentRegistrations: 30, registrationPercentage: 40,
+      targetedParticipants: 50, currentParticipants: 15, participationPercentage: 30 } },
+    { ...defaultMasterclass, id: "mc-003", title: "Blockchain in Finance", status: "Approved", 
+      date: "September 2025", location: "Singapore + Virtual",
+      metrics: { ...defaultMasterclass.metrics, targetedRegistrations: 100, currentRegistrations: 85, registrationPercentage: 85,
+      targetedParticipants: 60, currentParticipants: 48, participationPercentage: 80 } },
+    { ...defaultMasterclass, id: "mc-004", title: "AI Ethics in Financial Systems", status: "Rejected", 
+      date: "January 2026", location: "Virtual Only",
+      metrics: { ...defaultMasterclass.metrics, targetedRegistrations: 40, currentRegistrations: 0, registrationPercentage: 0,
+      targetedParticipants: 25, currentParticipants: 0, participationPercentage: 0 } },
+  ];
+
+  return variations.find(masterclass => masterclass.id === id);
+};
+
 export const updateMasterclass = async (masterclass: Masterclass): Promise<Masterclass> => {
-  // In a real application, this would make an API call to update the data
   console.log("Updating masterclass:", masterclass);
   return masterclass;
 };

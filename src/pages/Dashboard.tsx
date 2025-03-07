@@ -8,6 +8,7 @@ import StatusBadge from '../components/StatusBadge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Eye } from "lucide-react";
 
 const Dashboard = () => {
   const [masterclasses, setMasterclasses] = useState<Masterclass[]>([]);
@@ -145,7 +146,10 @@ const Dashboard = () => {
               
               <CardFooter className="pt-0">
                 <Button asChild variant="outline" className="w-full">
-                  <Link to="/">View Details</Link>
+                  <Link to={`/masterclass/${masterclass.id}`}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Details
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
