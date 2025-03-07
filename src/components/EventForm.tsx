@@ -18,9 +18,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Trash, GraduationCap, Code } from 'lucide-react';
+import { Save, Trash, GraduationCap, Code, Building, Users, MessageSquareCode, PenTool, UserPlus } from 'lucide-react';
 
-// Define the form validation schema
 const eventFormSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }),
   type: z.string().min(1, { message: 'Type is required' }),
@@ -32,7 +31,6 @@ const eventFormSchema = z.object({
   marketingDescription: z.string().min(1, { message: 'Description is required' }),
   status: z.enum(['Approved', 'Pending', 'Rejected']),
   
-  // Ownership fields
   finosLead: z.string().min(1, { message: 'FINOS lead is required' }),
   finosTeam: z.string().min(1, { message: 'FINOS team is required' }),
   marketingLiaison: z.string().min(1, { message: 'Marketing liaison is required' }),
@@ -42,13 +40,11 @@ const eventFormSchema = z.object({
   ambassador: z.string().min(1, { message: 'Ambassador is required' }),
   toc: z.string().min(1, { message: 'TOC is required' }),
   
-  // Impacts fields
   useCase: z.string(),
   strategicInitiative: z.string().min(1, { message: 'Strategic initiative is required' }),
   projects: z.string().min(1, { message: 'Projects are required' }),
   targetedPersonas: z.string().min(1, { message: 'Targeted personas are required' }),
   
-  // Metrics fields
   targetedRegistrations: z.number().min(0),
   currentRegistrations: z.number().min(0),
   targetedParticipants: z.number().min(0),
@@ -75,7 +71,6 @@ const EventForm: React.FC<EventFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Set default values for the form
   const defaultValues: Partial<EventFormValues> = {
     title: initialData?.title || '',
     type: initialData?.type || '',
@@ -87,7 +82,6 @@ const EventForm: React.FC<EventFormProps> = ({
     marketingDescription: initialData?.marketingDescription || '',
     status: initialData?.status || 'Pending',
     
-    // Ownership fields
     finosLead: initialData?.ownership.finosLead || '',
     finosTeam: initialData?.ownership.finosTeam.join(', ') || '',
     marketingLiaison: initialData?.ownership.marketingLiaison || '',
@@ -97,13 +91,11 @@ const EventForm: React.FC<EventFormProps> = ({
     ambassador: initialData?.ownership.ambassador || '',
     toc: initialData?.ownership.toc || '',
     
-    // Impacts fields
     useCase: initialData?.impacts.useCase || '',
     strategicInitiative: initialData?.impacts.strategicInitiative || '',
     projects: initialData?.impacts.projects.join(', ') || '',
     targetedPersonas: initialData?.impacts.targetedPersonas.join(', ') || '',
     
-    // Metrics fields
     targetedRegistrations: initialData?.metrics.targetedRegistrations || 0,
     currentRegistrations: initialData?.metrics.currentRegistrations || 0,
     targetedParticipants: initialData?.metrics.targetedParticipants || 0,
@@ -119,7 +111,6 @@ const EventForm: React.FC<EventFormProps> = ({
     try {
       setIsSubmitting(true);
       
-      // Convert form values to Masterclass object
       const eventData: Masterclass = {
         id: initialData?.id || '',
         title: values.title,
@@ -150,7 +141,6 @@ const EventForm: React.FC<EventFormProps> = ({
         metrics: {
           targetedRegistrations: values.targetedRegistrations,
           currentRegistrations: values.currentRegistrations,
-          // Calculate percentages
           registrationPercentage: values.targetedRegistrations > 0 
             ? Math.round((values.currentRegistrations / values.targetedRegistrations) * 100) 
             : 0,
@@ -169,7 +159,6 @@ const EventForm: React.FC<EventFormProps> = ({
         description: `Successfully ${isEditing ? 'updated' : 'created'} developer event "${values.title}"`,
       });
       
-      // Navigate back to dashboard
       navigate('/');
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -195,7 +184,6 @@ const EventForm: React.FC<EventFormProps> = ({
         description: "Successfully deleted the developer event",
       });
       
-      // Navigate back to dashboard
       navigate('/');
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -213,7 +201,6 @@ const EventForm: React.FC<EventFormProps> = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* General Information */}
           <Card>
             <CardHeader>
               <CardTitle>General Information</CardTitle>
@@ -256,6 +243,30 @@ const EventForm: React.FC<EventFormProps> = ({
                           <div className="flex items-center gap-2">
                             <Code className="h-4 w-4" />
                             <span>Hackathon</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Conference">
+                          <div className="flex items-center gap-2">
+                            <Building className="h-4 w-4" />
+                            <span>Conference</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="TechTalk">
+                          <div className="flex items-center gap-2">
+                            <MessageSquareCode className="h-4 w-4" />
+                            <span>TechTalk</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Workshop">
+                          <div className="flex items-center gap-2">
+                            <PenTool className="h-4 w-4" />
+                            <span>Workshop</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Meetup">
+                          <div className="flex items-center gap-2">
+                            <UserPlus className="h-4 w-4" />
+                            <span>Meetup</span>
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -378,7 +389,6 @@ const EventForm: React.FC<EventFormProps> = ({
             </CardContent>
           </Card>
           
-          {/* Ownership */}
           <Card>
             <CardHeader>
               <CardTitle>Ownership</CardTitle>
@@ -498,7 +508,6 @@ const EventForm: React.FC<EventFormProps> = ({
             </CardContent>
           </Card>
           
-          {/* Impacts and Metrics */}
           <Card>
             <CardHeader>
               <CardTitle>Impacts & Metrics</CardTitle>
