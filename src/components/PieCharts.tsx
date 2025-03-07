@@ -22,23 +22,25 @@ const PieCharts: React.FC<PieChartsProps> = ({ activities }) => {
     return acc;
   }, {});
 
-  // Process data for registrations by type
+  // Process data for registrations by type - FIXED: Now properly aggregating by type
   const registrationsByType = activities.reduce((acc: Record<string, number>, activity) => {
     const type = activity.type;
     if (!acc[type]) {
       acc[type] = 0;
     }
+    // Use the actual current registrations value
     acc[type] += activity.metrics.currentRegistrations;
     return acc;
   }, {});
 
-  // Process data for participants by type
+  // Process data for participants by type - FIXED: Now using currentParticipants
   const participantsByType = activities.reduce((acc: Record<string, number>, activity) => {
     const type = activity.type;
     if (!acc[type]) {
       acc[type] = 0;
     }
-    acc[type] += activity.metrics.currentParticipants;
+    // Use the current participants value instead of registrations
+    acc[type] += activity.metrics.currentParticipants || 0;
     return acc;
   }, {});
 
@@ -53,7 +55,7 @@ const PieCharts: React.FC<PieChartsProps> = ({ activities }) => {
       return (
         <div className="bg-background border rounded p-2 shadow-md">
           <p className="font-medium">{`${payload[0].name}`}</p>
-          <p className="text-finos-blue">{`${payload[0].value} ${payload[0].dataKey === 'participants' ? 'participants' : 'registrations'}`}</p>
+          <p className="text-finos-blue">{`${payload[0].value} ${payload[0].name === 'participants' ? 'participants' : 'registrations'}`}</p>
         </div>
       );
     }
