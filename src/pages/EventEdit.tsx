@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -45,8 +46,18 @@ const EventEdit = () => {
   const handleSubmit = async (data: Masterclass) => {
     try {
       await updateMasterclass(data);
-    } catch (error) {
+      toast({
+        title: "Success",
+        description: "Developer event updated successfully",
+      });
+      navigate('/');
+    } catch (error: any) {
       console.error("Error updating developer event:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update developer event",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -55,8 +66,18 @@ const EventEdit = () => {
     if (!id) return;
     try {
       await deleteMasterclass(id);
-    } catch (error) {
+      toast({
+        title: "Success",
+        description: "Developer event deleted successfully",
+      });
+      navigate('/');
+    } catch (error: any) {
       console.error("Error deleting developer event:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete developer event",
+        variant: "destructive",
+      });
       throw error;
     }
   };

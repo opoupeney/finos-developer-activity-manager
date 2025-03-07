@@ -14,18 +14,26 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Save, Trash, GraduationCap, Code, Building, Users, MessageSquareCode, PenTool, UserPlus } from 'lucide-react';
+import { format, parse } from 'date-fns';
 
 const eventFormSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }),
   type: z.string().min(1, { message: 'Type is required' }),
-  date: z.string().min(1, { message: 'Date is required' }),
-  kickOffDate: z.string().min(1, { message: 'Kick-off date is required' }),
-  endDate: z.string().min(1, { message: 'End date is required' }),
+  date: z.date({
+    required_error: 'Date is required',
+  }),
+  kickOffDate: z.date({
+    required_error: 'Kick-off date is required',
+  }),
+  endDate: z.date({
+    required_error: 'End date is required',
+  }),
   location: z.string().min(1, { message: 'Location is required' }),
   marketingCampaign: z.string().min(1, { message: 'Marketing campaign is required' }),
   marketingDescription: z.string().min(1, { message: 'Description is required' }),
@@ -71,12 +79,30 @@ const EventForm: React.FC<EventFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const parseDateString = (dateString?: string): Date | undefined => {
+    if (!dateString) return undefined;
+    try {
+      return parse(dateString, 'MMMM do yyyy', new Date());
+    } catch (error) {
+      try {
+        return parse(dateString, 'MMMM yyyy', new Date());
+      } catch (error) {
+        try {
+          return new Date(dateString);
+        } catch (error) {
+          console.error("Could not parse date:", dateString, error);
+          return undefined;
+        }
+      }
+    }
+  };
+
   const defaultValues: Partial<EventFormValues> = {
     title: initialData?.title || '',
     type: initialData?.type || '',
-    date: initialData?.date || '',
-    kickOffDate: initialData?.kickOffDate || '',
-    endDate: initialData?.endDate || '',
+    date: parseDateString(initialData?.date) || undefined,
+    kickOffDate: parseDateString(initialData?.kickOffDate) || undefined,
+    endDate: parseDateString(initialData?.endDate) || undefined,
     location: initialData?.location || '',
     marketingCampaign: initialData?.marketingCampaign || '',
     marketingDescription: initialData?.marketingDescription || '',
@@ -115,9 +141,9 @@ const EventForm: React.FC<EventFormProps> = ({
         id: initialData?.id || '',
         title: values.title,
         type: values.type,
-        date: values.date,
-        kickOffDate: values.kickOffDate,
-        endDate: values.endDate,
+        date: format(values.date, 'MMMM yyyy'),
+        kickOffDate: format(values.kickOffDate, 'MMMM do yyyy'),
+        endDate: format(values.endDate, 'MMMM do yyyy'),
         location: values.location,
         marketingCampaign: values.marketingCampaign,
         marketingDescription: values.marketingDescription,
@@ -282,9 +308,11 @@ const EventForm: React.FC<EventFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Date</FormLabel>
-                    <FormControl>
-                      <Input placeholder="April 2025" {...field} />
-                    </FormControl>
+                    <DatePicker 
+                      date={field.value} 
+                      onDateChange={field.onChange}
+                      placeholder="Select event date" 
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -296,9 +324,11 @@ const EventForm: React.FC<EventFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Kick-off Date</FormLabel>
-                    <FormControl>
-                      <Input placeholder="March 1st 2025" {...field} />
-                    </FormControl>
+                    <DatePicker 
+                      date={field.value} 
+                      onDateChange={field.onChange}
+                      placeholder="Select kick-off date" 
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -310,9 +340,11 @@ const EventForm: React.FC<EventFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                      <Input placeholder="April 30th 2025" {...field} />
-                    </FormControl>
+                    <DatePicker 
+                      date={field.value} 
+                      onDateChange={field.onChange}
+                      placeholder="Select end date" 
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
