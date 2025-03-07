@@ -15,27 +15,29 @@ const MasterclassView = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   
-  const { data: masterclass, isLoading, error } = useQuery({
-    queryKey: ['masterclass', id],
+  const { data: event, isLoading, error } = useQuery({
+    queryKey: ['event', id],
     queryFn: () => {
       if (!id) {
-        throw new Error("No masterclass ID provided");
+        throw new Error("No developer event ID provided");
       }
       return getMasterclassByID(id);
     },
-    onError: (err: any) => {
-      console.error("Error loading masterclass data:", err);
-      toast({
-        title: "Error loading data",
-        description: err.message || "There was a problem retrieving the masterclass information",
-        variant: "destructive",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Data loaded successfully",
-        description: "Masterclass information has been retrieved",
-      });
+    meta: {
+      onSuccess: () => {
+        toast({
+          title: "Data loaded successfully",
+          description: "Developer event information has been retrieved",
+        });
+      },
+      onError: (err: any) => {
+        console.error("Error loading developer event data:", err);
+        toast({
+          title: "Error loading data",
+          description: err.message || "There was a problem retrieving the developer event information",
+          variant: "destructive",
+        });
+      }
     },
     enabled: !!id // Only run the query if we have an ID
   });
@@ -48,7 +50,7 @@ const MasterclassView = () => {
         <div className="container max-w-7xl mx-auto px-4 py-12 flex items-center justify-center h-[80vh]">
           <div className="flex flex-col items-center">
             <div className="h-12 w-12 rounded-full border-4 border-finos-blue/30 border-t-finos-blue animate-spin"></div>
-            <p className="mt-4 text-muted-foreground animate-pulse">Loading masterclass data...</p>
+            <p className="mt-4 text-muted-foreground animate-pulse">Loading developer event data...</p>
           </div>
         </div>
       </div>
@@ -56,14 +58,14 @@ const MasterclassView = () => {
   }
 
   // If data is not available
-  if (!masterclass || error) {
+  if (!event || error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         <FinosHeader />
         <div className="container max-w-7xl mx-auto px-4 py-12">
           <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-red-500">Masterclass not found</h2>
-            <p className="text-muted-foreground mt-2">Could not find the requested masterclass information</p>
+            <h2 className="text-2xl font-bold text-red-500">Developer event not found</h2>
+            <p className="text-muted-foreground mt-2">Could not find the requested developer event information</p>
             <Button asChild variant="outline" className="mt-4">
               <Link to="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -90,11 +92,11 @@ const MasterclassView = () => {
           </Button>
         </div>
         
-        <MasterclassHeader masterclass={masterclass} />
+        <MasterclassHeader masterclass={event} />
         
-        <MasterclassStats masterclass={masterclass} />
+        <MasterclassStats masterclass={event} />
         
-        <MasterclassDetails masterclass={masterclass} />
+        <MasterclassDetails masterclass={event} />
       </main>
       
       <footer className="border-t py-6 mt-12">

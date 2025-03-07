@@ -4,20 +4,20 @@ import { Masterclass } from "../types/masterclass";
 
 export const getMasterclassData = async (): Promise<Masterclass> => {
   try {
-    // Get masterclass data
-    const { data: masterclasses, error: masterclassError } = await supabase
+    // Get event data
+    const { data: events, error: eventError } = await supabase
       .from('masterclasses')
       .select('*')
       .eq('custom_id', 'mc-001')
       .single();
     
-    if (masterclassError) throw masterclassError;
+    if (eventError) throw eventError;
     
     // Get ownership data
     const { data: ownership, error: ownershipError } = await supabase
       .from('ownerships')
       .select('*')
-      .eq('masterclass_id', masterclasses.id)
+      .eq('masterclass_id', events.id)
       .single();
     
     if (ownershipError) throw ownershipError;
@@ -26,7 +26,7 @@ export const getMasterclassData = async (): Promise<Masterclass> => {
     const { data: impacts, error: impactsError } = await supabase
       .from('impacts')
       .select('*')
-      .eq('masterclass_id', masterclasses.id)
+      .eq('masterclass_id', events.id)
       .single();
     
     if (impactsError) throw impactsError;
@@ -35,23 +35,23 @@ export const getMasterclassData = async (): Promise<Masterclass> => {
     const { data: metrics, error: metricsError } = await supabase
       .from('metrics')
       .select('*')
-      .eq('masterclass_id', masterclasses.id)
+      .eq('masterclass_id', events.id)
       .single();
     
     if (metricsError) throw metricsError;
     
     // Combine all data into a Masterclass object
     return {
-      id: masterclasses.custom_id,
-      title: masterclasses.title,
-      type: masterclasses.type,
-      date: masterclasses.date,
-      kickOffDate: masterclasses.kick_off_date,
-      endDate: masterclasses.end_date,
-      location: masterclasses.location,
-      marketingCampaign: masterclasses.marketing_campaign,
-      marketingDescription: masterclasses.marketing_description,
-      status: masterclasses.status,
+      id: events.custom_id,
+      title: events.title,
+      type: events.type,
+      date: events.date,
+      kickOffDate: events.kick_off_date,
+      endDate: events.end_date,
+      location: events.location,
+      marketingCampaign: events.marketing_campaign,
+      marketingDescription: events.marketing_description,
+      status: events.status as 'Approved' | 'Pending' | 'Rejected',
       ownership: {
         finosLead: ownership.finos_lead,
         finosTeam: ownership.finos_team,
@@ -78,27 +78,27 @@ export const getMasterclassData = async (): Promise<Masterclass> => {
       },
     };
   } catch (error) {
-    console.error("Error fetching masterclass data:", error);
+    console.error("Error fetching developer event data:", error);
     throw error;
   }
 };
 
 export const getMasterclassByID = async (id: string): Promise<Masterclass | undefined> => {
   try {
-    // Get masterclass data
-    const { data: masterclasses, error: masterclassError } = await supabase
+    // Get event data
+    const { data: events, error: eventError } = await supabase
       .from('masterclasses')
       .select('*')
       .eq('custom_id', id)
       .single();
     
-    if (masterclassError) throw masterclassError;
+    if (eventError) throw eventError;
     
     // Get ownership data
     const { data: ownership, error: ownershipError } = await supabase
       .from('ownerships')
       .select('*')
-      .eq('masterclass_id', masterclasses.id)
+      .eq('masterclass_id', events.id)
       .single();
     
     if (ownershipError) throw ownershipError;
@@ -107,7 +107,7 @@ export const getMasterclassByID = async (id: string): Promise<Masterclass | unde
     const { data: impacts, error: impactsError } = await supabase
       .from('impacts')
       .select('*')
-      .eq('masterclass_id', masterclasses.id)
+      .eq('masterclass_id', events.id)
       .single();
     
     if (impactsError) throw impactsError;
@@ -116,23 +116,23 @@ export const getMasterclassByID = async (id: string): Promise<Masterclass | unde
     const { data: metrics, error: metricsError } = await supabase
       .from('metrics')
       .select('*')
-      .eq('masterclass_id', masterclasses.id)
+      .eq('masterclass_id', events.id)
       .single();
     
     if (metricsError) throw metricsError;
     
     // Combine all data into a Masterclass object
     return {
-      id: masterclasses.custom_id,
-      title: masterclasses.title,
-      type: masterclasses.type,
-      date: masterclasses.date,
-      kickOffDate: masterclasses.kick_off_date,
-      endDate: masterclasses.end_date,
-      location: masterclasses.location,
-      marketingCampaign: masterclasses.marketing_campaign,
-      marketingDescription: masterclasses.marketing_description,
-      status: masterclasses.status,
+      id: events.custom_id,
+      title: events.title,
+      type: events.type,
+      date: events.date,
+      kickOffDate: events.kick_off_date,
+      endDate: events.end_date,
+      location: events.location,
+      marketingCampaign: events.marketing_campaign,
+      marketingDescription: events.marketing_description,
+      status: events.status as 'Approved' | 'Pending' | 'Rejected',
       ownership: {
         finosLead: ownership.finos_lead,
         finosTeam: ownership.finos_team,
@@ -159,25 +159,25 @@ export const getMasterclassByID = async (id: string): Promise<Masterclass | unde
       },
     };
   } catch (error) {
-    console.error("Error fetching masterclass by ID:", error);
+    console.error("Error fetching developer event by ID:", error);
     return undefined;
   }
 };
 
 export const updateMasterclass = async (masterclass: Masterclass): Promise<Masterclass> => {
   try {
-    // Get the UUID of the masterclass
-    const { data: masterclassData, error: masterclassError } = await supabase
+    // Get the UUID of the event
+    const { data: eventData, error: eventError } = await supabase
       .from('masterclasses')
       .select('id')
       .eq('custom_id', masterclass.id)
       .single();
     
-    if (masterclassError) throw masterclassError;
+    if (eventError) throw eventError;
     
-    const masterclassId = masterclassData.id;
+    const eventId = eventData.id;
     
-    // Update masterclass
+    // Update event
     const { error: updateError } = await supabase
       .from('masterclasses')
       .update({
@@ -190,9 +190,9 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
         marketing_campaign: masterclass.marketingCampaign,
         marketing_description: masterclass.marketingDescription,
         status: masterclass.status,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       })
-      .eq('id', masterclassId);
+      .eq('id', eventId);
     
     if (updateError) throw updateError;
     
@@ -209,7 +209,7 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
         ambassador: masterclass.ownership.ambassador,
         toc: masterclass.ownership.toc,
       })
-      .eq('masterclass_id', masterclassId);
+      .eq('masterclass_id', eventId);
     
     if (ownershipError) throw ownershipError;
     
@@ -222,7 +222,7 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
         projects: masterclass.impacts.projects,
         targeted_personas: masterclass.impacts.targetedPersonas,
       })
-      .eq('masterclass_id', masterclassId);
+      .eq('masterclass_id', eventId);
     
     if (impactsError) throw impactsError;
     
@@ -237,37 +237,37 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
         current_participants: masterclass.metrics.currentParticipants,
         participation_percentage: masterclass.metrics.participationPercentage,
       })
-      .eq('masterclass_id', masterclassId);
+      .eq('masterclass_id', eventId);
     
     if (metricsError) throw metricsError;
     
     return masterclass;
   } catch (error) {
-    console.error("Error updating masterclass:", error);
+    console.error("Error updating developer event:", error);
     throw error;
   }
 };
 
 export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
   try {
-    const { data: masterclasses, error: masterclassError } = await supabase
+    const { data: events, error: eventError } = await supabase
       .from('masterclasses')
       .select('*');
     
-    if (masterclassError) throw masterclassError;
+    if (eventError) throw eventError;
     
     const result: Masterclass[] = [];
     
-    for (const masterclass of masterclasses) {
+    for (const event of events) {
       // Get ownership data
       const { data: ownership, error: ownershipError } = await supabase
         .from('ownerships')
         .select('*')
-        .eq('masterclass_id', masterclass.id)
+        .eq('masterclass_id', event.id)
         .single();
       
       if (ownershipError) {
-        console.error("Error fetching ownership for masterclass:", masterclass.id, ownershipError);
+        console.error("Error fetching ownership for developer event:", event.id, ownershipError);
         continue;
       }
       
@@ -275,11 +275,11 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
       const { data: impacts, error: impactsError } = await supabase
         .from('impacts')
         .select('*')
-        .eq('masterclass_id', masterclass.id)
+        .eq('masterclass_id', event.id)
         .single();
       
       if (impactsError) {
-        console.error("Error fetching impacts for masterclass:", masterclass.id, impactsError);
+        console.error("Error fetching impacts for developer event:", event.id, impactsError);
         continue;
       }
       
@@ -287,26 +287,26 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
       const { data: metrics, error: metricsError } = await supabase
         .from('metrics')
         .select('*')
-        .eq('masterclass_id', masterclass.id)
+        .eq('masterclass_id', event.id)
         .single();
       
       if (metricsError) {
-        console.error("Error fetching metrics for masterclass:", masterclass.id, metricsError);
+        console.error("Error fetching metrics for developer event:", event.id, metricsError);
         continue;
       }
       
-      // Add masterclass to result
+      // Add event to result
       result.push({
-        id: masterclass.custom_id,
-        title: masterclass.title,
-        type: masterclass.type,
-        date: masterclass.date,
-        kickOffDate: masterclass.kick_off_date,
-        endDate: masterclass.end_date,
-        location: masterclass.location,
-        marketingCampaign: masterclass.marketing_campaign,
-        marketingDescription: masterclass.marketing_description,
-        status: masterclass.status,
+        id: event.custom_id,
+        title: event.title,
+        type: event.type,
+        date: event.date,
+        kickOffDate: event.kick_off_date,
+        endDate: event.end_date,
+        location: event.location,
+        marketingCampaign: event.marketing_campaign,
+        marketingDescription: event.marketing_description,
+        status: event.status as 'Approved' | 'Pending' | 'Rejected',
         ownership: {
           finosLead: ownership.finos_lead,
           finosTeam: ownership.finos_team,
@@ -336,7 +336,7 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
     
     return result;
   } catch (error) {
-    console.error("Error fetching all masterclasses:", error);
+    console.error("Error fetching all developer events:", error);
     throw error;
   }
 };

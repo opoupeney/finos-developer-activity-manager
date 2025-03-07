@@ -2,7 +2,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMasterclassData } from '../services/masterclassService';
-import { Masterclass } from '../types/masterclass';
 import FinosHeader from '../components/FinosHeader';
 import MasterclassHeader from '../components/MasterclassHeader';
 import MasterclassStats from '../components/MasterclassStats';
@@ -11,22 +10,24 @@ import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const { toast } = useToast();
-  const { data: masterclass, isLoading, error } = useQuery({
-    queryKey: ['masterclass'],
+  const { data: event, isLoading, error } = useQuery({
+    queryKey: ['event'],
     queryFn: () => getMasterclassData(),
-    onError: (err: any) => {
-      console.error("Error loading masterclass data:", err);
-      toast({
-        title: "Error loading data",
-        description: err.message || "There was a problem retrieving the masterclass information",
-        variant: "destructive",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Data loaded successfully",
-        description: "Masterclass information has been retrieved",
-      });
+    meta: {
+      onSuccess: () => {
+        toast({
+          title: "Data loaded successfully",
+          description: "Developer event information has been retrieved",
+        });
+      },
+      onError: (err: any) => {
+        console.error("Error loading developer event data:", err);
+        toast({
+          title: "Error loading data",
+          description: err.message || "There was a problem retrieving the developer event information",
+          variant: "destructive",
+        });
+      }
     }
   });
 
@@ -38,7 +39,7 @@ const Index = () => {
         <div className="container max-w-7xl mx-auto px-4 py-12 flex items-center justify-center h-[80vh]">
           <div className="flex flex-col items-center">
             <div className="h-12 w-12 rounded-full border-4 border-finos-blue/30 border-t-finos-blue animate-spin"></div>
-            <p className="mt-4 text-muted-foreground animate-pulse">Loading masterclass data...</p>
+            <p className="mt-4 text-muted-foreground animate-pulse">Loading developer event data...</p>
           </div>
         </div>
       </div>
@@ -46,14 +47,14 @@ const Index = () => {
   }
 
   // If data is not available
-  if (!masterclass || error) {
+  if (!event || error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         <FinosHeader />
         <div className="container max-w-7xl mx-auto px-4 py-12">
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-red-500">Data not available</h2>
-            <p className="text-muted-foreground mt-2">Could not load masterclass information</p>
+            <p className="text-muted-foreground mt-2">Could not load developer event information</p>
           </div>
         </div>
       </div>
@@ -65,11 +66,11 @@ const Index = () => {
       <FinosHeader />
       
       <main className="container max-w-7xl mx-auto px-4 py-12">
-        <MasterclassHeader masterclass={masterclass} />
+        <MasterclassHeader masterclass={event} />
         
-        <MasterclassStats masterclass={masterclass} />
+        <MasterclassStats masterclass={event} />
         
-        <MasterclassDetails masterclass={masterclass} />
+        <MasterclassDetails masterclass={event} />
       </main>
       
       <footer className="border-t py-6 mt-12">

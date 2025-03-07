@@ -46,15 +46,13 @@ const MasterclassDetails: React.FC<MasterclassDetailsProps> = ({ masterclass }) 
       <DetailCard 
         title="Ownership" 
         items={ownershipDetails} 
-        className="animate-slide-in-left" 
-        style={{ animationDelay: "0.1s" }}
+        className="animate-slide-in-left"
       />
       
       <DetailCard 
         title="Impacts" 
         items={impactDetails} 
-        className="animate-slide-in-left" 
-        style={{ animationDelay: "0.2s" }}
+        className="animate-slide-in-left"
       />
     </div>
   );
