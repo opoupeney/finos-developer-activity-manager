@@ -12,9 +12,6 @@ const FinosHeader = () => {
       <div className="container max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
         <div className="flex items-center gap-6">
           <Link to="/" className="font-bold text-xl flex items-center text-finos-blue">
-            <svg className="h-8 w-8 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-            </svg>
             FINOS
           </Link>
           
