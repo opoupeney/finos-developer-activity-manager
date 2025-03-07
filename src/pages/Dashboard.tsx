@@ -15,21 +15,21 @@ import PieCharts from '@/components/PieCharts';
 const Dashboard = () => {
   const { user, userDetails } = useAuth();
   const { toast } = useToast();
-  const { data: events, isLoading, error } = useQuery({
-    queryKey: ['events'],
+  const { data: activities, isLoading, error } = useQuery({
+    queryKey: ['activities'],
     queryFn: () => getAllMasterclasses(),
     meta: {
       onSuccess: () => {
         toast({
           title: "Dashboard loaded",
-          description: "Developer events dashboard data has been retrieved",
+          description: "Developer activities dashboard data has been retrieved",
         });
       },
       onError: (err: any) => {
         console.error("Error loading dashboard data:", err);
         toast({
           title: "Error loading dashboard",
-          description: err.message || "There was a problem retrieving the developer events information",
+          description: err.message || "There was a problem retrieving the developer activities information",
           variant: "destructive",
         });
       }
@@ -58,49 +58,49 @@ const Dashboard = () => {
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8 animate-fade-in">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">FINOS Developer Events</h1>
-            <p className="text-muted-foreground mt-1">Manage and monitor all developer events</p>
+            <h1 className="text-3xl font-bold tracking-tight">FINOS Developer Activities</h1>
+            <p className="text-muted-foreground mt-1">Manage and monitor all developer activities</p>
           </div>
           
           {userDetails?.role === 'admin' && (
             <Button asChild className="bg-finos-blue hover:bg-finos-blue/90 animate-scale">
               <Link to="/create">
                 <Plus className="mr-2 h-4 w-4" />
-                New Event
+                New Activity
               </Link>
             </Button>
           )}
         </div>
         
         {/* Charts Section */}
-        {events && events.length > 0 && (
+        {activities && activities.length > 0 && (
           <>
             <div className="flex items-center gap-2 mb-4 mt-8">
               <ChartPieIcon className="h-5 w-5 text-finos-blue" />
-              <h2 className="text-xl font-semibold">Event Analytics</h2>
+              <h2 className="text-xl font-semibold">Activity Analytics</h2>
             </div>
-            <PieCharts events={events} />
+            <PieCharts activities={activities} />
           </>
         )}
         
-        {!events || events.length === 0 ? (
+        {!activities || activities.length === 0 ? (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-muted-foreground">No developer events found</h2>
-            <p className="text-muted-foreground mt-2">There are no developer events available at the moment.</p>
+            <h2 className="text-xl font-semibold text-muted-foreground">No developer activities found</h2>
+            <p className="text-muted-foreground mt-2">There are no developer activities available at the moment.</p>
           </div>
         ) : (
           <>
             <div className="flex items-center gap-2 mb-4 mt-8">
               <Eye className="h-5 w-5 text-finos-blue" />
-              <h2 className="text-xl font-semibold">Event Overview</h2>
+              <h2 className="text-xl font-semibold">Activity Overview</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event, index) => (
-                <Card key={event.id} className="stats-card overflow-hidden animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+              {activities.map((activity, index) => (
+                <Card key={activity.id} className="stats-card overflow-hidden animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl font-semibold">{event.title}</CardTitle>
-                      <StatusBadge status={event.status} />
+                      <CardTitle className="text-xl font-semibold">{activity.title}</CardTitle>
+                      <StatusBadge status={activity.status} />
                     </div>
                   </CardHeader>
                   
@@ -113,7 +113,7 @@ const Dashboard = () => {
                           <line x1="8" x2="8" y1="2" y2="6" />
                           <line x1="3" x2="21" y1="10" y2="10" />
                         </svg>
-                        {new Date(event.date).toLocaleDateString('en-US', { 
+                        {new Date(activity.date).toLocaleDateString('en-US', { 
                           year: 'numeric', 
                           month: 'long'
                         })}
@@ -124,22 +124,22 @@ const Dashboard = () => {
                           <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                           <circle cx="12" cy="10" r="3" />
                         </svg>
-                        {event.location}
+                        {activity.location}
                       </div>
                       
                       <div className="mt-4">
                         <div className="text-sm font-medium flex justify-between mb-1">
                           <span>Registration Progress</span>
-                          <span>{event.metrics.registrationPercentage}%</span>
+                          <span>{activity.metrics.registrationPercentage}%</span>
                         </div>
                         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-finos-blue transition-all duration-500 ease-out rounded-full"
-                            style={{ width: `${event.metrics.registrationPercentage}%` }}
+                            style={{ width: `${activity.metrics.registrationPercentage}%` }}
                           ></div>
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          {event.metrics.currentRegistrations} of {event.metrics.targetedRegistrations} registrations
+                          {activity.metrics.currentRegistrations} of {activity.metrics.targetedRegistrations} registrations
                         </div>
                       </div>
                     </div>
@@ -147,7 +147,7 @@ const Dashboard = () => {
                   
                   <CardFooter className="pt-0 flex gap-2">
                     <Button asChild variant="outline" className="flex-1">
-                      <Link to={`/masterclass/${event.id}`}>
+                      <Link to={`/masterclass/${activity.id}`}>
                         <Eye className="mr-2 h-4 w-4" />
                         View Details
                       </Link>
@@ -155,7 +155,7 @@ const Dashboard = () => {
                     
                     {userDetails?.role === 'admin' && (
                       <Button asChild variant="outline" className="w-10 p-0 flex-none">
-                        <Link to={`/edit/${event.id}`}>
+                        <Link to={`/edit/${activity.id}`}>
                           <Edit className="h-4 w-4" />
                         </Link>
                       </Button>

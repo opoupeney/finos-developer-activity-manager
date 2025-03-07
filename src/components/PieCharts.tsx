@@ -8,37 +8,37 @@ import { Masterclass } from '@/types/masterclass';
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64d79', '#674ea7', '#3c78d8', '#6aa84f', '#f1c232', '#cc0000'];
 
 interface PieChartsProps {
-  events: Masterclass[];
+  activities: Masterclass[];
 }
 
-const PieCharts: React.FC<PieChartsProps> = ({ events }) => {
+const PieCharts: React.FC<PieChartsProps> = ({ activities }) => {
   // Process data for registrations by location
-  const registrationsByLocation = events.reduce((acc: Record<string, number>, event) => {
-    const location = event.location;
+  const registrationsByLocation = activities.reduce((acc: Record<string, number>, activity) => {
+    const location = activity.location;
     if (!acc[location]) {
       acc[location] = 0;
     }
-    acc[location] += event.metrics.currentRegistrations;
+    acc[location] += activity.metrics.currentRegistrations;
     return acc;
   }, {});
 
   // Process data for registrations by type
-  const registrationsByType = events.reduce((acc: Record<string, number>, event) => {
-    const type = event.type;
+  const registrationsByType = activities.reduce((acc: Record<string, number>, activity) => {
+    const type = activity.type;
     if (!acc[type]) {
       acc[type] = 0;
     }
-    acc[type] += event.metrics.currentRegistrations;
+    acc[type] += activity.metrics.currentRegistrations;
     return acc;
   }, {});
 
   // Process data for participants by type
-  const participantsByType = events.reduce((acc: Record<string, number>, event) => {
-    const type = event.type;
+  const participantsByType = activities.reduce((acc: Record<string, number>, activity) => {
+    const type = activity.type;
     if (!acc[type]) {
       acc[type] = 0;
     }
-    acc[type] += event.metrics.currentParticipants;
+    acc[type] += activity.metrics.currentParticipants;
     return acc;
   }, {});
 
