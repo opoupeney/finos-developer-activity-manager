@@ -31,10 +31,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      // Configure signOut to remove persistent sessions
+      await supabase.auth.signOut({ scope: 'global' });
+      // Clear local state
       setSession(null);
       setUser(null);
       setUserDetails(null);
+      
+      // Store a flag in localStorage to indicate signed out state for page refreshes
+      localStorage.setItem('authSignedOut', 'true');
     } catch (error: any) {
       console.error('Error signing out:', error.message);
       toast({
@@ -46,6 +51,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    // Check if user has manually signed out before
+    const hasSignedOut = localStorage.getItem('authSignedOut') === 'true';
+    
+    if (hasSignedOut) {
+      // If previously signed out, ensure we clear any lingering session
+      supabase.auth.signOut({ scope: 'global' })
+        .then(() => {
+          localStorage.removeItem('authSignedOut');
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Error clearing persistent session:', error);
+          setLoading(false);
+        });
+      return;
+    }
+
     const fetchUserDetails = async (userId: string) => {
       try {
         const { data, error } = await supabase
@@ -98,14 +120,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       console.log('Auth state changed:', event, newSession?.user?.id);
       
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
-      
-      if (newSession?.user) {
-        const details = await fetchUserDetails(newSession.user.id);
-        setUserDetails(details);
-      } else {
+      if (event === 'SIGNED_OUT') {
+        // Make sure we clear everything on sign out
+        setSession(null);
+        setUser(null);
         setUserDetails(null);
+      } else {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        
+        if (newSession?.user) {
+          const details = await fetchUserDetails(newSession.user.id);
+          setUserDetails(details);
+        } else {
+          setUserDetails(null);
+        }
       }
       
       setLoading(false);
