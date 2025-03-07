@@ -8,7 +8,7 @@ import StatusBadge from '../components/StatusBadge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Plus } from "lucide-react";
+import { Eye, Plus, Edit } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard = () => {
@@ -62,9 +62,11 @@ const Dashboard = () => {
           </div>
           
           {userDetails?.role === 'admin' && (
-            <Button className="bg-finos-blue hover:bg-finos-blue/90 animate-scale">
-              <Plus className="mr-2 h-4 w-4" />
-              New Event
+            <Button asChild className="bg-finos-blue hover:bg-finos-blue/90 animate-scale">
+              <Link to="/create">
+                <Plus className="mr-2 h-4 w-4" />
+                New Event
+              </Link>
             </Button>
           )}
         </div>
@@ -123,13 +125,21 @@ const Dashboard = () => {
                   </div>
                 </CardContent>
                 
-                <CardFooter className="pt-0">
-                  <Button asChild variant="outline" className="w-full">
+                <CardFooter className="pt-0 flex gap-2">
+                  <Button asChild variant="outline" className="flex-1">
                     <Link to={`/masterclass/${event.id}`}>
                       <Eye className="mr-2 h-4 w-4" />
                       View Details
                     </Link>
                   </Button>
+                  
+                  {userDetails?.role === 'admin' && (
+                    <Button asChild variant="outline" className="w-10 p-0 flex-none">
+                      <Link to={`/edit/${event.id}`}>
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             ))}

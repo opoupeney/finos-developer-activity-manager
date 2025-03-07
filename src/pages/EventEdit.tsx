@@ -1,33 +1,37 @@
 
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getMasterclassByID } from '../services/masterclassService';
 import FinosHeader from '../components/FinosHeader';
-import MasterclassHeader from '../components/MasterclassHeader';
-import MasterclassStats from '../components/MasterclassStats';
-import MasterclassDetails from '../components/MasterclassDetails';
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Edit } from "lucide-react";
+import EventForm from '../components/EventForm';
+import { getMasterclassByID, updateMasterclass, deleteMasterclass } from '../services/masterclassService';
+import { Masterclass } from '../types/masterclass';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
-const MasterclassView = () => {
+const EventEdit = () => {
   const { id } = useParams<{ id: string }>();
-  const { toast } = useToast();
   const { userDetails } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
+  // Check if user is an admin
+  React.useEffect(() => {
+    if (userDetails && userDetails.role !== 'admin') {
+      toast({
+        title: "Access Denied",
+        description: "You do not have permission to edit developer events",
+        variant: "destructive",
+      });
+      navigate('/');
+    }
+  }, [userDetails, navigate, toast]);
+
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: () => getMasterclassByID(id!),
     enabled: !!id,
     meta: {
-      onSuccess: () => {
-        toast({
-          title: "Data loaded successfully",
-          description: "Developer event information has been retrieved",
-        });
-      },
       onError: (err: any) => {
         console.error("Error loading developer event data:", err);
         toast({
@@ -35,9 +39,19 @@ const MasterclassView = () => {
           description: err.message || "There was a problem retrieving the developer event information",
           variant: "destructive",
         });
+        navigate('/');
       }
     }
   });
+
+  const handleSubmit = async (data: Masterclass) => {
+    return updateMasterclass(data);
+  };
+
+  const handleDelete = async () => {
+    if (!id) return;
+    return deleteMasterclass(id);
+  };
 
   // Loading state
   if (isLoading) {
@@ -74,24 +88,21 @@ const MasterclassView = () => {
       <FinosHeader />
       
       <main className="container max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-start mb-8">
-          <div className="flex-1">
-            <MasterclassHeader masterclass={event} />
-          </div>
-          
-          {userDetails?.role === 'admin' && (
-            <Button asChild variant="outline" className="flex items-center gap-2">
-              <Link to={`/edit/${event.id}`}>
-                <Edit className="h-4 w-4" />
-                Edit Event
-              </Link>
-            </Button>
-          )}
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Edit Developer Event
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Make changes to the developer event "{event.title}"
+          </p>
         </div>
         
-        <MasterclassStats masterclass={event} />
-        
-        <MasterclassDetails masterclass={event} />
+        <EventForm 
+          initialData={event} 
+          onSubmit={handleSubmit} 
+          onDelete={handleDelete}
+          isEditing={true}
+        />
       </main>
       
       <footer className="border-t py-6 mt-12">
@@ -117,4 +128,4 @@ const MasterclassView = () => {
   );
 };
 
-export default MasterclassView;
+export default EventEdit;

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Masterclass } from "../types/masterclass";
 
@@ -337,6 +336,112 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
     return result;
   } catch (error) {
     console.error("Error fetching all developer events:", error);
+    throw error;
+  }
+};
+
+export const createMasterclass = async (masterclass: Omit<Masterclass, 'id'>): Promise<Masterclass> => {
+  try {
+    // Create a custom ID for the new event
+    const timestamp = Date.now();
+    const customId = `de-${timestamp.toString().slice(-6)}`;
+    
+    // Insert masterclass record
+    const { data: eventData, error: eventError } = await supabase
+      .from('masterclasses')
+      .insert({
+        title: masterclass.title,
+        type: masterclass.type,
+        date: masterclass.date,
+        kick_off_date: masterclass.kickOffDate,
+        end_date: masterclass.endDate,
+        location: masterclass.location,
+        marketing_campaign: masterclass.marketingCampaign,
+        marketing_description: masterclass.marketingDescription,
+        status: masterclass.status,
+        custom_id: customId,
+      })
+      .select('id, custom_id')
+      .single();
+    
+    if (eventError) throw eventError;
+    
+    // Insert ownership data
+    const { error: ownershipError } = await supabase
+      .from('ownerships')
+      .insert({
+        masterclass_id: eventData.id,
+        finos_lead: masterclass.ownership.finosLead,
+        finos_team: masterclass.ownership.finosTeam,
+        marketing_liaison: masterclass.ownership.marketingLiaison,
+        member_success_liaison: masterclass.ownership.memberSuccessLiaison,
+        sponsors_partners: masterclass.ownership.sponsorsPartners,
+        channel: masterclass.ownership.channel,
+        ambassador: masterclass.ownership.ambassador,
+        toc: masterclass.ownership.toc,
+      });
+    
+    if (ownershipError) throw ownershipError;
+    
+    // Insert impacts data
+    const { error: impactsError } = await supabase
+      .from('impacts')
+      .insert({
+        masterclass_id: eventData.id,
+        use_case: masterclass.impacts.useCase,
+        strategic_initiative: masterclass.impacts.strategicInitiative,
+        projects: masterclass.impacts.projects,
+        targeted_personas: masterclass.impacts.targetedPersonas,
+      });
+    
+    if (impactsError) throw impactsError;
+    
+    // Insert metrics data
+    const { error: metricsError } = await supabase
+      .from('metrics')
+      .insert({
+        masterclass_id: eventData.id,
+        targeted_registrations: masterclass.metrics.targetedRegistrations,
+        current_registrations: masterclass.metrics.currentRegistrations,
+        registration_percentage: masterclass.metrics.registrationPercentage,
+        targeted_participants: masterclass.metrics.targetedParticipants,
+        current_participants: masterclass.metrics.currentParticipants,
+        participation_percentage: masterclass.metrics.participationPercentage,
+      });
+    
+    if (metricsError) throw metricsError;
+    
+    // Return the created masterclass with its ID
+    return {
+      ...masterclass,
+      id: eventData.custom_id,
+    };
+  } catch (error) {
+    console.error("Error creating developer event:", error);
+    throw error;
+  }
+};
+
+export const deleteMasterclass = async (id: string): Promise<void> => {
+  try {
+    // Get the UUID of the event
+    const { data: eventData, error: eventError } = await supabase
+      .from('masterclasses')
+      .select('id')
+      .eq('custom_id', id)
+      .single();
+    
+    if (eventError) throw eventError;
+    
+    // Delete the masterclass (cascades to related tables due to FK constraints)
+    const { error: deleteError } = await supabase
+      .from('masterclasses')
+      .delete()
+      .eq('id', eventData.id);
+    
+    if (deleteError) throw deleteError;
+  } catch (error) {
+    console.error("Error deleting developer event:", error);
     throw error;
   }
 };

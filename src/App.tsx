@@ -11,6 +11,8 @@ import NotFound from "./pages/NotFound";
 import MasterclassView from "./pages/MasterclassView";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import EventCreate from "./pages/EventCreate";
+import EventEdit from "./pages/EventEdit";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/masterclass/:id" element={<MasterclassView />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/create" element={<EventCreate />} />
+            <Route path="/edit/:id" element={<EventEdit />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
