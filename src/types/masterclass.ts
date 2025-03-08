@@ -9,7 +9,7 @@ export interface Masterclass {
   location: string;
   marketingCampaign: string;
   marketingDescription: string;
-  status: 'Approved' | 'Pending' | 'Rejected';
+  status: 'Approved' | 'Pending' | 'Rejected' | 'Done';
   ownership: Ownership;
   impacts: Impacts;
   metrics: Metrics;

@@ -50,7 +50,7 @@ export const getMasterclassData = async (): Promise<Masterclass> => {
       location: events.location,
       marketingCampaign: events.marketing_campaign,
       marketingDescription: events.marketing_description,
-      status: events.status as 'Approved' | 'Pending' | 'Rejected',
+      status: events.status as 'Approved' | 'Pending' | 'Rejected' | 'Done',
       ownership: {
         finosLead: ownership.finos_lead,
         finosTeam: ownership.finos_team,
@@ -131,7 +131,7 @@ export const getMasterclassByID = async (id: string): Promise<Masterclass | unde
       location: events.location,
       marketingCampaign: events.marketing_campaign,
       marketingDescription: events.marketing_description,
-      status: events.status as 'Approved' | 'Pending' | 'Rejected',
+      status: events.status as 'Approved' | 'Pending' | 'Rejected' | 'Done',
       ownership: {
         finosLead: ownership.finos_lead,
         finosTeam: ownership.finos_team,
@@ -305,7 +305,7 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
         location: event.location,
         marketingCampaign: event.marketing_campaign,
         marketingDescription: event.marketing_description,
-        status: event.status as 'Approved' | 'Pending' | 'Rejected',
+        status: event.status as 'Approved' | 'Pending' | 'Rejected' | 'Done',
         ownership: {
           finosLead: ownership.finos_lead,
           finosTeam: ownership.finos_team,

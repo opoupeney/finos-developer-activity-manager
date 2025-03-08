@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
-  status: 'Approved' | 'Pending' | 'Rejected';
+  status: 'Approved' | 'Pending' | 'Rejected' | 'Done';
   className?: string;
 }
 
@@ -13,6 +13,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
     Approved: "bg-finos-green text-white hover:bg-finos-darkGreen",
     Pending: "bg-yellow-500 text-white hover:bg-yellow-600",
     Rejected: "bg-red-500 text-white hover:bg-red-600",
+    Done: "bg-gray-400 text-white hover:bg-gray-500", // New "Done" status with gray styling
   };
 
   return (
