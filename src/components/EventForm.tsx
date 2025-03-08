@@ -37,7 +37,7 @@ const eventFormSchema = z.object({
   location: z.string().min(1, { message: 'Location is required' }),
   marketingCampaign: z.string().min(1, { message: 'Marketing campaign is required' }),
   marketingDescription: z.string().min(1, { message: 'Description is required' }),
-  status: z.enum(['Approved', 'Pending', 'Rejected']),
+  status: z.enum(['Approved', 'Pending', 'Rejected', 'Done']),
   
   finosLead: z.string().min(1, { message: 'FINOS lead is required' }),
   finosTeam: z.string().min(1, { message: 'FINOS team is required' }),
@@ -389,6 +389,7 @@ const EventForm: React.FC<EventFormProps> = ({
                         <SelectItem value="Approved">Approved</SelectItem>
                         <SelectItem value="Pending">Pending</SelectItem>
                         <SelectItem value="Rejected">Rejected</SelectItem>
+                        <SelectItem value="Done">Done</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

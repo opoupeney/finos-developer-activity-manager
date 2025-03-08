@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, Plus, Edit, ChartPieIcon, Calendar, Code, Mic, BookOpen, Trophy, Star, Activity, MapPin, Building, MessageSquareCode, PenTool, UserPlus, GraduationCap } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import PieCharts from '@/components/PieCharts';
+import ActivityMap from '@/components/ActivityMap';
 
 // Map of activity types to their corresponding icons to match EventForm dropdown
 const typeToIconMap: Record<string, React.ReactNode> = {
@@ -87,6 +88,13 @@ const Dashboard = () => {
             </Button>
           )}
         </div>
+        
+        {/* Map Section - New addition */}
+        {activities && activities.length > 0 && (
+          <div className="mb-8">
+            <ActivityMap activities={activities} />
+          </div>
+        )}
         
         {/* Charts Section */}
         {activities && activities.length > 0 && (
