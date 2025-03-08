@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getAllMasterclasses } from '../services/masterclassService';
@@ -13,7 +12,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import PieCharts from '@/components/PieCharts';
 import ActivityMap from '@/components/ActivityMap';
 
-// Map of activity types to their corresponding icons to match EventForm dropdown
 const typeToIconMap: Record<string, React.ReactNode> = {
   'Workshop': <PenTool className="h-5 w-5 mr-2 text-finos-blue" />,
   'Hackathon': <Code className="h-5 w-5 mr-2 text-finos-blue" />,
@@ -26,15 +24,21 @@ const typeToIconMap: Record<string, React.ReactNode> = {
   'Awards': <Star className="h-5 w-5 mr-2 text-finos-blue" />,
 };
 
-// Default icon for activity types not in the map
 const DefaultIcon = <Activity className="h-5 w-5 mr-2 text-finos-blue" />;
 
 const Dashboard = () => {
-  const { user, userDetails } = useAuth();
+  const { user, userDetails, loading: authLoading } = useAuth();
   const { toast } = useToast();
-  const { data: activities, isLoading, error } = useQuery({
+  
+  const { 
+    data: activities, 
+    isLoading: activitiesLoading, 
+    error,
+    refetch 
+  } = useQuery({
     queryKey: ['activities'],
     queryFn: () => getAllMasterclasses(),
+    enabled: !authLoading,
     meta: {
       onSuccess: () => {
         toast({
@@ -53,8 +57,13 @@ const Dashboard = () => {
     }
   });
 
-  // Loading state
-  if (isLoading) {
+  useEffect(() => {
+    if (!authLoading) {
+      refetch();
+    }
+  }, [authLoading, user, refetch]);
+
+  if (authLoading || activitiesLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         <FinosHeader />
@@ -89,14 +98,12 @@ const Dashboard = () => {
           )}
         </div>
         
-        {/* Map Section - New addition */}
         {activities && activities.length > 0 && (
           <div className="mb-8">
             <ActivityMap activities={activities} />
           </div>
         )}
         
-        {/* Charts Section */}
         {activities && activities.length > 0 && (
           <>
             <div className="flex items-center gap-2 mb-4 mt-8">

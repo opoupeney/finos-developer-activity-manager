@@ -50,6 +50,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const fetchUserDetails = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name, email, avatar_url, role')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user details:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in fetchUserDetails:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     // Check if user has manually signed out before
     const hasSignedOut = localStorage.getItem('authSignedOut') === 'true';
@@ -68,33 +88,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    const fetchUserDetails = async (userId: string) => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('full_name, email, avatar_url, role')
-          .eq('id', userId)
-          .single();
-
-        if (error) {
-          console.error('Error fetching user details:', error);
-          return null;
-        }
-
-        return data;
-      } catch (error) {
-        console.error('Error in fetchUserDetails:', error);
-        return null;
-      }
-    };
-
     const fetchSession = async () => {
       try {
+        setLoading(true);
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         
         if (error) {
           throw error;
         }
+        
+        console.log('Initial session fetch:', currentSession?.user?.id);
         
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
@@ -117,6 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     fetchSession();
 
+    // Setup auth state change listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       console.log('Auth state changed:', event, newSession?.user?.id);
       
@@ -125,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(null);
         setUser(null);
         setUserDetails(null);
-      } else {
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
