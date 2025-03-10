@@ -70,7 +70,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ activities }) => {
             <ActivityProgressKnob 
               value={activeActivitiesCount} 
               maxValue={activitiesThreshold} 
-              title="Active Activities" 
+              title="Total Activities" 
               description={`${activeActivitiesCount} of ${activitiesThreshold} target activities`}
             />
             
