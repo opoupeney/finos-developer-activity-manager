@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllMasterclasses } from '../services/masterclassService';
 import FinosHeader from '../components/FinosHeader';
 import { useToast } from "@/hooks/use-toast";
-import { Activity, Building, BookOpen, Calendar, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, Trophy, UserPlus } from "lucide-react";
+import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import ActivityMap from '@/components/Map/ActivityMap';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
@@ -19,7 +19,7 @@ const typeToIconMap: Record<string, React.ReactNode> = {
   'Conference': <Building className="h-5 w-5 mr-2 text-finos-blue" />,
   'TechTalk': <MessageSquareCode className="h-5 w-5 mr-2 text-finos-blue" />,
   'Masterclass': <GraduationCap className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Meetup': <UserPlus className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Meetup': <Activity className="h-5 w-5 mr-2 text-finos-blue" />,
   'Webinar': <Mic className="h-5 w-5 mr-2 text-finos-blue" />,
   'Training': <BookOpen className="h-5 w-5 mr-2 text-finos-blue" />,
   'Awards': <Star className="h-5 w-5 mr-2 text-finos-blue" />,
@@ -39,7 +39,7 @@ const Dashboard = () => {
   } = useQuery({
     queryKey: ['activities'],
     queryFn: () => getAllMasterclasses(),
-    enabled: !authLoading,
+    enabled: !authLoading, // Only run query when auth loading is complete
     meta: {
       onSuccess: () => {
         toast({
@@ -58,13 +58,21 @@ const Dashboard = () => {
     }
   });
 
+  // We only want to refetch when auth state changes from loading to not loading
+  // Not on every render or auth state check
   useEffect(() => {
-    if (!authLoading) {
+    // Only trigger a refetch when auth loading completes and we have a user
+    if (!authLoading && user) {
       refetch();
     }
   }, [authLoading, user, refetch]);
 
-  if (authLoading || activitiesLoading) {
+  if (authLoading) {
+    return <DashboardLoading />;
+  }
+
+  // Show loading state only if activities are being loaded AND we're not in the auth loading state
+  if (activitiesLoading && !authLoading) {
     return <DashboardLoading />;
   }
 

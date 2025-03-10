@@ -124,6 +124,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       console.log('Auth state changed:', event, newSession?.user?.id);
       
+      // Set loading to true at the start of auth state change
+      setLoading(true);
+      
       if (event === 'SIGNED_OUT') {
         // Make sure we clear everything on sign out
         setSession(null);
@@ -141,6 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
       
+      // Set loading to false after processing the auth state change
       setLoading(false);
     });
 
