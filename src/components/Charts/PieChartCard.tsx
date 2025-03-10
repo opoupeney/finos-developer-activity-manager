@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const PieChartCard: React.FC<PieChartCardProps> = ({ title, data }) => {
   return (
-    <Card className="h-[300px] flex flex-col">
+    <Card className="h-[400px] flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
@@ -42,7 +42,7 @@ const PieChartCard: React.FC<PieChartCardProps> = ({ title, data }) => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                outerRadius={80}
+                outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
                 nameKey="name"
