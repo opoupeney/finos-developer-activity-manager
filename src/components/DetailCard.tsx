@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface DetailItem {
   label: string;
@@ -25,16 +26,18 @@ const DetailCard: React.FC<DetailCardProps> = ({ title, items, className }) => {
   };
   
   return (
-    <Card className={className}>
+    <Card className={cn("shadow-sm hover:shadow-md transition-shadow duration-300", className)}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl">{title}</CardTitle>
+        <CardTitle className="text-xl font-semibold text-finos-blue">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="w-full">
+      <CardContent className="pt-0">
+        <div className="space-y-3">
           {items.map((item, index) => (
-            <div key={index} className="py-2">
-              <p className="text-sm font-medium text-muted-foreground">{item.label}</p>
-              <p className="font-medium">{formatValue(item.value)}</p>
+            <div key={index} className="animate-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
+              <div className="text-sm font-medium text-muted-foreground mb-1">{item.label}</div>
+              <div className="font-medium">
+                {formatValue(item.value)}
+              </div>
             </div>
           ))}
         </div>
