@@ -301,7 +301,7 @@ const EventForm: React.FC<EventFormProps> = ({
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Month/Year</FormLabel>
+                    <FormLabel>Event Date</FormLabel>
                     <DatePicker 
                       date={field.value} 
                       onDateChange={field.onChange}
