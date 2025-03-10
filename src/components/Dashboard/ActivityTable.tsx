@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Masterclass } from '@/types/masterclass';
 import { Link } from 'react-router-dom';
-import { formatDate } from '@/lib/utils';
+import { formatDate, compareValues } from '@/lib/utils';
 import StatusBadge from '@/components/StatusBadge';
 import {
   Table,
@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react';
+import SearchBar from './SearchBar';
+import { parseISO } from 'date-fns';
 
 interface ActivityTableProps {
   activities: Masterclass[];
@@ -26,6 +28,19 @@ type SortDirection = 'asc' | 'desc';
 const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) => {
   const [sortField, setSortField] = useState<SortField>('title');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [searchText, setSearchText] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  // Extract unique types and statuses for filter dropdowns
+  const typeOptions = useMemo(() => {
+    return [...new Set(activities.map(activity => activity.type))].sort();
+  }, [activities]);
+
+  const statusOptions = useMemo(() => {
+    return [...new Set(activities.map(activity => activity.status))].sort();
+  }, [activities]);
 
   if (!activities || activities.length === 0) {
     return (
@@ -45,7 +60,25 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
     }
   };
 
-  const sortedActivities = [...activities].sort((a, b) => {
+  const filteredActivities = activities.filter(activity => {
+    // Text search filter
+    const titleMatch = !searchText || 
+      activity.title.toLowerCase().includes(searchText.toLowerCase());
+    
+    // Date filter
+    const dateMatch = !dateFilter || 
+      (activity.date && isSameDay(parseISO(activity.date), dateFilter));
+    
+    // Type filter
+    const typeMatch = !typeFilter || activity.type === typeFilter;
+    
+    // Status filter
+    const statusMatch = !statusFilter || activity.status === statusFilter;
+    
+    return titleMatch && dateMatch && typeMatch && statusMatch;
+  });
+
+  const sortedActivities = [...filteredActivities].sort((a, b) => {
     let valueA, valueB;
 
     switch (sortField) {
@@ -84,6 +117,15 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
     return sortDirection === 'asc' ? comparison : -comparison;
   });
 
+  // Helper function to check if two dates are the same day
+  function isSameDay(date1: Date, date2: Date): boolean {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  }
+
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
     return sortDirection === 'asc' ? 
@@ -104,7 +146,16 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
   );
 
   return (
-    <div className="w-full mt-4">
+    <div className="w-full space-y-4">
+      <SearchBar 
+        onSearch={setSearchText}
+        onDateFilter={setDateFilter}
+        onTypeFilter={setTypeFilter}
+        onStatusFilter={setStatusFilter}
+        typeOptions={typeOptions}
+        statusOptions={statusOptions}
+      />
+      
       <Table>
         <TableHeader>
           <TableRow>
@@ -118,24 +169,32 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedActivities.map((activity) => (
-            <TableRow key={activity.id}>
-              <TableCell className="font-medium">{activity.title}</TableCell>
-              <TableCell>{activity.type}</TableCell>
-              <TableCell>{activity.date ? formatDate(activity.date) : 'TBD'}</TableCell>
-              <TableCell>{activity.location}</TableCell>
-              <TableCell><StatusBadge status={activity.status} /></TableCell>
-              <TableCell>{activity.ownership.finosLead}</TableCell>
-              <TableCell className="text-right">
-                <Button asChild variant="ghost" size="sm">
-                  <Link to={`/masterclass/${activity.id}`}>
-                    <span>View</span>
-                    <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
+          {sortedActivities.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-8">
+                <p className="text-muted-foreground">No activities found with the current filters</p>
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            sortedActivities.map((activity) => (
+              <TableRow key={activity.id}>
+                <TableCell className="font-medium">{activity.title}</TableCell>
+                <TableCell>{activity.type}</TableCell>
+                <TableCell>{activity.date ? formatDate(activity.date) : 'TBD'}</TableCell>
+                <TableCell>{activity.location}</TableCell>
+                <TableCell><StatusBadge status={activity.status} /></TableCell>
+                <TableCell>{activity.ownership.finosLead}</TableCell>
+                <TableCell className="text-right">
+                  <Button asChild variant="ghost" size="sm">
+                    <Link to={`/masterclass/${activity.id}`}>
+                      <span>View</span>
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>
