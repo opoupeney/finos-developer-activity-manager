@@ -176,8 +176,8 @@ const EventForm: React.FC<EventFormProps> = ({
       await onSubmit(eventData);
       
       toast({
-        title: `Developer Event ${isEditing ? 'Updated' : 'Created'}`,
-        description: `Successfully ${isEditing ? 'updated' : 'created'} developer event "${values.title}"`,
+        title: `Developer Activity ${isEditing ? 'Updated' : 'Created'}`,
+        description: `Successfully ${isEditing ? 'updated' : 'created'} developer activity "${values.title}"`,
       });
       
       navigate('/');
@@ -185,7 +185,7 @@ const EventForm: React.FC<EventFormProps> = ({
       console.error("Error submitting form:", error);
       toast({
         title: "Error",
-        description: `Failed to ${isEditing ? 'update' : 'create'} developer event`,
+        description: `Failed to ${isEditing ? 'update' : 'create'} developer activity`,
         variant: "destructive",
       });
     } finally {
@@ -201,8 +201,8 @@ const EventForm: React.FC<EventFormProps> = ({
       await onDelete();
       
       toast({
-        title: "Developer Event Deleted",
-        description: "Successfully deleted the developer event",
+        title: "Developer Activity Deleted",
+        description: "Successfully deleted the developer activity",
       });
       
       navigate('/');
@@ -210,7 +210,7 @@ const EventForm: React.FC<EventFormProps> = ({
       console.error("Error deleting event:", error);
       toast({
         title: "Error",
-        description: "Failed to delete developer event",
+        description: "Failed to delete developer activity",
         variant: "destructive",
       });
     } finally {
@@ -230,7 +230,7 @@ const EventForm: React.FC<EventFormProps> = ({
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Developer Event Title" {...field} />
+                  <Input placeholder="Developer Activity Title" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -245,7 +245,7 @@ const EventForm: React.FC<EventFormProps> = ({
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea 
-                    placeholder="Event description" 
+                    placeholder="Activity description" 
                     {...field} 
                     className="min-h-[120px]"
                   />
@@ -271,7 +271,7 @@ const EventForm: React.FC<EventFormProps> = ({
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select event type" />
+                          <SelectValue placeholder="Select activity type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -323,11 +323,11 @@ const EventForm: React.FC<EventFormProps> = ({
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Event Date</FormLabel>
+                    <FormLabel>Activity Date</FormLabel>
                     <DatePicker 
                       date={field.value} 
                       onDateChange={field.onChange}
-                      placeholder="Select event month/year" 
+                      placeholder="Select activity month/year" 
                       dateFormat="MMMM yyyy"
                     />
                     <FormMessage />
@@ -710,7 +710,7 @@ const EventForm: React.FC<EventFormProps> = ({
                 ) : (
                   <>
                     <Trash className="mr-2 h-4 w-4" />
-                    Delete Event
+                    Delete Activity
                   </>
                 )}
               </Button>
@@ -726,7 +726,7 @@ const EventForm: React.FC<EventFormProps> = ({
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  {isEditing ? 'Update Event' : 'Create Event'}
+                  {isEditing ? 'Update Activity' : 'Create Activity'}
                 </>
               )}
             </Button>

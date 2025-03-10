@@ -18,7 +18,7 @@ const EventCreate = () => {
     if (userDetails && userDetails.role !== 'admin') {
       toast({
         title: "Access Denied",
-        description: "You do not have permission to create developer events",
+        description: "You do not have permission to create developer activities",
         variant: "destructive",
       });
       navigate('/');
@@ -31,7 +31,7 @@ const EventCreate = () => {
     try {
       await createMasterclass(eventWithoutId);
     } catch (error) {
-      console.error("Error creating developer event:", error);
+      console.error("Error creating developer activity:", error);
       throw error;
     }
   };
@@ -43,10 +43,10 @@ const EventCreate = () => {
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            Create New Developer Event
+            Create New Developer Activity
           </h1>
           <p className="text-muted-foreground mt-1">
-            Fill out the form below to create a new developer event
+            Fill out the form below to create a new developer activity
           </p>
         </div>
         

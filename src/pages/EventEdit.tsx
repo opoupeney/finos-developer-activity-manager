@@ -19,7 +19,7 @@ const EventEdit = () => {
     if (userDetails && userDetails.role !== 'admin') {
       toast({
         title: "Access Denied",
-        description: "You do not have permission to edit developer events",
+        description: "You do not have permission to edit developer activities",
         variant: "destructive",
       });
       navigate('/');
@@ -32,10 +32,10 @@ const EventEdit = () => {
     enabled: !!id,
     meta: {
       onError: (err: any) => {
-        console.error("Error loading developer event data:", err);
+        console.error("Error loading developer activity data:", err);
         toast({
           title: "Error loading data",
-          description: err.message || "There was a problem retrieving the developer event information",
+          description: err.message || "There was a problem retrieving the developer activity information",
           variant: "destructive",
         });
         navigate('/');
@@ -48,14 +48,14 @@ const EventEdit = () => {
       await updateMasterclass(data);
       toast({
         title: "Success",
-        description: "Developer event updated successfully",
+        description: "Developer activity updated successfully",
       });
       navigate('/');
     } catch (error: any) {
-      console.error("Error updating developer event:", error);
+      console.error("Error updating developer activity:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update developer event",
+        description: error.message || "Failed to update developer activity",
         variant: "destructive",
       });
       throw error;
@@ -68,14 +68,14 @@ const EventEdit = () => {
       await deleteMasterclass(id);
       toast({
         title: "Success",
-        description: "Developer event deleted successfully",
+        description: "Developer activity deleted successfully",
       });
       navigate('/');
     } catch (error: any) {
-      console.error("Error deleting developer event:", error);
+      console.error("Error deleting developer activity:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to delete developer event",
+        description: error.message || "Failed to delete developer activity",
         variant: "destructive",
       });
       throw error;
@@ -89,7 +89,7 @@ const EventEdit = () => {
         <div className="container max-w-7xl mx-auto px-4 py-12 flex items-center justify-center h-[80vh]">
           <div className="flex flex-col items-center">
             <div className="h-12 w-12 rounded-full border-4 border-finos-blue/30 border-t-finos-blue animate-spin"></div>
-            <p className="mt-4 text-muted-foreground animate-pulse">Loading developer event data...</p>
+            <p className="mt-4 text-muted-foreground animate-pulse">Loading developer activity data...</p>
           </div>
         </div>
       </div>
@@ -102,8 +102,8 @@ const EventEdit = () => {
         <FinosHeader />
         <div className="container max-w-7xl mx-auto px-4 py-12">
           <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-red-500">Developer Event not found</h2>
-            <p className="text-muted-foreground mt-2">Could not load developer event information</p>
+            <h2 className="text-2xl font-bold text-red-500">Developer Activity not found</h2>
+            <p className="text-muted-foreground mt-2">Could not load developer activity information</p>
           </div>
         </div>
       </div>
@@ -117,10 +117,10 @@ const EventEdit = () => {
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            Edit Developer Event
+            Edit Developer Activity
           </h1>
           <p className="text-muted-foreground mt-1">
-            Make changes to the developer event "{event.title}"
+            Make changes to the developer activity "{event.title}"
           </p>
         </div>
         
