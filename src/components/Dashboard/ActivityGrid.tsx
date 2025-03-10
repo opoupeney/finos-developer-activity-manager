@@ -1,8 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Masterclass } from '@/types/masterclass';
-import { ChartPieIcon, Eye } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import ActivityCard from './ActivityCard';
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface ActivityGridProps {
   activities: Masterclass[];
@@ -11,6 +16,7 @@ interface ActivityGridProps {
   isAdmin: boolean;
   title: string;
   icon: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
 const ActivityGrid: React.FC<ActivityGridProps> = ({ 
@@ -19,8 +25,11 @@ const ActivityGrid: React.FC<ActivityGridProps> = ({
   defaultIcon,
   isAdmin,
   title,
-  icon
+  icon,
+  defaultOpen = true
 }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
   if (!activities || activities.length === 0) {
     return (
       <div className="text-center py-12">
@@ -31,22 +40,37 @@ const ActivityGrid: React.FC<ActivityGridProps> = ({
   }
 
   return (
-    <>
-      <div className="flex items-center gap-2 mb-4 mt-8">
-        {icon}
-        <h2 className="text-xl font-semibold">{title}</h2>
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="w-full space-y-2 my-4"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {icon}
+          <h2 className="text-xl font-semibold">{title}</h2>
+        </div>
+        <CollapsibleTrigger asChild>
+          <button className="rounded-full h-8 w-8 flex items-center justify-center hover:bg-muted transition-colors">
+            <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? "" : "transform -rotate-90"}`} />
+            <span className="sr-only">Toggle {title}</span>
+          </button>
+        </CollapsibleTrigger>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {activities.map((activity, index) => (
-          <ActivityCard 
-            key={activity.id} 
-            activity={activity}
-            icon={typeToIconMap[activity.type] || defaultIcon}
-            isAdmin={isAdmin}
-          />
-        ))}
-      </div>
-    </>
+      
+      <CollapsibleContent className="space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          {activities.map((activity, index) => (
+            <ActivityCard 
+              key={activity.id} 
+              activity={activity}
+              icon={typeToIconMap[activity.type] || defaultIcon}
+              isAdmin={isAdmin}
+            />
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 

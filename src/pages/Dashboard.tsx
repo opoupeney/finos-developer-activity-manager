@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllMasterclasses } from '../services/masterclassService';
@@ -110,6 +109,7 @@ const Dashboard = () => {
           isAdmin={isAdmin}
           title="Activity Pipeline"
           icon={<ListChecks className="h-5 w-5 text-finos-blue" />}
+          defaultOpen={true}
         />
 
         {archivedActivities.length > 0 && (
@@ -120,6 +120,7 @@ const Dashboard = () => {
             isAdmin={isAdmin}
             title="Activity Archive"
             icon={<Archive className="h-5 w-5 text-finos-blue" />}
+            defaultOpen={false}
           />
         )}
       </main>
