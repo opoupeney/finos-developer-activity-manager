@@ -123,11 +123,13 @@
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 
-  /* Reset page margins */
+  /* Reset page margins and set landscape */
   @page {
     margin: 2cm;
+    size: landscape;
   }
 
   /* Ensure all content is visible */
@@ -140,9 +142,44 @@
     background: white !important;
   }
 
+  /* Maintain grid layouts */
+  .grid-cols-1 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  /* Ensure charts and knobs maintain their size */
+  .h-[400px] {
+    height: 400px !important;
+    page-break-inside: avoid;
+  }
+
   /* Ensure charts are visible */
   .recharts-surface {
     width: 100% !important;
     height: 100% !important;
+  }
+
+  /* Force cards to maintain their layout */
+  .stats-card {
+    break-inside: avoid;
+    display: inline-block;
+    width: calc(33.333% - 1rem);
+    margin: 0.5rem;
+  }
+
+  /* Ensure SVG elements print correctly */
+  svg {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  /* Add page breaks between major sections */
+  .activity-section {
+    page-break-before: always;
+  }
+
+  /* Maintain spacing */
+  .gap-6 {
+    gap: 1.5rem !important;
   }
 }

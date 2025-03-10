@@ -43,7 +43,7 @@ const ActivityGrid: React.FC<ActivityGridProps> = ({
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="w-full space-y-2 my-4"
+      className="w-full space-y-2 my-4 activity-section"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ const ActivityGrid: React.FC<ActivityGridProps> = ({
       </div>
       
       <CollapsibleContent className="space-y-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 print:!grid-cols-3">
           {activities.map((activity, index) => (
             <ActivityCard 
               key={activity.id} 
