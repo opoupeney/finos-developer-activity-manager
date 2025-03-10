@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllMasterclasses } from '../services/masterclassService';
 import FinosHeader from '../components/FinosHeader';
 import { useToast } from "@/hooks/use-toast";
-import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star } from "lucide-react";
+import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, ListChecks, Archive } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import ActivityMap from '@/components/Map/ActivityMap';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
@@ -78,6 +78,16 @@ const Dashboard = () => {
 
   const isAdmin = userDetails?.role === 'admin';
 
+  // Filter activities for pipeline (not done or rejected)
+  const pipelineActivities = activities?.filter(activity => 
+    activity.status !== 'Done' && activity.status !== 'Rejected'
+  ) || [];
+
+  // Filter activities for archive (done or rejected)
+  const archivedActivities = activities?.filter(activity => 
+    activity.status === 'Done' || activity.status === 'Rejected'
+  ) || [];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
@@ -94,11 +104,24 @@ const Dashboard = () => {
         <AnalyticsSection activities={activities} />
         
         <ActivityGrid 
-          activities={activities} 
+          activities={pipelineActivities} 
           typeToIconMap={typeToIconMap}
           defaultIcon={DefaultIcon}
           isAdmin={isAdmin}
+          title="Activity Pipeline"
+          icon={<ListChecks className="h-5 w-5 text-finos-blue" />}
         />
+
+        {archivedActivities.length > 0 && (
+          <ActivityGrid 
+            activities={archivedActivities} 
+            typeToIconMap={typeToIconMap}
+            defaultIcon={DefaultIcon}
+            isAdmin={isAdmin}
+            title="Activity Archive"
+            icon={<Archive className="h-5 w-5 text-finos-blue" />}
+          />
+        )}
       </main>
       
       <DashboardFooter />

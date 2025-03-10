@@ -9,13 +9,17 @@ interface ActivityGridProps {
   typeToIconMap: Record<string, React.ReactNode>;
   defaultIcon: React.ReactNode;
   isAdmin: boolean;
+  title: string;
+  icon: React.ReactNode;
 }
 
 const ActivityGrid: React.FC<ActivityGridProps> = ({ 
   activities, 
   typeToIconMap, 
   defaultIcon,
-  isAdmin
+  isAdmin,
+  title,
+  icon
 }) => {
   if (!activities || activities.length === 0) {
     return (
@@ -29,8 +33,8 @@ const ActivityGrid: React.FC<ActivityGridProps> = ({
   return (
     <>
       <div className="flex items-center gap-2 mb-4 mt-8">
-        <Eye className="h-5 w-5 text-finos-blue" />
-        <h2 className="text-xl font-semibold">Activity Overview</h2>
+        {icon}
+        <h2 className="text-xl font-semibold">{title}</h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {activities.map((activity, index) => (
