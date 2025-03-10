@@ -6,7 +6,7 @@ import FinosHeader from '../components/FinosHeader';
 import { useToast } from "@/hooks/use-toast";
 import { Activity, Building, BookOpen, Calendar, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, Trophy, UserPlus } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
-import ActivityMap from '@/components/ActivityMap';
+import ActivityMap from '@/components/Map/ActivityMap';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
 import DashboardLoading from '@/components/Dashboard/DashboardLoading';
 import ActivityGrid from '@/components/Dashboard/ActivityGrid';
