@@ -24,6 +24,9 @@ const ActivityMap: React.FC<ActivityMapProps> = ({ activities }) => {
     setIsMapReady(true);
   };
 
+  // Filter out rejected activities
+  const nonRejectedActivities = activities.filter(activity => activity.status !== 'Rejected');
+
   if (!isMapReady) {
     return (
       <MapSetupCard 
@@ -43,7 +46,7 @@ const ActivityMap: React.FC<ActivityMapProps> = ({ activities }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <MapContainer activities={activities} mapboxToken={mapboxToken} />
+        <MapContainer activities={nonRejectedActivities} mapboxToken={mapboxToken} />
       </CardContent>
     </Card>
   );
