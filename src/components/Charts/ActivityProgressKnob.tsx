@@ -33,9 +33,9 @@ const ActivityProgressKnob: React.FC<ActivityProgressKnobProps> = ({
         <CardTitle className="text-lg">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="pt-0 flex items-center justify-center h-[calc(100%-80px)]">
+      <CardContent className="pt-0 flex items-center justify-center h-[calc(100%-88px)]">
         <div className="flex flex-col items-center justify-center w-full">
-          <div className="relative w-40 h-40 flex items-center justify-center">
+          <div className="relative w-32 h-32 flex items-center justify-center">
             {/* Circle background */}
             <div className="absolute inset-0 rounded-full border-8 border-gray-100"></div>
             
@@ -66,8 +66,8 @@ const ActivityProgressKnob: React.FC<ActivityProgressKnobProps> = ({
             
             {/* Value in the middle */}
             <div className="text-center">
-              <span className="text-4xl font-bold">{value}</span>
-              <span className="text-sm block text-muted-foreground">of {maxValue}</span>
+              <span className="text-3xl font-bold">{value}</span>
+              <span className="text-xs block text-muted-foreground">of {maxValue}</span>
             </div>
           </div>
           
