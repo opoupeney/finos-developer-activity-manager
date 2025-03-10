@@ -64,29 +64,33 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ activities }) => {
       </div>
       
       <CollapsibleContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-          <ActivityProgressKnob 
-            value={activeActivitiesCount} 
-            maxValue={activitiesThreshold} 
-            title="Active Activities" 
-            description={`${activeActivitiesCount} of ${activitiesThreshold} target activities`}
-          />
+        <div className="grid grid-cols-1 gap-6 mt-4">
+          {/* Row 1: Three knobs in one row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <ActivityProgressKnob 
+              value={activeActivitiesCount} 
+              maxValue={activitiesThreshold} 
+              title="Active Activities" 
+              description={`${activeActivitiesCount} of ${activitiesThreshold} target activities`}
+            />
+            
+            <ActivityProgressKnob 
+              value={totalRegistrations} 
+              maxValue={registrationsThreshold} 
+              title="Total Registrations" 
+              description={`${totalRegistrations} of ${registrationsThreshold} target registrations`}
+            />
+            
+            <ActivityProgressKnob 
+              value={totalParticipants} 
+              maxValue={participantsThreshold} 
+              title="Total Participants" 
+              description={`${totalParticipants} of ${participantsThreshold} target participants`}
+            />
+          </div>
           
-          <ActivityProgressKnob 
-            value={totalRegistrations} 
-            maxValue={registrationsThreshold} 
-            title="Total Registrations" 
-            description={`${totalRegistrations} of ${registrationsThreshold} target registrations`}
-          />
-          
-          <ActivityProgressKnob 
-            value={totalParticipants} 
-            maxValue={participantsThreshold} 
-            title="Total Participants" 
-            description={`${totalParticipants} of ${participantsThreshold} target participants`}
-          />
-          
-          <div className="md:col-span-1">
+          {/* Row 2: Pie charts */}
+          <div className="mt-4">
             <PieCharts activities={activities} />
           </div>
         </div>
