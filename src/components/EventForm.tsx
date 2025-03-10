@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Masterclass } from '@/types/masterclass';
@@ -365,9 +366,17 @@ const EventForm: React.FC<EventFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Marketing Campaign</FormLabel>
-                    <FormControl>
-                      <Input placeholder="DevExpand" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select marketing campaign" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="DevExpand">DevExpand</SelectItem>
+                        <SelectItem value="DevConnect">DevConnect</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
