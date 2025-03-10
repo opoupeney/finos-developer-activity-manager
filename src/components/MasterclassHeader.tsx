@@ -3,6 +3,7 @@ import React from 'react';
 import { Masterclass } from '../types/masterclass';
 import StatusBadge from './StatusBadge';
 import { format } from 'date-fns';
+import MDEditor from '@uiw/react-md-editor';
 
 interface MasterclassHeaderProps {
   masterclass: Masterclass;
@@ -35,9 +36,9 @@ const MasterclassHeader: React.FC<MasterclassHeaderProps> = ({ masterclass }) =>
       </div>
       
       <div className="max-w-3xl">
-        <p className="text-muted-foreground leading-relaxed">
-          {masterclass.marketingDescription}
-        </p>
+        <div data-color-mode="light" className="mb-4">
+          <MDEditor.Markdown source={masterclass.marketingDescription} />
+        </div>
       </div>
       
       <div className="flex flex-wrap items-center text-sm gap-x-6 gap-y-2 text-muted-foreground pt-2">
