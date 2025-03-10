@@ -1,15 +1,56 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import FinosHeader from '../components/FinosHeader';
 import AuthForm from '../components/Auth/AuthForm';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const Auth = () => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [authLoading, setAuthLoading] = useState(false);
+  
+  useEffect(() => {
+    const handleAuthSession = async () => {
+      try {
+        setAuthLoading(true);
+        const { data, error } = await supabase.auth.getSession();
+        
+        // If there is session data and we detect that it's from an OAuth provider (like Google)
+        // show a success toast since we just came back from an OAuth redirect
+        if (data.session?.provider_token || data.session?.provider_refresh_token) {
+          toast({
+            title: "Signed in successfully",
+            description: "You have been signed in with Google",
+          });
+          
+          navigate('/', { replace: true });
+        }
+        
+        if (error) {
+          console.error("Error checking auth session:", error);
+        }
+      } catch (error) {
+        console.error("Unexpected error during auth check:", error);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+    
+    // Check for auth session when the component mounts
+    if (!loading && !user) {
+      const hasHashParams = window.location.hash && window.location.hash.includes('access_token');
+      if (hasHashParams) {
+        handleAuthSession();
+      }
+    }
+  }, [loading, user, navigate, toast]);
   
   // If already authenticated, redirect to dashboard
-  if (user && !loading) {
+  if (user && !loading && !authLoading) {
     return <Navigate to="/" replace />;
   }
   
