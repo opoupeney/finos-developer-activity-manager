@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllMasterclasses } from '../services/masterclassService';
 import FinosHeader from '../components/FinosHeader';
 import { useToast } from "@/hooks/use-toast";
-import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, ListChecks, Archive } from "lucide-react";
+import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, ListChecks, Archive, Printer } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useAuth } from '@/contexts/AuthContext';
 import ActivityMap from '@/components/Map/ActivityMap';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
@@ -57,10 +58,11 @@ const Dashboard = () => {
     }
   });
 
-  // We only want to refetch when auth state changes from loading to not loading
-  // Not on every render or auth state check
+  const handlePrint = () => {
+    window.print();
+  };
+
   useEffect(() => {
-    // Only trigger a refetch when auth loading completes and we have a user
     if (!authLoading && user) {
       refetch();
     }
@@ -70,19 +72,16 @@ const Dashboard = () => {
     return <DashboardLoading />;
   }
 
-  // Show loading state only if activities are being loaded AND we're not in the auth loading state
   if (activitiesLoading && !authLoading) {
     return <DashboardLoading />;
   }
 
   const isAdmin = userDetails?.role === 'admin';
 
-  // Filter activities for pipeline (not done or rejected)
   const pipelineActivities = activities?.filter(activity => 
     activity.status !== 'Done' && activity.status !== 'Rejected'
   ) || [];
 
-  // Filter activities for archive (done or rejected)
   const archivedActivities = activities?.filter(activity => 
     activity.status === 'Done' || activity.status === 'Rejected'
   ) || [];
@@ -92,7 +91,17 @@ const Dashboard = () => {
       <FinosHeader />
       
       <main className="container max-w-7xl mx-auto px-4 py-12">
-        <DashboardHeader isAdmin={isAdmin} />
+        <div className="flex justify-between items-center mb-6">
+          <DashboardHeader isAdmin={isAdmin} />
+          <Button 
+            variant="outline" 
+            onClick={handlePrint}
+            className="print:hidden"
+          >
+            <Printer className="h-5 w-5 mr-2" />
+            Print Dashboard
+          </Button>
+        </div>
         
         {activities && activities.length > 0 && (
           <div className="mb-8">
