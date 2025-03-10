@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Masterclass } from '@/types/masterclass';
 import { ChartPieIcon, ChevronDown } from "lucide-react";
 import PieCharts from '../PieCharts';
+import ActivityProgressKnob from '../Charts/ActivityProgressKnob';
 import { 
   Collapsible,
   CollapsibleContent,
@@ -19,6 +20,14 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ activities }) => {
   if (!activities || activities.length === 0) {
     return null;
   }
+
+  // Count non-declined activities
+  const nonDeclinedActivities = activities.filter(
+    activity => activity.status !== 'Rejected'
+  ).length;
+
+  // Set threshold
+  const threshold = 70;
 
   return (
     <Collapsible
@@ -39,8 +48,18 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ activities }) => {
         </CollapsibleTrigger>
       </div>
       
-      <CollapsibleContent className="space-y-2">
-        <PieCharts activities={activities} />
+      <CollapsibleContent className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-4">
+          <ActivityProgressKnob 
+            value={nonDeclinedActivities} 
+            maxValue={threshold} 
+            title="Active Activities" 
+            description={`${nonDeclinedActivities} of ${threshold} target activities`}
+          />
+          <div className="md:col-span-3">
+            <PieCharts activities={activities} />
+          </div>
+        </div>
       </CollapsibleContent>
     </Collapsible>
   );
