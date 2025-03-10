@@ -53,23 +53,26 @@ const MasterclassDetails: React.FC<MasterclassDetailsProps> = ({ masterclass }) 
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="flex flex-col space-y-6">
+      {/* General Information Section */}
       <DetailCard 
         title="General Information" 
         items={generalDetails} 
-        className="animate-slide-in-left"
+        className="animate-slide-in-left w-full grid grid-cols-1 md:grid-cols-3 gap-4"
       />
       
+      {/* Ownership Section */}
       <DetailCard 
         title="Ownership" 
         items={ownershipDetails} 
-        className="animate-slide-in-left"
+        className="animate-slide-in-left w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
       />
       
+      {/* Impacts Section */}
       <DetailCard 
         title="Impacts" 
         items={impactDetails} 
-        className="animate-slide-in-left"
+        className="animate-slide-in-left w-full grid grid-cols-1 md:grid-cols-2 gap-4"
       />
     </div>
   );

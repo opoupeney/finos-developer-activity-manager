@@ -73,7 +73,7 @@ const MasterclassView = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
       
-      <main className="container max-w-7xl mx-auto px-4 py-12">
+      <main className="container max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-start mb-8">
           <div className="flex-1">
             <MasterclassHeader masterclass={event} />
@@ -91,7 +91,9 @@ const MasterclassView = () => {
         
         <MasterclassStats masterclass={event} />
         
-        <MasterclassDetails masterclass={event} />
+        <div className="mt-8">
+          <MasterclassDetails masterclass={event} />
+        </div>
       </main>
       
       <footer className="border-t py-6 mt-12">
