@@ -24,10 +24,25 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ activities }) => {
   // Count non-declined activities
   const nonDeclinedActivities = activities.filter(
     activity => activity.status !== 'Rejected'
-  ).length;
+  );
 
-  // Set threshold
-  const threshold = 70;
+  const activeActivitiesCount = nonDeclinedActivities.length;
+  
+  // Calculate total registrations and participants from non-declined activities
+  const totalRegistrations = nonDeclinedActivities.reduce(
+    (sum, activity) => sum + activity.metrics.currentRegistrations, 
+    0
+  );
+  
+  const totalParticipants = nonDeclinedActivities.reduce(
+    (sum, activity) => sum + (activity.metrics.currentParticipants || 0), 
+    0
+  );
+
+  // Set thresholds
+  const activitiesThreshold = 70;
+  const registrationsThreshold = 2000;
+  const participantsThreshold = 1000;
 
   return (
     <Collapsible
@@ -49,14 +64,29 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ activities }) => {
       </div>
       
       <CollapsibleContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <ActivityProgressKnob 
-            value={nonDeclinedActivities} 
-            maxValue={threshold} 
+            value={activeActivitiesCount} 
+            maxValue={activitiesThreshold} 
             title="Active Activities" 
-            description={`${nonDeclinedActivities} of ${threshold} target activities`}
+            description={`${activeActivitiesCount} of ${activitiesThreshold} target activities`}
           />
-          <div className="md:col-span-3">
+          
+          <ActivityProgressKnob 
+            value={totalRegistrations} 
+            maxValue={registrationsThreshold} 
+            title="Total Registrations" 
+            description={`${totalRegistrations} of ${registrationsThreshold} target registrations`}
+          />
+          
+          <ActivityProgressKnob 
+            value={totalParticipants} 
+            maxValue={participantsThreshold} 
+            title="Total Participants" 
+            description={`${totalParticipants} of ${participantsThreshold} target participants`}
+          />
+          
+          <div className="md:col-span-1">
             <PieCharts activities={activities} />
           </div>
         </div>
