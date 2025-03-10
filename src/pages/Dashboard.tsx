@@ -11,6 +11,7 @@ import { Eye, Plus, Edit, ChartPieIcon, Calendar, Code, Mic, BookOpen, Trophy, S
 import { useAuth } from '@/contexts/AuthContext';
 import PieCharts from '@/components/PieCharts';
 import ActivityMap from '@/components/ActivityMap';
+import { format } from 'date-fns';
 
 const typeToIconMap: Record<string, React.ReactNode> = {
   'Workshop': <PenTool className="h-5 w-5 mr-2 text-finos-blue" />,
@@ -62,6 +63,19 @@ const Dashboard = () => {
       refetch();
     }
   }, [authLoading, user, refetch]);
+
+  const formatDateString = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return format(date, 'MMMM d, yyyy');
+      }
+      return dateStr;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateStr;
+    }
+  };
 
   if (authLoading || activitiesLoading) {
     return (
@@ -147,10 +161,7 @@ const Dashboard = () => {
                           <line x1="8" x2="8" y1="2" y2="6" />
                           <line x1="3" x2="21" y1="10" y2="10" />
                         </svg>
-                        {new Date(activity.date).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long'
-                        })}
+                        {formatDateString(activity.date)}
                       </div>
                       
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">

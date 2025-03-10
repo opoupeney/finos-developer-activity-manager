@@ -2,17 +2,34 @@
 import React from 'react';
 import DetailCard from './DetailCard';
 import { Masterclass } from '../types/masterclass';
+import { format } from 'date-fns';
 
 interface MasterclassDetailsProps {
   masterclass: Masterclass;
 }
 
 const MasterclassDetails: React.FC<MasterclassDetailsProps> = ({ masterclass }) => {
+  // Format the date string if it's a valid date
+  const formatDateString = (dateStr: string) => {
+    try {
+      // Check if we have a valid date string
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return format(date, 'MMMM d, yyyy');
+      }
+      // If not a valid date, return the original string
+      return dateStr;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateStr;
+    }
+  };
+
   const generalDetails = [
     { label: "Type", value: masterclass.type },
-    { label: "Date", value: masterclass.date },
-    { label: "Kick-off Date", value: masterclass.kickOffDate },
-    { label: "End Date", value: masterclass.endDate },
+    { label: "Date", value: formatDateString(masterclass.date) },
+    { label: "Kick-off Date", value: formatDateString(masterclass.kickOffDate) },
+    { label: "End Date", value: formatDateString(masterclass.endDate) },
     { label: "Location", value: masterclass.location },
     { label: "Marketing Campaign", value: masterclass.marketingCampaign },
   ];

@@ -2,12 +2,29 @@
 import React from 'react';
 import { Masterclass } from '../types/masterclass';
 import StatusBadge from './StatusBadge';
+import { format } from 'date-fns';
 
 interface MasterclassHeaderProps {
   masterclass: Masterclass;
 }
 
 const MasterclassHeader: React.FC<MasterclassHeaderProps> = ({ masterclass }) => {
+  // Format the date string if it's a valid date
+  const formatDateString = (dateStr: string) => {
+    try {
+      // Check if we have a valid date string
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return format(date, 'MMMM d, yyyy');
+      }
+      // If not a valid date, return the original string
+      return dateStr;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateStr;
+    }
+  };
+
   return (
     <div className="space-y-4 mb-8 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -31,7 +48,7 @@ const MasterclassHeader: React.FC<MasterclassHeaderProps> = ({ masterclass }) =>
             <line x1="8" x2="8" y1="2" y2="6" />
             <line x1="3" x2="21" y1="10" y2="10" />
           </svg>
-          <span>Date: {masterclass.date}</span>
+          <span>Date: {formatDateString(masterclass.date)}</span>
         </div>
         
         <div className="flex items-center gap-2">

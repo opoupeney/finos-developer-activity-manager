@@ -26,7 +26,7 @@ export function DatePicker({
   onDateChange,
   placeholder = "Select date",
   disabled = false,
-  dateFormat = "PPP", // This is the default format from date-fns (e.g., "April 29th, 2023")
+  dateFormat = "MMMM d, yyyy", // Updated default format
 }: DatePickerProps) {
   return (
     <Popover>
