@@ -28,12 +28,12 @@ const ActivityProgressKnob: React.FC<ActivityProgressKnobProps> = ({
   };
 
   return (
-    <Card className="h-[300px]">
+    <Card className="h-[300px] flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="pt-0 flex items-center justify-center h-[calc(100%-88px)]">
+      <CardContent className="flex-1 flex items-center justify-center">
         <div className="flex flex-col items-center justify-center w-full">
           <div className="relative w-32 h-32 flex items-center justify-center">
             {/* Circle background */}
