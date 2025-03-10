@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Masterclass } from '@/types/masterclass';
@@ -22,6 +21,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Save, Trash, GraduationCap, Code, Building, Users, MessageSquareCode, PenTool, UserPlus } from 'lucide-react';
 import { format, parse } from 'date-fns';
+import MDEditor from '@uiw/react-md-editor';
 
 const eventFormSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }),
@@ -79,6 +79,7 @@ const EventForm: React.FC<EventFormProps> = ({
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [mdDescription, setMdDescription] = useState(initialData?.marketingDescription || '');
 
   const parseDate = (dateValue: string | Date | null | undefined): Date | undefined => {
     if (!dateValue) return undefined;
@@ -141,7 +142,7 @@ const EventForm: React.FC<EventFormProps> = ({
         endDate: values.endDate.toISOString(),
         location: values.location,
         marketingCampaign: values.marketingCampaign,
-        marketingDescription: values.marketingDescription,
+        marketingDescription: mdDescription,
         status: values.status,
         ownership: {
           finosLead: values.finosLead,
@@ -221,7 +222,6 @@ const EventForm: React.FC<EventFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-        {/* Title and Description section - moved description here */}
         <div className="space-y-4">
           <FormField
             control={form.control}
@@ -237,23 +237,17 @@ const EventForm: React.FC<EventFormProps> = ({
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="marketingDescription"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Activity description" 
-                    {...field} 
-                    className="min-h-[120px]"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <div data-color-mode="light" style={{ height: "250px" }}>
+              <MDEditor
+                value={mdDescription}
+                onChange={(val) => setMdDescription(val || '')}
+                height={250}
+                preview="edit"
+              />
+            </div>
+          </FormItem>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
