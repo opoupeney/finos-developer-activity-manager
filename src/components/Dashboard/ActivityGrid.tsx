@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import { ChevronDown } from "lucide-react";
 import ActivityCard from './ActivityCard';
 import { 
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/collapsible";
 
 interface ActivityGridProps {
-  activities: Masterclass[];
+  activities: Activity[];
   typeToIconMap: Record<string, React.ReactNode>;
   defaultIcon: React.ReactNode;
   isAdmin: boolean;

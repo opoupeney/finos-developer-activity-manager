@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import PieChartCard from './Charts/PieChartCard';
 import { 
   processLocationData, 
@@ -9,7 +9,7 @@ import {
 } from './Charts/chartUtils';
 
 interface PieChartsProps {
-  activities: Masterclass[];
+  activities: Activity[];
 }
 
 const PieCharts: React.FC<PieChartsProps> = ({ activities }) => {

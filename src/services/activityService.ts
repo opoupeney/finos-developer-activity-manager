@@ -1,7 +1,8 @@
-import { supabase } from "@/integrations/supabase/client";
-import { Masterclass } from "../types/masterclass";
 
-export const getMasterclassData = async (): Promise<Masterclass> => {
+import { supabase } from "@/integrations/supabase/client";
+import { Activity } from "../types/activity";
+
+export const getActivityData = async (): Promise<Activity> => {
   try {
     // Get event data
     const { data: events, error: eventError } = await supabase
@@ -39,7 +40,7 @@ export const getMasterclassData = async (): Promise<Masterclass> => {
     
     if (metricsError) throw metricsError;
     
-    // Combine all data into a Masterclass object
+    // Combine all data into an Activity object
     return {
       id: events.custom_id,
       title: events.title,
@@ -77,12 +78,12 @@ export const getMasterclassData = async (): Promise<Masterclass> => {
       },
     };
   } catch (error) {
-    console.error("Error fetching developer event data:", error);
+    console.error("Error fetching activity data:", error);
     throw error;
   }
 };
 
-export const getMasterclassByID = async (id: string): Promise<Masterclass | undefined> => {
+export const getActivityByID = async (id: string): Promise<Activity | undefined> => {
   try {
     // Get event data
     const { data: events, error: eventError } = await supabase
@@ -120,7 +121,7 @@ export const getMasterclassByID = async (id: string): Promise<Masterclass | unde
     
     if (metricsError) throw metricsError;
     
-    // Combine all data into a Masterclass object
+    // Combine all data into an Activity object
     return {
       id: events.custom_id,
       title: events.title,
@@ -158,18 +159,18 @@ export const getMasterclassByID = async (id: string): Promise<Masterclass | unde
       },
     };
   } catch (error) {
-    console.error("Error fetching developer event by ID:", error);
+    console.error("Error fetching activity by ID:", error);
     return undefined;
   }
 };
 
-export const updateMasterclass = async (masterclass: Masterclass): Promise<Masterclass> => {
+export const updateActivity = async (activity: Activity): Promise<Activity> => {
   try {
     // Get the UUID of the event
     const { data: eventData, error: eventError } = await supabase
       .from('masterclasses')
       .select('id')
-      .eq('custom_id', masterclass.id)
+      .eq('custom_id', activity.id)
       .single();
     
     if (eventError) throw eventError;
@@ -180,15 +181,15 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
     const { error: updateError } = await supabase
       .from('masterclasses')
       .update({
-        title: masterclass.title,
-        type: masterclass.type,
-        date: masterclass.date,
-        kick_off_date: masterclass.kickOffDate,
-        end_date: masterclass.endDate,
-        location: masterclass.location,
-        marketing_campaign: masterclass.marketingCampaign,
-        marketing_description: masterclass.marketingDescription,
-        status: masterclass.status,
+        title: activity.title,
+        type: activity.type,
+        date: activity.date,
+        kick_off_date: activity.kickOffDate,
+        end_date: activity.endDate,
+        location: activity.location,
+        marketing_campaign: activity.marketingCampaign,
+        marketing_description: activity.marketingDescription,
+        status: activity.status,
         updated_at: new Date().toISOString(),
       })
       .eq('id', eventId);
@@ -199,14 +200,14 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
     const { error: ownershipError } = await supabase
       .from('ownerships')
       .update({
-        finos_lead: masterclass.ownership.finosLead,
-        finos_team: masterclass.ownership.finosTeam,
-        marketing_liaison: masterclass.ownership.marketingLiaison,
-        member_success_liaison: masterclass.ownership.memberSuccessLiaison,
-        sponsors_partners: masterclass.ownership.sponsorsPartners,
-        channel: masterclass.ownership.channel,
-        ambassador: masterclass.ownership.ambassador,
-        toc: masterclass.ownership.toc,
+        finos_lead: activity.ownership.finosLead,
+        finos_team: activity.ownership.finosTeam,
+        marketing_liaison: activity.ownership.marketingLiaison,
+        member_success_liaison: activity.ownership.memberSuccessLiaison,
+        sponsors_partners: activity.ownership.sponsorsPartners,
+        channel: activity.ownership.channel,
+        ambassador: activity.ownership.ambassador,
+        toc: activity.ownership.toc,
       })
       .eq('masterclass_id', eventId);
     
@@ -216,10 +217,10 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
     const { error: impactsError } = await supabase
       .from('impacts')
       .update({
-        use_case: masterclass.impacts.useCase,
-        strategic_initiative: masterclass.impacts.strategicInitiative,
-        projects: masterclass.impacts.projects,
-        targeted_personas: masterclass.impacts.targetedPersonas,
+        use_case: activity.impacts.useCase,
+        strategic_initiative: activity.impacts.strategicInitiative,
+        projects: activity.impacts.projects,
+        targeted_personas: activity.impacts.targetedPersonas,
       })
       .eq('masterclass_id', eventId);
     
@@ -229,25 +230,25 @@ export const updateMasterclass = async (masterclass: Masterclass): Promise<Maste
     const { error: metricsError } = await supabase
       .from('metrics')
       .update({
-        targeted_registrations: masterclass.metrics.targetedRegistrations,
-        current_registrations: masterclass.metrics.currentRegistrations,
-        registration_percentage: masterclass.metrics.registrationPercentage,
-        targeted_participants: masterclass.metrics.targetedParticipants,
-        current_participants: masterclass.metrics.currentParticipants,
-        participation_percentage: masterclass.metrics.participationPercentage,
+        targeted_registrations: activity.metrics.targetedRegistrations,
+        current_registrations: activity.metrics.currentRegistrations,
+        registration_percentage: activity.metrics.registrationPercentage,
+        targeted_participants: activity.metrics.targetedParticipants,
+        current_participants: activity.metrics.currentParticipants,
+        participation_percentage: activity.metrics.participationPercentage,
       })
       .eq('masterclass_id', eventId);
     
     if (metricsError) throw metricsError;
     
-    return masterclass;
+    return activity;
   } catch (error) {
-    console.error("Error updating developer event:", error);
+    console.error("Error updating activity:", error);
     throw error;
   }
 };
 
-export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
+export const getAllActivities = async (): Promise<Activity[]> => {
   try {
     const { data: events, error: eventError } = await supabase
       .from('masterclasses')
@@ -255,7 +256,7 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
     
     if (eventError) throw eventError;
     
-    const result: Masterclass[] = [];
+    const result: Activity[] = [];
     
     for (const event of events) {
       // Get ownership data
@@ -266,7 +267,7 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
         .single();
       
       if (ownershipError) {
-        console.error("Error fetching ownership for developer event:", event.id, ownershipError);
+        console.error("Error fetching ownership for activity:", event.id, ownershipError);
         continue;
       }
       
@@ -278,7 +279,7 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
         .single();
       
       if (impactsError) {
-        console.error("Error fetching impacts for developer event:", event.id, impactsError);
+        console.error("Error fetching impacts for activity:", event.id, impactsError);
         continue;
       }
       
@@ -290,7 +291,7 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
         .single();
       
       if (metricsError) {
-        console.error("Error fetching metrics for developer event:", event.id, metricsError);
+        console.error("Error fetching metrics for activity:", event.id, metricsError);
         continue;
       }
       
@@ -335,30 +336,30 @@ export const getAllMasterclasses = async (): Promise<Masterclass[]> => {
     
     return result;
   } catch (error) {
-    console.error("Error fetching all developer events:", error);
+    console.error("Error fetching all activities:", error);
     throw error;
   }
 };
 
-export const createMasterclass = async (masterclass: Omit<Masterclass, 'id'>): Promise<Masterclass> => {
+export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Activity> => {
   try {
     // Create a custom ID for the new event
     const timestamp = Date.now();
     const customId = `de-${timestamp.toString().slice(-6)}`;
     
-    // Insert masterclass record
+    // Insert activity record
     const { data: eventData, error: eventError } = await supabase
       .from('masterclasses')
       .insert({
-        title: masterclass.title,
-        type: masterclass.type,
-        date: masterclass.date,
-        kick_off_date: masterclass.kickOffDate,
-        end_date: masterclass.endDate,
-        location: masterclass.location,
-        marketing_campaign: masterclass.marketingCampaign,
-        marketing_description: masterclass.marketingDescription,
-        status: masterclass.status,
+        title: activity.title,
+        type: activity.type,
+        date: activity.date,
+        kick_off_date: activity.kickOffDate,
+        end_date: activity.endDate,
+        location: activity.location,
+        marketing_campaign: activity.marketingCampaign,
+        marketing_description: activity.marketingDescription,
+        status: activity.status,
         custom_id: customId,
       })
       .select('id, custom_id')
@@ -371,14 +372,14 @@ export const createMasterclass = async (masterclass: Omit<Masterclass, 'id'>): P
       .from('ownerships')
       .insert({
         masterclass_id: eventData.id,
-        finos_lead: masterclass.ownership.finosLead,
-        finos_team: masterclass.ownership.finosTeam,
-        marketing_liaison: masterclass.ownership.marketingLiaison,
-        member_success_liaison: masterclass.ownership.memberSuccessLiaison,
-        sponsors_partners: masterclass.ownership.sponsorsPartners,
-        channel: masterclass.ownership.channel,
-        ambassador: masterclass.ownership.ambassador,
-        toc: masterclass.ownership.toc,
+        finos_lead: activity.ownership.finosLead,
+        finos_team: activity.ownership.finosTeam,
+        marketing_liaison: activity.ownership.marketingLiaison,
+        member_success_liaison: activity.ownership.memberSuccessLiaison,
+        sponsors_partners: activity.ownership.sponsorsPartners,
+        channel: activity.ownership.channel,
+        ambassador: activity.ownership.ambassador,
+        toc: activity.ownership.toc,
       });
     
     if (ownershipError) throw ownershipError;
@@ -388,10 +389,10 @@ export const createMasterclass = async (masterclass: Omit<Masterclass, 'id'>): P
       .from('impacts')
       .insert({
         masterclass_id: eventData.id,
-        use_case: masterclass.impacts.useCase,
-        strategic_initiative: masterclass.impacts.strategicInitiative,
-        projects: masterclass.impacts.projects,
-        targeted_personas: masterclass.impacts.targetedPersonas,
+        use_case: activity.impacts.useCase,
+        strategic_initiative: activity.impacts.strategicInitiative,
+        projects: activity.impacts.projects,
+        targeted_personas: activity.impacts.targetedPersonas,
       });
     
     if (impactsError) throw impactsError;
@@ -401,28 +402,28 @@ export const createMasterclass = async (masterclass: Omit<Masterclass, 'id'>): P
       .from('metrics')
       .insert({
         masterclass_id: eventData.id,
-        targeted_registrations: masterclass.metrics.targetedRegistrations,
-        current_registrations: masterclass.metrics.currentRegistrations,
-        registration_percentage: masterclass.metrics.registrationPercentage,
-        targeted_participants: masterclass.metrics.targetedParticipants,
-        current_participants: masterclass.metrics.currentParticipants,
-        participation_percentage: masterclass.metrics.participationPercentage,
+        targeted_registrations: activity.metrics.targetedRegistrations,
+        current_registrations: activity.metrics.currentRegistrations,
+        registration_percentage: activity.metrics.registrationPercentage,
+        targeted_participants: activity.metrics.targetedParticipants,
+        current_participants: activity.metrics.currentParticipants,
+        participation_percentage: activity.metrics.participationPercentage,
       });
     
     if (metricsError) throw metricsError;
     
-    // Return the created masterclass with its ID
+    // Return the created activity with its ID
     return {
-      ...masterclass,
+      ...activity,
       id: eventData.custom_id,
     };
   } catch (error) {
-    console.error("Error creating developer event:", error);
+    console.error("Error creating activity:", error);
     throw error;
   }
 };
 
-export const deleteMasterclass = async (id: string): Promise<void> => {
+export const deleteActivity = async (id: string): Promise<void> => {
   try {
     // Get the UUID of the event
     const { data: eventData, error: eventError } = await supabase
@@ -433,7 +434,7 @@ export const deleteMasterclass = async (id: string): Promise<void> => {
     
     if (eventError) throw eventError;
     
-    // Delete the masterclass (cascades to related tables due to FK constraints)
+    // Delete the activity (cascades to related tables due to FK constraints)
     const { error: deleteError } = await supabase
       .from('masterclasses')
       .delete()
@@ -441,7 +442,7 @@ export const deleteMasterclass = async (id: string): Promise<void> => {
     
     if (deleteError) throw deleteError;
   } catch (error) {
-    console.error("Error deleting developer event:", error);
+    console.error("Error deleting activity:", error);
     throw error;
   }
 };

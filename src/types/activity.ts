@@ -1,5 +1,5 @@
 
-export interface Masterclass {
+export interface Activity {
   id: string;
   title: string;
   type: string;

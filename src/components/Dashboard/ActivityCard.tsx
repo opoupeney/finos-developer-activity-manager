@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import StatusBadge from '../StatusBadge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Eye, Edit } from "lucide-react";
 import { format } from 'date-fns';
 
 interface ActivityCardProps {
-  activity: Masterclass;
+  activity: Activity;
   icon: React.ReactNode;
   isAdmin: boolean;
 }
@@ -80,7 +80,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, icon, isAdmin }) 
       
       <CardFooter className="pt-0 flex gap-2">
         <Button asChild variant="outline" className="flex-1">
-          <Link to={`/masterclass/${activity.id}`}>
+          <Link to={`/activity/${activity.id}`}>
             <Eye className="mr-2 h-4 w-4" />
             View Details
           </Link>

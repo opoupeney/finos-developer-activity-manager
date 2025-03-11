@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapIcon } from 'lucide-react';
 import MapSetupCard from './MapSetupCard';
 import MapContainer from './MapContainer';
 
 interface ActivityMapProps {
-  activities: Masterclass[];
+  activities: Activity[];
 }
 
 const ActivityMap: React.FC<ActivityMapProps> = ({ activities }) => {

@@ -17,7 +17,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
-import { getAllMasterclasses } from '@/services/masterclassService';
+import { getAllActivities } from '@/services/activityService';
 import { useAuth } from '@/contexts/AuthContext';
 
 const typeToIconMap = {
@@ -36,8 +36,8 @@ const Index = () => {
   const [viewType, setViewType] = useState<"grid" | "table">("table");
 
   const { data: activities, isLoading, error } = useQuery({
-    queryKey: ['masterclasses'],
-    queryFn: getAllMasterclasses,
+    queryKey: ['activities'],
+    queryFn: getAllActivities,
   });
 
   if (isLoading) {

@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import { Link } from 'react-router-dom';
 import { formatDate, compareValues } from '@/lib/utils';
 import StatusBadge from '@/components/StatusBadge';
@@ -18,7 +18,7 @@ import SearchBar from './SearchBar';
 import { parseISO } from 'date-fns';
 
 interface ActivityTableProps {
-  activities: Masterclass[];
+  activities: Activity[];
   isAdmin: boolean;
 }
 
@@ -186,7 +186,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
                 <TableCell>{activity.ownership.finosLead}</TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="ghost" size="sm">
-                    <Link to={`/masterclass/${activity.id}`}>
+                    <Link to={`/activity/${activity.id}`}>
                       <span>View</span>
                       <ArrowRight className="ml-1 h-4 w-4" />
                     </Link>

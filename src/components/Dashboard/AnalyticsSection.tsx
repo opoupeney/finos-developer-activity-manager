@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import { ChartPieIcon, ChevronDown } from "lucide-react";
 import PieCharts from '../PieCharts';
 import ActivityProgressKnob from '../Charts/ActivityProgressKnob';
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/collapsible";
 
 interface AnalyticsSectionProps {
-  activities: Masterclass[];
+  activities: Activity[];
 }
 
 const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ activities }) => {

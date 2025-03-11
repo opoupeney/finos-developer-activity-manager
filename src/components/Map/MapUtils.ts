@@ -1,5 +1,5 @@
 
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import mapboxgl from 'mapbox-gl';
 
 // Function to convert location strings to coordinates
@@ -34,7 +34,7 @@ export const getCoordinates = (location: string): [number, number] | null => {
 };
 
 export const createActivityMarker = (
-  activity: Masterclass, 
+  activity: Activity, 
   map: mapboxgl.Map
 ): mapboxgl.Marker | null => {
   const coordinates = getCoordinates(activity.location);
