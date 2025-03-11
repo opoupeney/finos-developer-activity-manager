@@ -17,6 +17,7 @@ export const getCoordinates = (location: string): [number, number] | null => {
     'Toronto': [-79.3832, 43.6532],
     'Chicago': [-87.6298, 41.8781],
     'Los Angeles': [-118.2437, 34.0522],
+    'Singapore': [103.8198, 1.3521],
     'Remote': [0, 0], // Center of the map for remote activities
     'Virtual': [0, 0],  // Center of the map for virtual activities
     'Online': [0, 0]    // Center of the map for online activities
