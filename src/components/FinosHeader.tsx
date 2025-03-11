@@ -22,6 +22,9 @@ const FinosHeader = () => {
             <Link to="/activity" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Developer Activities
             </Link>
+            <Link to="/schedule" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Schedule
+            </Link>
             {userDetails?.role === 'admin' && (
               <Link to="/admin" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Admin

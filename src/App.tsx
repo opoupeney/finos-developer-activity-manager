@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import EventCreate from "./pages/EventCreate";
 import EventEdit from "./pages/EventEdit";
+import Schedule from "./pages/Schedule";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/create" element={<EventCreate />} />
             <Route path="/edit/:id" element={<EventEdit />} />
+            <Route path="/schedule" element={<Schedule />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
