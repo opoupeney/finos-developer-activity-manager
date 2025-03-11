@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import Breadcrumb from '@/components/Breadcrumb';
 
 const Auth = () => {
   const { user, loading } = useAuth();
@@ -73,6 +74,10 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
+      
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
+        <Breadcrumb />
+      </div>
       
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
