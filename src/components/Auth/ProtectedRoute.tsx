@@ -1,7 +1,8 @@
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import DashboardLoading from '../Dashboard/DashboardLoading';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -11,9 +12,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // While checking auth state, show nothing
+  // While checking auth state, show loading indicator
   if (loading) {
-    return null;
+    return <DashboardLoading />;
   }
 
   // If not authenticated, redirect to auth page

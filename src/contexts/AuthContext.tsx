@@ -110,6 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
+    // Since we're not signed out, attempt to recover the session
     const fetchSession = async () => {
       try {
         setLoading(true);
@@ -122,6 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Initial session fetch:', currentSession?.user?.id || 'No session');
         
         if (currentSession) {
+          // Valid session exists
           setSession(currentSession);
           setUser(currentSession.user);
           
@@ -130,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUserDetails(details);
           }
         } else {
-          // If no current session, ensure state is clear
+          // No valid session
           setSession(null);
           setUser(null);
           setUserDetails(null);
