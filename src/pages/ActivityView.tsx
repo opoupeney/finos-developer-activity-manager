@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -77,20 +76,14 @@ const ActivityView = () => {
       
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 flex items-center justify-between">
-          <div className="flex items-center">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate(-1)}
-              size="sm"
-              className="mr-4"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-            <h1 className="text-3xl font-bold truncate">
-              {activity.title}
-            </h1>
-          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate(-1)}
+            size="sm"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
           {isAdmin && (
             <Button asChild>
               <div 
