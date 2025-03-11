@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import Breadcrumb from '@/components/Breadcrumb';
 
 const ActivityView = () => {
   const { id } = useParams<{ id: string }>();
@@ -73,7 +74,9 @@ const ActivityView = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
-      
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
+        <Breadcrumb />
+      </div>
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 flex items-center justify-between">
           <Button 

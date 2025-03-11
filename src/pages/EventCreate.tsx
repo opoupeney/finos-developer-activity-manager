@@ -1,4 +1,3 @@
-
 import React from 'react';
 import FinosHeader from '../components/FinosHeader';
 import EventForm from '../components/EventForm';
@@ -7,13 +6,13 @@ import { Activity } from '../types/activity';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import Breadcrumb from '../components/Breadcrumb';
 
 const EventCreate = () => {
   const { userDetails } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Check if user is an admin
   React.useEffect(() => {
     if (userDetails && userDetails.role !== 'admin') {
       toast({
@@ -26,7 +25,6 @@ const EventCreate = () => {
   }, [userDetails, navigate, toast]);
 
   const handleSubmit = async (data: Activity) => {
-    // Remove id because we're creating a new event
     const { id, ...eventWithoutId } = data;
     try {
       await createActivity(eventWithoutId);
@@ -39,7 +37,9 @@ const EventCreate = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
-      
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
+        <Breadcrumb />
+      </div>
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">

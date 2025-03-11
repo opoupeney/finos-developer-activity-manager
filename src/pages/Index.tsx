@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -19,6 +18,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { getAllActivities } from '@/services/activityService';
 import { useAuth } from '@/contexts/AuthContext';
+import Breadcrumb from '@/components/Breadcrumb';
 
 const typeToIconMap = {
   'Meetup': <Users className="h-5 w-5" />,
@@ -67,6 +67,9 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <FinosHeader />
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
+        <Breadcrumb />
+      </div>
       <div className="flex-1 container max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Developer Activities</h1>

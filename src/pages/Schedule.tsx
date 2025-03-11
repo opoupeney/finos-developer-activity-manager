@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllActivities } from '@/services/activityService';
@@ -11,6 +10,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarIcon, ListIcon } from 'lucide-react';
 import { filterValidActivities } from '@/components/Timeline/TimelineUtils';
+import Breadcrumb from '@/components/Breadcrumb';
 
 const Schedule = () => {
   const [view, setView] = useState<'timeline' | 'calendar'>('timeline');
@@ -26,7 +26,9 @@ const Schedule = () => {
     <TooltipProvider>
       <div className="min-h-screen flex flex-col">
         <FinosHeader />
-        
+        <div className="container max-w-7xl mx-auto px-4 pt-4">
+          <Breadcrumb />
+        </div>
         <main className="flex-1 container max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Activity Schedule</h1>

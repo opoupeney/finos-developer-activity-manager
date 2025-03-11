@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import FinosHeader from '../components/FinosHeader';
 import AuthForm from '../components/Auth/AuthForm';
@@ -20,8 +19,6 @@ const Auth = () => {
         setAuthLoading(true);
         const { data, error } = await supabase.auth.getSession();
         
-        // If there is session data and we detect that it's from an OAuth provider (like Google)
-        // show a success toast since we just came back from an OAuth redirect
         if (data.session?.provider_token || data.session?.provider_refresh_token) {
           toast({
             title: "Signed in successfully",
@@ -51,9 +48,7 @@ const Auth = () => {
       }
     };
     
-    // Check for auth session when the component mounts
     if (!loading && !user) {
-      // Look for hash parameters or query parameters which indicate an OAuth callback
       const hasHashParams = window.location.hash && window.location.hash.includes('access_token');
       const hasQueryParams = window.location.search && (
         window.location.search.includes('error_description') || 
@@ -66,7 +61,6 @@ const Auth = () => {
     }
   }, [loading, user, navigate, toast]);
   
-  // If already authenticated, redirect to dashboard
   if (user && !loading && !authLoading) {
     return <Navigate to="/" replace />;
   }

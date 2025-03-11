@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -8,6 +7,7 @@ import { getActivityByID, updateActivity, deleteActivity } from '../services/act
 import { Activity } from '../types/activity';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import Breadcrumb from '../components/Breadcrumb';
 
 const EventEdit = () => {
   const { id } = useParams<{ id: string }>();
@@ -113,7 +113,9 @@ const EventEdit = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
-      
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
+        <Breadcrumb />
+      </div>
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
