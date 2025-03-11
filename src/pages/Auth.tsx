@@ -32,9 +32,19 @@ const Auth = () => {
         
         if (error) {
           console.error("Error checking auth session:", error);
+          toast({
+            title: "Authentication Error",
+            description: error.message,
+            variant: "destructive",
+          });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Unexpected error during auth check:", error);
+        toast({
+          title: "Authentication Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
       } finally {
         setAuthLoading(false);
       }
@@ -42,8 +52,14 @@ const Auth = () => {
     
     // Check for auth session when the component mounts
     if (!loading && !user) {
+      // Look for hash parameters or query parameters which indicate an OAuth callback
       const hasHashParams = window.location.hash && window.location.hash.includes('access_token');
-      if (hasHashParams) {
+      const hasQueryParams = window.location.search && (
+        window.location.search.includes('error_description') || 
+        window.location.search.includes('code=')
+      );
+      
+      if (hasHashParams || hasQueryParams) {
         handleAuthSession();
       }
     }

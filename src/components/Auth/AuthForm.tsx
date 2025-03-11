@@ -91,10 +91,13 @@ const AuthForm = () => {
     try {
       setLoading(true);
       
+      // Use the current window origin for the redirect
+      const redirectTo = `${window.location.origin}/auth`;
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/auth',
+          redirectTo: redirectTo,
         }
       });
       
