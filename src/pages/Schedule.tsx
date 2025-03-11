@@ -57,7 +57,7 @@ const Schedule = () => {
               <p className="text-muted-foreground mt-2">Please try again later.</p>
             </div>
           ) : (
-            <>
+            <div>
               {view === 'timeline' ? (
                 <Timeline activities={filteredActivities} />
               ) : (
@@ -70,7 +70,7 @@ const Schedule = () => {
                   <p className="text-muted-foreground mt-2">There are no activities available for this time period.</p>
                 </div>
               )}
-            </>
+            </div>
           )}
         </main>
         
