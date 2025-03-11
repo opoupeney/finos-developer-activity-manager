@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -18,7 +19,7 @@ import Schedule from "./pages/Schedule";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
   },
@@ -32,14 +33,17 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/activity" element={<Index />} />
-            <Route path="/activity/:id" element={<ActivityView />} />
+            {/* Public route */}
             <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/create" element={<EventCreate />} />
-            <Route path="/edit/:id" element={<EventEdit />} />
-            <Route path="/schedule" element={<Schedule />} />
+            
+            {/* Protected routes */}
+            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/activity" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/activity/:id" element={<ProtectedRoute><ActivityView /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/create" element={<ProtectedRoute><EventCreate /></ProtectedRoute>} />
+            <Route path="/edit/:id" element={<ProtectedRoute><EventEdit /></ProtectedRoute>} />
+            <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
