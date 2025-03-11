@@ -4,8 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllActivities } from '../services/activityService';
 import FinosHeader from '../components/FinosHeader';
 import { useToast } from "@/hooks/use-toast";
-import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, ListChecks, Archive, Printer } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, ListChecks, Archive } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import ActivityMap from '@/components/Map/ActivityMap';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
@@ -59,10 +58,6 @@ const Dashboard = () => {
     }
   });
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   useEffect(() => {
     if (!authLoading && user) {
       refetch();
@@ -92,17 +87,7 @@ const Dashboard = () => {
       <FinosHeader />
       
       <main className="container max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-6">
-          <DashboardHeader isAdmin={isAdmin} />
-          <Button 
-            variant="outline" 
-            onClick={handlePrint}
-            className="print:hidden"
-          >
-            <Printer className="h-5 w-5 mr-2" />
-            Print Dashboard
-          </Button>
-        </div>
+        <DashboardHeader isAdmin={isAdmin} />
         
         {activities && activities.length > 0 && (
           <div className="mb-8">
