@@ -1,6 +1,7 @@
+
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getAllMasterclasses } from '../services/masterclassService';
+import { getAllActivities } from '../services/activityService';
 import FinosHeader from '../components/FinosHeader';
 import { useToast } from "@/hooks/use-toast";
 import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, ListChecks, Archive, Printer } from "lucide-react";
@@ -38,7 +39,7 @@ const Dashboard = () => {
     refetch 
   } = useQuery({
     queryKey: ['activities'],
-    queryFn: () => getAllMasterclasses(),
+    queryFn: () => getAllActivities(),
     enabled: !authLoading, // Only run query when auth loading is complete
     meta: {
       onSuccess: () => {

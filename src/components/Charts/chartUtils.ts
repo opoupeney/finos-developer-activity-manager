@@ -1,11 +1,11 @@
 
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 
 // Define color palette for pie charts
 export const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64d79', '#674ea7', '#3c78d8', '#6aa84f', '#f1c232', '#cc0000'];
 
 // Process data for registrations by location
-export const processLocationData = (activities: Masterclass[]) => {
+export const processLocationData = (activities: Activity[]) => {
   const registrationsByLocation = activities.reduce((acc: Record<string, number>, activity) => {
     const location = activity.location;
     if (!acc[location]) {
@@ -19,7 +19,7 @@ export const processLocationData = (activities: Masterclass[]) => {
 };
 
 // Process data for registrations by type
-export const processRegistrationTypeData = (activities: Masterclass[]) => {
+export const processRegistrationTypeData = (activities: Activity[]) => {
   const registrationsByType = activities.reduce((acc: Record<string, number>, activity) => {
     const type = activity.type;
     if (!acc[type]) {
@@ -33,7 +33,7 @@ export const processRegistrationTypeData = (activities: Masterclass[]) => {
 };
 
 // Process data for participants by type
-export const processParticipantTypeData = (activities: Masterclass[]) => {
+export const processParticipantTypeData = (activities: Activity[]) => {
   const participantsByType = activities.reduce((acc: Record<string, number>, activity) => {
     const type = activity.type;
     if (!acc[type]) {

@@ -2,8 +2,8 @@
 import React from 'react';
 import FinosHeader from '../components/FinosHeader';
 import EventForm from '../components/EventForm';
-import { createMasterclass } from '../services/masterclassService';
-import { Masterclass } from '../types/masterclass';
+import { createActivity } from '../services/activityService';
+import { Activity } from '../types/activity';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -25,11 +25,11 @@ const EventCreate = () => {
     }
   }, [userDetails, navigate, toast]);
 
-  const handleSubmit = async (data: Masterclass) => {
+  const handleSubmit = async (data: Activity) => {
     // Remove id because we're creating a new event
     const { id, ...eventWithoutId } = data;
     try {
-      await createMasterclass(eventWithoutId);
+      await createActivity(eventWithoutId);
     } catch (error) {
       console.error("Error creating developer activity:", error);
       throw error;

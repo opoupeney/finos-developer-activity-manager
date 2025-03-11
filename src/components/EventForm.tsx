@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Masterclass } from '@/types/masterclass';
+import { Activity } from '@/types/activity';
 import { 
   Form,
   FormControl,
@@ -63,8 +63,8 @@ const eventFormSchema = z.object({
 type EventFormValues = z.infer<typeof eventFormSchema>;
 
 interface EventFormProps {
-  initialData?: Masterclass;
-  onSubmit: (data: Masterclass) => Promise<void>;
+  initialData?: Activity;
+  onSubmit: (data: Activity) => Promise<void>;
   onDelete?: () => Promise<void>;
   isEditing?: boolean;
 }
@@ -133,7 +133,7 @@ const EventForm: React.FC<EventFormProps> = ({
     try {
       setIsSubmitting(true);
       
-      const eventData: Masterclass = {
+      const eventData: Activity = {
         id: initialData?.id || '',
         title: values.title,
         type: values.type,

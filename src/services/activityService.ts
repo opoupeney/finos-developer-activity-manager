@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Activity } from "../types/activity";
 
@@ -446,3 +445,10 @@ export const deleteActivity = async (id: string): Promise<void> => {
     throw error;
   }
 };
+
+// Alias functions for compatibility during transition
+export const getMasterclassByID = getActivityByID;
+export const getAllMasterclasses = getAllActivities;
+export const createMasterclass = createActivity;
+export const updateMasterclass = updateActivity;
+export const deleteMasterclass = deleteActivity;

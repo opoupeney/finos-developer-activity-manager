@@ -8,7 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import MasterclassView from "./pages/MasterclassView";
+import ActivityView from "./pages/ActivityView";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import EventCreate from "./pages/EventCreate";
@@ -33,7 +33,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/masterclass" element={<Index />} />
-            <Route path="/masterclass/:id" element={<MasterclassView />} />
+            <Route path="/masterclass/:id" element={<ActivityView />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/create" element={<EventCreate />} />

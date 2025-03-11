@@ -4,8 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FinosHeader from '../components/FinosHeader';
 import EventForm from '../components/EventForm';
-import { getMasterclassByID, updateMasterclass, deleteMasterclass } from '../services/masterclassService';
-import { Masterclass } from '../types/masterclass';
+import { getActivityByID, updateActivity, deleteActivity } from '../services/activityService';
+import { Activity } from '../types/activity';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -28,7 +28,7 @@ const EventEdit = () => {
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
-    queryFn: () => getMasterclassByID(id!),
+    queryFn: () => getActivityByID(id!),
     enabled: !!id,
     meta: {
       onError: (err: any) => {
@@ -43,9 +43,9 @@ const EventEdit = () => {
     }
   });
 
-  const handleSubmit = async (data: Masterclass) => {
+  const handleSubmit = async (data: Activity) => {
     try {
-      await updateMasterclass(data);
+      await updateActivity(data);
       toast({
         title: "Success",
         description: "Developer activity updated successfully",
@@ -65,7 +65,7 @@ const EventEdit = () => {
   const handleDelete = async () => {
     if (!id) return;
     try {
-      await deleteMasterclass(id);
+      await deleteActivity(id);
       toast({
         title: "Success",
         description: "Developer activity deleted successfully",
