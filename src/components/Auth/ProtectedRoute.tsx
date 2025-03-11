@@ -12,17 +12,18 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // While checking auth state, show loading indicator
+  useEffect(() => {
+    console.log('ProtectedRoute - Auth state:', { user: !!user, loading });
+  }, [user, loading]);
+
   if (loading) {
     return <DashboardLoading />;
   }
 
-  // If not authenticated, redirect to auth page
   if (!user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // If authenticated, render the protected content
   return <>{children}</>;
 };
 

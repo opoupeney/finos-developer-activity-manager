@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -81,116 +80,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    console.log('AuthProvider init - checking auth state');
+    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
     
-    // Check if user has manually signed out before
-    const hasSignedOut = localStorage.getItem('authSignedOut') === 'true';
-    
-    if (hasSignedOut) {
-      // If previously signed out, ensure we clear any lingering session
-      console.log('Previously signed out, clearing session');
-      
-      // Clear state first to prevent flickering
-      setSession(null);
-      setUser(null);
-      setUserDetails(null);
-      
-      // Then ensure Supabase session is cleared
-      supabase.auth.signOut({ scope: 'global' })
-        .then(() => {
-          localStorage.removeItem('authSignedOut');
-          localStorage.removeItem('supabase.auth.token');
-          console.log('Cleared persistent session after signout');
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Error clearing persistent session:', error);
-          setLoading(false);
-        });
-      return;
-    }
-
-    // Since we're not signed out, attempt to recover the session
-    const fetchSession = async () => {
+    const initializeAuth = async () => {
       try {
         setLoading(true);
-        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         
-        if (error) {
-          throw error;
+        // Get the initial session
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          throw sessionError;
         }
-        
-        console.log('Initial session fetch:', currentSession?.user?.id || 'No session');
-        
-        if (currentSession) {
-          // Valid session exists
-          setSession(currentSession);
-          setUser(currentSession.user);
+
+        // If we have a session, set up the auth state
+        if (initialSession?.user) {
+          setSession(initialSession);
+          setUser(initialSession.user);
+          const details = await fetchUserDetails(initialSession.user.id);
+          setUserDetails(details);
+        }
+
+        // Set up auth state change listener
+        const { data: listener } = supabase.auth.onAuthStateChange(async (event, changedSession) => {
+          console.log('Auth state changed:', event, changedSession?.user?.id);
           
-          if (currentSession.user) {
-            const details = await fetchUserDetails(currentSession.user.id);
+          if (event === 'SIGNED_OUT') {
+            setSession(null);
+            setUser(null);
+            setUserDetails(null);
+          } else if (changedSession?.user) {
+            setSession(changedSession);
+            setUser(changedSession.user);
+            const details = await fetchUserDetails(changedSession.user.id);
             setUserDetails(details);
           }
-        } else {
-          // No valid session
-          setSession(null);
-          setUser(null);
-          setUserDetails(null);
-        }
+        });
+
+        authListener = listener;
       } catch (error: any) {
-        console.error('Error fetching session:', error.message);
+        console.error('Error initializing auth:', error);
+        toast({
+          title: 'Authentication Error',
+          description: 'There was a problem with authentication. Please try signing in again.',
+          variant: 'destructive',
+        });
         
-        // Clear session state on error
+        // Clear auth state on error
         setSession(null);
         setUser(null);
         setUserDetails(null);
-        
-        toast({
-          title: 'Authentication Error',
-          description: 'There was a problem fetching your session.',
-          variant: 'destructive',
-        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSession();
-
-    // Setup auth state change listener
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      console.log('Auth state changed:', event, newSession?.user?.id || 'No user');
-      
-      // Set loading to true at the start of auth state change
-      setLoading(true);
-      
-      if (event === 'SIGNED_OUT') {
-        // Make sure we clear everything on sign out
-        console.log('SIGNED_OUT event detected, clearing auth state');
-        setSession(null);
-        setUser(null);
-        setUserDetails(null);
-        localStorage.removeItem('supabase.auth.token');
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        console.log(`${event} event detected, updating auth state`);
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        
-        if (newSession?.user) {
-          const details = await fetchUserDetails(newSession.user.id);
-          setUserDetails(details);
-        } else {
-          setUserDetails(null);
-        }
-      }
-      
-      // Set loading to false after processing the auth state change
-      setLoading(false);
-    });
+    initializeAuth();
 
     return () => {
-      console.log('Cleaning up auth listener');
-      authListener.subscription.unsubscribe();
+      if (authListener) {
+        console.log('Cleaning up auth listener');
+        authListener.subscription.unsubscribe();
+      }
     };
   }, [toast]);
 
