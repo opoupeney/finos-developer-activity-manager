@@ -7,7 +7,6 @@ import FinosHeader from '@/components/FinosHeader';
 import ActivityHeader from '@/components/ActivityHeader';
 import ActivityDetails from '@/components/ActivityDetails';
 import ActivityStats from '@/components/ActivityStats';
-import DetailCard from '@/components/DetailCard';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit } from 'lucide-react';
@@ -114,32 +113,6 @@ const ActivityView = () => {
           <div>
             <ActivityStats activity={activity} />
           </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <DetailCard
-            title="Ownership"
-            items={[
-              { label: 'FINOS Lead', value: activity.ownership.finosLead },
-              { label: 'FINOS Team', value: activity.ownership.finosTeam.join(', ') },
-              { label: 'Marketing Liaison', value: activity.ownership.marketingLiaison },
-              { label: 'Member Success Liaison', value: activity.ownership.memberSuccessLiaison },
-              { label: 'Sponsors/Partners', value: activity.ownership.sponsorsPartners.join(', ') },
-              { label: 'Channel', value: activity.ownership.channel },
-              { label: 'Ambassador', value: activity.ownership.ambassador },
-              { label: 'TOC', value: activity.ownership.toc },
-            ]}
-          />
-          
-          <DetailCard
-            title="Impacts"
-            items={[
-              { label: 'Use Case', value: activity.impacts.useCase },
-              { label: 'Strategic Initiative', value: activity.impacts.strategicInitiative },
-              { label: 'Projects', value: activity.impacts.projects.join(', ') },
-              { label: 'Targeted Personas', value: activity.impacts.targetedPersonas.join(', ') },
-            ]}
-          />
         </div>
       </main>
       
