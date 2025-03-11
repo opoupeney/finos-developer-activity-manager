@@ -2,11 +2,10 @@
 import React, { useState, useRef } from 'react';
 import { Activity } from '@/types/activity';
 import { format, differenceInDays, startOfMonth, endOfMonth, parseISO, isAfter, isBefore, isSameDay } from 'date-fns';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Calendar, Activity as ActivityIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import StatusBadge from '@/components/StatusBadge';
 
 interface TimelineProps {
   activities: Activity[];
@@ -69,6 +68,20 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
     setScrollPosition(e.currentTarget.scrollLeft);
   };
 
+  // Get background color based on activity status
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Approved':
+        return 'bg-finos-green/90 hover:bg-finos-green/100';
+      case 'Pending':
+        return 'bg-yellow-500/80 hover:bg-yellow-500/90';
+      case 'Done':
+        return 'bg-gray-400/80 hover:bg-gray-400/90';
+      default:
+        return 'bg-primary/10 hover:bg-primary/20';
+    }
+  };
+
   // Position activities on the timeline - ONLY using activity.date now
   const positionActivity = (activity: Activity) => {
     try {
@@ -82,6 +95,7 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
 
       // Calculate the position
       const startPos = Math.max(0, differenceInDays(activityDate, startDate));
+      const statusColor = getStatusColor(activity.status);
 
       return (
         <Link
@@ -94,16 +108,11 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
             top: '5px', // Adjust as needed
           }}
         >
-          <Card className="h-[80px] bg-primary/10 border-primary hover:bg-primary/20 transition-all">
-            <CardContent className="p-2 h-full flex flex-col justify-between overflow-hidden">
-              <div className="flex justify-between items-start gap-1">
-                <h3 className="text-xs font-medium truncate group-hover:whitespace-normal">{activity.title}</h3>
-                <StatusBadge status={activity.status} className="scale-75 origin-right" />
-              </div>
-              <div className="text-xs text-muted-foreground flex gap-1 items-center mt-1">
-                <ActivityIcon className="h-3 w-3" />
-                <span className="truncate">{activity.type}</span>
-              </div>
+          <Card className={`h-16 border transition-all ${statusColor} text-white shadow hover:shadow-md`}>
+            <CardContent className="p-2 h-full flex items-center justify-center">
+              <h3 className="text-xs font-medium text-center truncate group-hover:whitespace-normal">
+                {activity.title}
+              </h3>
             </CardContent>
           </Card>
         </Link>
