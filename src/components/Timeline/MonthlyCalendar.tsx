@@ -28,52 +28,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
     });
   };
 
-  // Custom day render function for the calendar
-  const renderDay = (day: Date, selectedDays: Date[], dayProps: React.HTMLAttributes<HTMLDivElement>) => {
-    const dayActivities = getActivitiesForDate(day);
-    const hasActivities = dayActivities.length > 0;
-
-    return (
-      <div {...dayProps} className={cn(dayProps.className)}>
-        <div className="relative w-full h-full flex items-center justify-center">
-          <span className={hasActivities ? "font-bold" : ""}>{day.getDate()}</span>
-          
-          {hasActivities && (
-            <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-1">
-              {dayActivities.slice(0, 3).map((activity, i) => (
-                <Tooltip key={i}>
-                  <TooltipTrigger asChild>
-                    <div 
-                      className={`h-1.5 w-1.5 rounded-full ${getStatusColor(activity.status)}`}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div className="space-y-1 max-w-xs">
-                      <p className="font-semibold">{activity.title}</p>
-                      <p className="text-xs">{activity.type}</p>
-                      {activity.location && <p className="text-xs">{activity.location}</p>}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-              
-              {dayActivities.length > 3 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{dayActivities.length - 3} more activities</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <Card className="border shadow-sm">
       <CardContent className="p-0">
@@ -82,8 +36,57 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
           month={month}
           onMonthChange={setMonth}
           className="p-3"
+          modifiers={{
+            hasActivity: (date) => getActivitiesForDate(date).length > 0,
+          }}
+          modifiersClassNames={{
+            hasActivity: "font-bold",
+          }}
           components={{
-            Day: ({ day, selectedDay, ...props }) => renderDay(day, selectedDay ? [selectedDay] : [], props),
+            Day: ({ date, ...props }) => {
+              const dayActivities = getActivitiesForDate(date);
+              const hasActivities = dayActivities.length > 0;
+
+              return (
+                <div {...props} className={cn(props.className)}>
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    <span>{date.getDate()}</span>
+                    
+                    {hasActivities && (
+                      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-1">
+                        {dayActivities.slice(0, 3).map((activity, i) => (
+                          <Tooltip key={i}>
+                            <TooltipTrigger asChild>
+                              <div 
+                                className={`h-1.5 w-1.5 rounded-full ${getStatusColor(activity.status)}`}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <div className="space-y-1 max-w-xs">
+                                <p className="font-semibold">{activity.title}</p>
+                                <p className="text-xs">{activity.type}</p>
+                                {activity.location && <p className="text-xs">{activity.location}</p>}
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        ))}
+                        
+                        {dayActivities.length > 3 && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{dayActivities.length - 3} more activities</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            },
           }}
           showOutsideDays={true}
           disabled={false}
