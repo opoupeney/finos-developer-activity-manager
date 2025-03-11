@@ -7,6 +7,7 @@ import { parseISO, isSameDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getStatusColor } from './TimelineUtils';
+import { DayProps } from 'react-day-picker';
 
 interface MonthlyCalendarProps {
   activities: Activity[];
@@ -43,13 +44,12 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
             hasActivity: "font-bold",
           }}
           components={{
-            Day: (props) => {
-              const date = props.date;
+            Day: ({ date, ...props }: DayProps) => {
               const dayActivities = getActivitiesForDate(date);
               const hasActivities = dayActivities.length > 0;
 
               return (
-                <div {...props} className={cn(props.className)}>
+                <div {...props} className={cn(props.className ? props.className : '')}>
                   <div className="relative w-full h-full flex items-center justify-center">
                     <span>{date.getDate()}</span>
                     
