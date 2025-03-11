@@ -60,7 +60,7 @@ const Auth = () => {
       
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
-          <h1 className="text-3xl font-bold text-center mb-8">Welcome to FINOS</h1>
+          <h1 className="text-3xl font-bold text-center mb-8">Welcome to FINOS's Developer Activities Manager</h1>
           <AuthForm />
         </div>
       </main>

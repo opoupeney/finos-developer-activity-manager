@@ -43,7 +43,8 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
             hasActivity: "font-bold",
           }}
           components={{
-            Day: ({ date, ...props }) => {
+            Day: (props) => {
+              const date = props.date;
               const dayActivities = getActivitiesForDate(date);
               const hasActivities = dayActivities.length > 0;
 
