@@ -6,6 +6,12 @@ import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Calendar } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface TimelineProps {
   activities: Activity[];
@@ -98,24 +104,36 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
       const statusColor = getStatusColor(activity.status);
 
       return (
-        <Link
-          to={`/activity/${activity.id}`}
-          key={activity.id}
-          className="absolute rounded group hover:z-20"
-          style={{
-            left: `${startPos * dayWidth}px`,
-            width: `${dayWidth}px`, // Each activity takes up exactly one day
-            top: '5px', // Adjust as needed
-          }}
-        >
-          <Card className={`h-16 border transition-all ${statusColor} text-white shadow hover:shadow-md`}>
-            <CardContent className="p-2 h-full flex items-center justify-center">
-              <h3 className="text-xs font-medium text-center truncate group-hover:whitespace-normal">
-                {activity.title}
-              </h3>
-            </CardContent>
-          </Card>
-        </Link>
+        <TooltipProvider key={activity.id}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                to={`/activity/${activity.id}`}
+                className="absolute rounded group hover:z-20"
+                style={{
+                  left: `${startPos * dayWidth}px`,
+                  width: `${dayWidth}px`, // Each activity takes up exactly one day
+                  top: '5px', // Adjust as needed
+                }}
+              >
+                <Card className={`h-16 border transition-all ${statusColor} text-white shadow hover:shadow-md`}>
+                  <CardContent className="p-2 h-full flex items-center justify-center">
+                    <h3 className="text-xs font-medium text-center truncate group-hover:whitespace-normal">
+                      {activity.title}
+                    </h3>
+                  </CardContent>
+                </Card>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <div className="space-y-1">
+                <p className="font-semibold">{activity.title}</p>
+                <p className="text-xs">{activity.type} • {format(parseISO(activity.date), 'MMM d, yyyy')}</p>
+                {activity.location && <p className="text-xs">{activity.location}</p>}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     } catch (error) {
       console.error("Error positioning activity:", error, activity);

@@ -6,6 +6,7 @@ import Timeline from '@/components/Timeline/Timeline';
 import FinosHeader from '@/components/FinosHeader';
 import DashboardFooter from '@/components/Dashboard/DashboardFooter';
 import DashboardLoading from '@/components/Dashboard/DashboardLoading';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const Schedule = () => {
   const { data: activities, isLoading, error } = useQuery({
@@ -14,26 +15,28 @@ const Schedule = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <FinosHeader />
-      
-      <main className="flex-1 container max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Activity Schedule</h1>
+    <TooltipProvider>
+      <div className="min-h-screen flex flex-col">
+        <FinosHeader />
         
-        {isLoading ? (
-          <DashboardLoading />
-        ) : error ? (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-destructive">Error loading activities</h2>
-            <p className="text-muted-foreground mt-2">Please try again later.</p>
-          </div>
-        ) : (
-          <Timeline activities={activities || []} />
-        )}
-      </main>
-      
-      <DashboardFooter />
-    </div>
+        <main className="flex-1 container max-w-7xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-6">Activity Schedule</h1>
+          
+          {isLoading ? (
+            <DashboardLoading />
+          ) : error ? (
+            <div className="text-center py-12">
+              <h2 className="text-xl font-semibold text-destructive">Error loading activities</h2>
+              <p className="text-muted-foreground mt-2">Please try again later.</p>
+            </div>
+          ) : (
+            <Timeline activities={activities || []} />
+          )}
+        </main>
+        
+        <DashboardFooter />
+      </div>
+    </TooltipProvider>
   );
 };
 
