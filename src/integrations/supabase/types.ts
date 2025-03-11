@@ -9,42 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      impacts: {
-        Row: {
-          id: string
-          masterclass_id: string
-          projects: string[]
-          strategic_initiative: string
-          targeted_personas: string[]
-          use_case: string
-        }
-        Insert: {
-          id?: string
-          masterclass_id: string
-          projects: string[]
-          strategic_initiative: string
-          targeted_personas: string[]
-          use_case: string
-        }
-        Update: {
-          id?: string
-          masterclass_id?: string
-          projects?: string[]
-          strategic_initiative?: string
-          targeted_personas?: string[]
-          use_case?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "impacts_masterclass_id_fkey"
-            columns: ["masterclass_id"]
-            isOneToOne: false
-            referencedRelation: "masterclasses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      masterclasses: {
+      activities: {
         Row: {
           created_at: string
           custom_id: string | null
@@ -92,32 +57,67 @@ export type Database = {
         }
         Relationships: []
       }
+      impacts: {
+        Row: {
+          activity_id: string
+          id: string
+          projects: string[]
+          strategic_initiative: string
+          targeted_personas: string[]
+          use_case: string
+        }
+        Insert: {
+          activity_id: string
+          id?: string
+          projects: string[]
+          strategic_initiative: string
+          targeted_personas: string[]
+          use_case: string
+        }
+        Update: {
+          activity_id?: string
+          id?: string
+          projects?: string[]
+          strategic_initiative?: string
+          targeted_personas?: string[]
+          use_case?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impacts_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       metrics: {
         Row: {
+          activity_id: string
           current_participants: number
           current_registrations: number
           id: string
-          masterclass_id: string
           participation_percentage: number
           registration_percentage: number
           targeted_participants: number
           targeted_registrations: number
         }
         Insert: {
+          activity_id: string
           current_participants: number
           current_registrations: number
           id?: string
-          masterclass_id: string
           participation_percentage: number
           registration_percentage: number
           targeted_participants: number
           targeted_registrations: number
         }
         Update: {
+          activity_id?: string
           current_participants?: number
           current_registrations?: number
           id?: string
-          masterclass_id?: string
           participation_percentage?: number
           registration_percentage?: number
           targeted_participants?: number
@@ -125,57 +125,57 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "metrics_masterclass_id_fkey"
-            columns: ["masterclass_id"]
+            foreignKeyName: "metrics_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "masterclasses"
+            referencedRelation: "activities"
             referencedColumns: ["id"]
           },
         ]
       }
       ownerships: {
         Row: {
+          activity_id: string
           ambassador: string
           channel: string
           finos_lead: string
           finos_team: string[]
           id: string
           marketing_liaison: string
-          masterclass_id: string
           member_success_liaison: string
           sponsors_partners: string[]
           toc: string
         }
         Insert: {
+          activity_id: string
           ambassador: string
           channel: string
           finos_lead: string
           finos_team: string[]
           id?: string
           marketing_liaison: string
-          masterclass_id: string
           member_success_liaison: string
           sponsors_partners: string[]
           toc: string
         }
         Update: {
+          activity_id?: string
           ambassador?: string
           channel?: string
           finos_lead?: string
           finos_team?: string[]
           id?: string
           marketing_liaison?: string
-          masterclass_id?: string
           member_success_liaison?: string
           sponsors_partners?: string[]
           toc?: string
         }
         Relationships: [
           {
-            foreignKeyName: "ownerships_masterclass_id_fkey"
-            columns: ["masterclass_id"]
+            foreignKeyName: "ownerships_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "masterclasses"
+            referencedRelation: "activities"
             referencedColumns: ["id"]
           },
         ]

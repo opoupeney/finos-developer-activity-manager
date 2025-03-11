@@ -32,8 +32,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/masterclass" element={<Index />} />
-            <Route path="/masterclass/:id" element={<ActivityView />} />
+            <Route path="/activity" element={<Index />} />
+            <Route path="/activity/:id" element={<ActivityView />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/create" element={<EventCreate />} />

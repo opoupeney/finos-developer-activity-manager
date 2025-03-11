@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Activity } from "../types/activity";
 
@@ -5,7 +6,7 @@ export const getActivityData = async (): Promise<Activity> => {
   try {
     // Get event data
     const { data: events, error: eventError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .select('*')
       .eq('custom_id', 'mc-001')
       .single();
@@ -16,7 +17,7 @@ export const getActivityData = async (): Promise<Activity> => {
     const { data: ownership, error: ownershipError } = await supabase
       .from('ownerships')
       .select('*')
-      .eq('masterclass_id', events.id)
+      .eq('activity_id', events.id)
       .single();
     
     if (ownershipError) throw ownershipError;
@@ -25,7 +26,7 @@ export const getActivityData = async (): Promise<Activity> => {
     const { data: impacts, error: impactsError } = await supabase
       .from('impacts')
       .select('*')
-      .eq('masterclass_id', events.id)
+      .eq('activity_id', events.id)
       .single();
     
     if (impactsError) throw impactsError;
@@ -34,7 +35,7 @@ export const getActivityData = async (): Promise<Activity> => {
     const { data: metrics, error: metricsError } = await supabase
       .from('metrics')
       .select('*')
-      .eq('masterclass_id', events.id)
+      .eq('activity_id', events.id)
       .single();
     
     if (metricsError) throw metricsError;
@@ -86,7 +87,7 @@ export const getActivityByID = async (id: string): Promise<Activity | undefined>
   try {
     // Get event data
     const { data: events, error: eventError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .select('*')
       .eq('custom_id', id)
       .single();
@@ -97,7 +98,7 @@ export const getActivityByID = async (id: string): Promise<Activity | undefined>
     const { data: ownership, error: ownershipError } = await supabase
       .from('ownerships')
       .select('*')
-      .eq('masterclass_id', events.id)
+      .eq('activity_id', events.id)
       .single();
     
     if (ownershipError) throw ownershipError;
@@ -106,7 +107,7 @@ export const getActivityByID = async (id: string): Promise<Activity | undefined>
     const { data: impacts, error: impactsError } = await supabase
       .from('impacts')
       .select('*')
-      .eq('masterclass_id', events.id)
+      .eq('activity_id', events.id)
       .single();
     
     if (impactsError) throw impactsError;
@@ -115,7 +116,7 @@ export const getActivityByID = async (id: string): Promise<Activity | undefined>
     const { data: metrics, error: metricsError } = await supabase
       .from('metrics')
       .select('*')
-      .eq('masterclass_id', events.id)
+      .eq('activity_id', events.id)
       .single();
     
     if (metricsError) throw metricsError;
@@ -167,7 +168,7 @@ export const updateActivity = async (activity: Activity): Promise<Activity> => {
   try {
     // Get the UUID of the event
     const { data: eventData, error: eventError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .select('id')
       .eq('custom_id', activity.id)
       .single();
@@ -178,7 +179,7 @@ export const updateActivity = async (activity: Activity): Promise<Activity> => {
     
     // Update event
     const { error: updateError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .update({
         title: activity.title,
         type: activity.type,
@@ -208,7 +209,7 @@ export const updateActivity = async (activity: Activity): Promise<Activity> => {
         ambassador: activity.ownership.ambassador,
         toc: activity.ownership.toc,
       })
-      .eq('masterclass_id', eventId);
+      .eq('activity_id', eventId);
     
     if (ownershipError) throw ownershipError;
     
@@ -221,7 +222,7 @@ export const updateActivity = async (activity: Activity): Promise<Activity> => {
         projects: activity.impacts.projects,
         targeted_personas: activity.impacts.targetedPersonas,
       })
-      .eq('masterclass_id', eventId);
+      .eq('activity_id', eventId);
     
     if (impactsError) throw impactsError;
     
@@ -236,7 +237,7 @@ export const updateActivity = async (activity: Activity): Promise<Activity> => {
         current_participants: activity.metrics.currentParticipants,
         participation_percentage: activity.metrics.participationPercentage,
       })
-      .eq('masterclass_id', eventId);
+      .eq('activity_id', eventId);
     
     if (metricsError) throw metricsError;
     
@@ -250,7 +251,7 @@ export const updateActivity = async (activity: Activity): Promise<Activity> => {
 export const getAllActivities = async (): Promise<Activity[]> => {
   try {
     const { data: events, error: eventError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .select('*');
     
     if (eventError) throw eventError;
@@ -262,7 +263,7 @@ export const getAllActivities = async (): Promise<Activity[]> => {
       const { data: ownership, error: ownershipError } = await supabase
         .from('ownerships')
         .select('*')
-        .eq('masterclass_id', event.id)
+        .eq('activity_id', event.id)
         .single();
       
       if (ownershipError) {
@@ -274,7 +275,7 @@ export const getAllActivities = async (): Promise<Activity[]> => {
       const { data: impacts, error: impactsError } = await supabase
         .from('impacts')
         .select('*')
-        .eq('masterclass_id', event.id)
+        .eq('activity_id', event.id)
         .single();
       
       if (impactsError) {
@@ -286,7 +287,7 @@ export const getAllActivities = async (): Promise<Activity[]> => {
       const { data: metrics, error: metricsError } = await supabase
         .from('metrics')
         .select('*')
-        .eq('masterclass_id', event.id)
+        .eq('activity_id', event.id)
         .single();
       
       if (metricsError) {
@@ -348,7 +349,7 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
     
     // Insert activity record
     const { data: eventData, error: eventError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .insert({
         title: activity.title,
         type: activity.type,
@@ -370,7 +371,7 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
     const { error: ownershipError } = await supabase
       .from('ownerships')
       .insert({
-        masterclass_id: eventData.id,
+        activity_id: eventData.id,
         finos_lead: activity.ownership.finosLead,
         finos_team: activity.ownership.finosTeam,
         marketing_liaison: activity.ownership.marketingLiaison,
@@ -387,7 +388,7 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
     const { error: impactsError } = await supabase
       .from('impacts')
       .insert({
-        masterclass_id: eventData.id,
+        activity_id: eventData.id,
         use_case: activity.impacts.useCase,
         strategic_initiative: activity.impacts.strategicInitiative,
         projects: activity.impacts.projects,
@@ -400,7 +401,7 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
     const { error: metricsError } = await supabase
       .from('metrics')
       .insert({
-        masterclass_id: eventData.id,
+        activity_id: eventData.id,
         targeted_registrations: activity.metrics.targetedRegistrations,
         current_registrations: activity.metrics.currentRegistrations,
         registration_percentage: activity.metrics.registrationPercentage,
@@ -426,7 +427,7 @@ export const deleteActivity = async (id: string): Promise<void> => {
   try {
     // Get the UUID of the event
     const { data: eventData, error: eventError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .select('id')
       .eq('custom_id', id)
       .single();
@@ -435,7 +436,7 @@ export const deleteActivity = async (id: string): Promise<void> => {
     
     // Delete the activity (cascades to related tables due to FK constraints)
     const { error: deleteError } = await supabase
-      .from('masterclasses')
+      .from('activities')
       .delete()
       .eq('id', eventData.id);
     
