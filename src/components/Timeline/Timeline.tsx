@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Activity } from '@/types/activity';
 import { format, differenceInDays, startOfMonth, endOfMonth, parseISO, isAfter, isBefore, isSameDay } from 'date-fns';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Calendar, Activity as ActivityIcon } from 'lucide-react';
@@ -69,29 +69,19 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
     setScrollPosition(e.currentTarget.scrollLeft);
   };
 
-  // Position activities on the timeline
+  // Position activities on the timeline - ONLY using activity.date now
   const positionActivity = (activity: Activity) => {
     try {
-      // For the activity position, prioritize kickOffDate, then date as fallback
-      const activityDate = activity.kickOffDate ? parseISO(activity.kickOffDate) : parseISO(activity.date);
+      // Now ONLY using the activity.date for positioning
+      const activityDate = parseISO(activity.date);
       
-      // Calculate activity's end date (using endDate if available, otherwise the same as start date)
-      const activityEndDate = activity.endDate ? parseISO(activity.endDate) : activityDate;
-
       // If activity is not in the current view, don't display it
-      if (isAfter(activityDate, endDate) || isBefore(activityEndDate, startDate)) {
+      if (isAfter(activityDate, endDate) || isBefore(activityDate, startDate)) {
         return null;
       }
 
-      // Calculate the position and width
+      // Calculate the position
       const startPos = Math.max(0, differenceInDays(activityDate, startDate));
-      const width = Math.min(
-        differenceInDays(
-          isBefore(activityEndDate, endDate) ? activityEndDate : endDate,
-          isBefore(activityDate, startDate) ? startDate : activityDate
-        ) + 1,
-        totalDays - startPos
-      );
 
       return (
         <Link
@@ -100,7 +90,7 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
           className="absolute rounded group hover:z-20"
           style={{
             left: `${startPos * dayWidth}px`,
-            width: `${width * dayWidth}px`,
+            width: `${dayWidth}px`, // Each activity takes up exactly one day
             top: '5px', // Adjust as needed
           }}
         >
