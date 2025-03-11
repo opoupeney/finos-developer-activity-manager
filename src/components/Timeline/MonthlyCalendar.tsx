@@ -7,7 +7,7 @@ import { parseISO, isSameDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getStatusColor } from './TimelineUtils';
-import { DayProps } from 'react-day-picker';
+import { DayClickEventHandler, DayContent, DayContentProps } from 'react-day-picker';
 
 interface MonthlyCalendarProps {
   activities: Activity[];
@@ -44,47 +44,45 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
             hasActivity: "font-bold",
           }}
           components={{
-            Day: ({ date, ...props }: DayProps) => {
-              const dayActivities = getActivitiesForDate(date);
+            DayContent: (props: DayContentProps) => {
+              const dayActivities = getActivitiesForDate(props.date);
               const hasActivities = dayActivities.length > 0;
 
               return (
-                <div {...props} className={cn(props.className ? props.className : '')}>
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <span>{date.getDate()}</span>
-                    
-                    {hasActivities && (
-                      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-1">
-                        {dayActivities.slice(0, 3).map((activity, i) => (
-                          <Tooltip key={i}>
-                            <TooltipTrigger asChild>
-                              <div 
-                                className={`h-1.5 w-1.5 rounded-full ${getStatusColor(activity.status)}`}
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <div className="space-y-1 max-w-xs">
-                                <p className="font-semibold">{activity.title}</p>
-                                <p className="text-xs">{activity.type}</p>
-                                {activity.location && <p className="text-xs">{activity.location}</p>}
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        ))}
-                        
-                        {dayActivities.length > 3 && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{dayActivities.length - 3} more activities</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <DayContent {...props} />
+                  
+                  {hasActivities && (
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-1">
+                      {dayActivities.slice(0, 3).map((activity, i) => (
+                        <Tooltip key={i}>
+                          <TooltipTrigger asChild>
+                            <div 
+                              className={`h-1.5 w-1.5 rounded-full ${getStatusColor(activity.status)}`}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <div className="space-y-1 max-w-xs">
+                              <p className="font-semibold">{activity.title}</p>
+                              <p className="text-xs">{activity.type}</p>
+                              {activity.location && <p className="text-xs">{activity.location}</p>}
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                      
+                      {dayActivities.length > 3 && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{dayActivities.length - 3} more activities</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             },
