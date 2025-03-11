@@ -5,7 +5,6 @@ import { startOfMonth, endOfMonth, differenceInDays } from 'date-fns';
 import TimelineHeader from './TimelineHeader';
 import DateHeader from './DateHeader';
 import TimelineContent from './TimelineContent';
-import { filterValidActivities } from './TimelineUtils';
 
 interface TimelineProps {
   activities: Activity[];
@@ -16,9 +15,6 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
   const [viewDate, setViewDate] = useState(new Date());
   const [scrollPosition, setScrollPosition] = useState(0);
   const timelineRef = useRef<HTMLDivElement>(null);
-
-  // Filter out rejected activities
-  const validActivities = filterValidActivities(activities);
 
   // Set start and end dates based on the scale
   const startDate = startOfMonth(viewDate);
@@ -89,7 +85,7 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
 
         {/* Timeline content */}
         <TimelineContent 
-          activities={validActivities}
+          activities={activities}
           datesInView={datesInView}
           startDate={startDate}
           endDate={endDate}
@@ -97,13 +93,6 @@ const Timeline: React.FC<TimelineProps> = ({ activities }) => {
           timelineWidth={timelineWidth}
         />
       </div>
-
-      {validActivities.length === 0 && (
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-muted-foreground">No activities found</h2>
-          <p className="text-muted-foreground mt-2">There are no activities available for this time period.</p>
-        </div>
-      )}
     </div>
   );
 };
