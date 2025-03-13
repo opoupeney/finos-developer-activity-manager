@@ -51,13 +51,13 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-2">
-        <Card className="border shadow-sm">
-          <CardContent className="p-0">
+        <Card className="border shadow-sm h-full">
+          <CardContent className="p-0 h-full flex flex-col">
             <Calendar
               mode="single"
               month={month}
               onMonthChange={setMonth}
-              className="p-3"
+              className="p-3 flex-1"
               modifiers={{
                 hasActivity: (date) => getActivitiesForDate(date).length > 0,
               }}
@@ -117,18 +117,18 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
 
       <div className="md:col-span-1">
         <Card className="border shadow-sm h-full">
-          <CardContent className="p-4">
+          <CardContent className="p-4 h-full flex flex-col">
             <h3 className="text-lg font-semibold mb-4 flex items-center">
               <CalendarIcon className="mr-2 h-5 w-5 text-finos-blue" />
               {format(month, 'MMMM yyyy')} Activities
             </h3>
             
             {activitiesForCurrentMonth.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-muted-foreground flex-1 flex items-center justify-center">
                 No activities scheduled for this month
               </div>
             ) : (
-              <ScrollArea className="h-[calc(100vh-300px)] pr-4">
+              <ScrollArea className="flex-1">
                 <div className="space-y-4">
                   {activitiesForCurrentMonth.map((activity, index) => {
                     const activityDate = parseISO(activity.date);
