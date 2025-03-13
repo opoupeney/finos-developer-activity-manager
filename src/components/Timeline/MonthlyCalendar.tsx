@@ -8,9 +8,18 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getStatusColor } from './TimelineUtils';
 import { DayClickEventHandler, DayContent, DayContentProps } from 'react-day-picker';
-import { CalendarIcon, MapPinIcon } from 'lucide-react';
+import { CalendarIcon, MapPinIcon, ClockIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import StatusBadge from '@/components/StatusBadge';
 
 interface MonthlyCalendarProps {
   activities: Activity[];
@@ -129,52 +138,46 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
               </div>
             ) : (
               <ScrollArea className="flex-1">
-                <div className="space-y-4">
-                  {activitiesForCurrentMonth.map((activity, index) => {
-                    const activityDate = parseISO(activity.date);
-                    
-                    return (
-                      <div key={index} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="font-medium line-clamp-1">{activity.title}</h4>
-                          <Badge variant="outline" className={cn(
-                            "ml-2 flex-shrink-0", 
-                            activity.status === 'Approved' ? "border-green-500 text-green-700" :
-                            activity.status === 'Pending' ? "border-yellow-500 text-yellow-700" :
-                            activity.status === 'Done' ? "border-gray-500 text-gray-700" :
-                            "border-primary text-primary"
-                          )}>
-                            {activity.status}
-                          </Badge>
-                        </div>
-                        
-                        <div className="text-sm text-muted-foreground mb-1">
-                          {format(activityDate, 'EEEE, MMMM d, yyyy')}
-                        </div>
-                        
-                        {activity.location && (
-                          <div className="flex items-center text-xs text-muted-foreground">
-                            <MapPinIcon className="h-3 w-3 mr-1" />
-                            <span className="line-clamp-1">{activity.location}</span>
-                          </div>
-                        )}
-                        
-                        <div className="mt-2 text-xs">
-                          <div className="flex justify-between text-muted-foreground mb-1">
-                            <span>Registrations</span>
-                            <span>{activity.metrics.registrationPercentage}%</span>
-                          </div>
-                          <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-finos-blue transition-all duration-500 ease-out rounded-full"
-                              style={{ width: `${activity.metrics.registrationPercentage}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {activitiesForCurrentMonth.map((activity, index) => {
+                      const activityDate = parseISO(activity.date);
+                      
+                      return (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{activity.title}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <ClockIcon className="h-3 w-3 mr-1 text-muted-foreground" />
+                              {format(activityDate, 'MMM d, yyyy')}
+                            </div>
+                          </TableCell>
+                          <TableCell>{activity.type}</TableCell>
+                          <TableCell>
+                            {activity.location && (
+                              <div className="flex items-center">
+                                <MapPinIcon className="h-3 w-3 mr-1 text-muted-foreground" />
+                                <span className="truncate max-w-[150px]">{activity.location}</span>
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge status={activity.status} />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </ScrollArea>
             )}
           </CardContent>
