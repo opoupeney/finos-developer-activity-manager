@@ -50,7 +50,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div className="md:col-span-8">
+      <div className="md:col-span-4">
         <Card className="border shadow-sm h-full w-full">
           <CardContent className="p-0 h-full flex flex-col">
             <Calendar
@@ -115,7 +115,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
         </Card>
       </div>
 
-      <div className="md:col-span-4">
+      <div className="md:col-span-8">
         <Card className="border shadow-sm h-full">
           <CardContent className="p-4 h-full flex flex-col">
             <h3 className="text-lg font-semibold mb-4 flex items-center">
