@@ -61,12 +61,12 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities }) => {
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-4">
         <Card className="border shadow-sm h-full w-full">
-          <CardContent className="p-0 h-full flex flex-col">
+          <CardContent className="p-0 h-full flex flex-col items-center justify-center">
             <Calendar
               mode="single"
               month={month}
               onMonthChange={setMonth}
-              className="p-3 flex-1"
+              className="p-3 flex-1 mx-auto"
               modifiers={{
                 hasActivity: (date) => getActivitiesForDate(date).length > 0,
               }}
