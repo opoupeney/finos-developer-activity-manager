@@ -30,7 +30,7 @@ const Schedule = () => {
         <div className="container max-w-7xl mx-auto px-4 pt-4">
           <Breadcrumb />
         </div>
-        <main className="flex-1 container max-w-7xl mx-auto px-4 py-8">
+        <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Activity Schedule</h1>
             

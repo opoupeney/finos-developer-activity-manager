@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -53,7 +54,7 @@ const Index = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <FinosHeader />
-        <div className="flex-1 container max-w-7xl mx-auto px-4 py-8">
+        <div className="flex-1 container max-w-7xl mx-auto px-4 py-6">
           <div className="text-center py-12">
             <h2 className="text-2xl font-semibold text-destructive">Error loading data</h2>
             <p className="text-muted-foreground mt-2">Please try again later.</p>
@@ -70,7 +71,7 @@ const Index = () => {
       <div className="container max-w-7xl mx-auto px-4 pt-4">
         <Breadcrumb />
       </div>
-      <div className="flex-1 container max-w-7xl mx-auto px-4 py-8">
+      <div className="flex-1 container max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Developer Activities</h1>
           {isAdmin && (
