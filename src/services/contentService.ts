@@ -18,7 +18,7 @@ export const fetchContents = async (): Promise<Content[]> => {
     type: item.type as ContentType,
     provider: item.provider as ContentProvider,
     status: item.status as ContentStatus,
-    publication_date: item.publication_date,
+    publication_date: item.publication_date || null,
   }));
 };
 
@@ -41,7 +41,7 @@ export const fetchContentById = async (id: string): Promise<Content | null> => {
     type: data.type as ContentType,
     provider: data.provider as ContentProvider,
     status: data.status as ContentStatus,
-    publication_date: data.publication_date,
+    publication_date: data.publication_date || null,
   };
 };
 
@@ -62,7 +62,7 @@ export const createContent = async (content: Omit<Content, 'id' | 'created_at' |
     type: data.type as ContentType,
     provider: data.provider as ContentProvider,
     status: data.status as ContentStatus,
-    publication_date: data.publication_date,
+    publication_date: data.publication_date || null,
   };
 };
 
@@ -84,7 +84,7 @@ export const updateContent = async (id: string, content: Partial<Omit<Content, '
     type: data.type as ContentType,
     provider: data.provider as ContentProvider,
     status: data.status as ContentStatus,
-    publication_date: data.publication_date,
+    publication_date: data.publication_date || null,
   };
 };
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -29,7 +28,9 @@ const contentFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().nullable(),
   author: z.string().nullable(),
-  url: z.string().url('Must be a valid URL').nullable().optional(),
+  url: z.string().refine(val => val === '' || /^https?:\/\//.test(val), {
+    message: 'Must be a valid URL or empty',
+  }).nullable().optional(),
   type: z.enum(['document', 'presentation', 'video'] as const),
   provider: z.enum(['gdoc', 'gslide', 'linkedin', 'youtube'] as const),
   status: z.enum(['logged', 'in progress', 'draft', 'published', 'archived'] as const),
@@ -125,7 +126,7 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
                   <Input placeholder="Enter content URL" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormDescription>
-                  The URL where the content can be accessed
+                  The URL where the content can be accessed (optional)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
