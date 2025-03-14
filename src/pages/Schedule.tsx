@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllActivities } from '@/services/activityService';
+import { fetchContents } from '@/services/contentService';
 import Timeline from '@/components/Timeline/Timeline';
 import MonthlyCalendar from '@/components/Timeline/MonthlyCalendar';
 import FinosHeader from '@/components/FinosHeader';
@@ -16,12 +17,19 @@ import Breadcrumb from '@/components/Breadcrumb';
 const Schedule = () => {
   const [view, setView] = useState<'timeline' | 'calendar'>('timeline');
   
-  const { data: activities, isLoading, error } = useQuery({
+  const { data: activities, isLoading: activitiesLoading, error: activitiesError } = useQuery({
     queryKey: ['activities'],
     queryFn: getAllActivities,
   });
 
+  const { data: contents, isLoading: contentsLoading, error: contentsError } = useQuery({
+    queryKey: ['contents'],
+    queryFn: fetchContents,
+  });
+
   const filteredActivities = activities ? filterValidActivities(activities) : [];
+  const isLoading = activitiesLoading || contentsLoading;
+  const error = activitiesError || contentsError;
 
   return (
     <TooltipProvider>
@@ -56,7 +64,7 @@ const Schedule = () => {
             <DashboardLoading />
           ) : error ? (
             <div className="text-center py-12">
-              <h2 className="text-xl font-semibold text-destructive">Error loading activities</h2>
+              <h2 className="text-xl font-semibold text-destructive">Error loading data</h2>
               <p className="text-muted-foreground mt-2">Please try again later.</p>
             </div>
           ) : (
@@ -64,7 +72,7 @@ const Schedule = () => {
               {view === 'timeline' ? (
                 <Timeline activities={filteredActivities} />
               ) : (
-                <MonthlyCalendar activities={filteredActivities} />
+                <MonthlyCalendar activities={filteredActivities} contents={contents || []} />
               )}
               
               {filteredActivities.length === 0 && (
