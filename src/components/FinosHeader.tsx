@@ -26,6 +26,9 @@ const FinosHeader = () => {
             <Link to="/content" className={`text-sm font-medium ${location.pathname.startsWith('/content') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
               Content Library
             </Link>
+            <Link to="/ambassadors" className={`text-sm font-medium ${location.pathname.startsWith('/ambassadors') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
+              Ambassadors
+            </Link>
             <Link to="/schedule" className={`text-sm font-medium ${location.pathname === '/schedule' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
               Schedule
             </Link>
