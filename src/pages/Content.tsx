@@ -6,6 +6,7 @@ import { fetchContents } from '@/services/contentService';
 import FinosHeader from '@/components/FinosHeader';
 import ContentHeader from '@/components/Content/ContentHeader';
 import ContentGrid from '@/components/Content/ContentGrid';
+import Breadcrumb from '@/components/Breadcrumb';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Content = () => {
@@ -17,11 +18,17 @@ const Content = () => {
     queryFn: fetchContents,
   });
 
+  const breadcrumbItems = [
+    { label: 'Content Library', href: '/content', current: true },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <FinosHeader />
       
       <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
+        <Breadcrumb items={breadcrumbItems} />
+        
         <ContentHeader isAdmin={isAdmin} />
         
         {isLoading ? (
