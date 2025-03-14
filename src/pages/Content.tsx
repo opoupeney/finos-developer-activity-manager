@@ -26,9 +26,11 @@ const Content = () => {
     <div className="min-h-screen flex flex-col">
       <FinosHeader />
       
-      <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
         <Breadcrumb items={breadcrumbItems} />
-        
+      </div>
+      
+      <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
         <ContentHeader isAdmin={isAdmin} />
         
         {isLoading ? (
