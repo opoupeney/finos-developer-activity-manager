@@ -57,6 +57,45 @@ export type Database = {
         }
         Relationships: []
       }
+      contents: {
+        Row: {
+          author: string | null
+          created_at: string
+          description: string | null
+          id: string
+          provider: string | null
+          status: string | null
+          title: string
+          type: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          provider?: string | null
+          status?: string | null
+          title: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          provider?: string | null
+          status?: string | null
+          title?: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       impacts: {
         Row: {
           activity_id: string

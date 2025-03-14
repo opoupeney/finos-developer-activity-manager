@@ -15,6 +15,10 @@ import Profile from "./pages/Profile";
 import EventCreate from "./pages/EventCreate";
 import EventEdit from "./pages/EventEdit";
 import Schedule from "./pages/Schedule";
+import Content from "./pages/Content";
+import ContentView from "./pages/ContentView";
+import ContentCreate from "./pages/ContentCreate";
+import ContentEdit from "./pages/ContentEdit";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +48,10 @@ const App = () => (
             <Route path="/create" element={<ProtectedRoute><EventCreate /></ProtectedRoute>} />
             <Route path="/edit/:id" element={<ProtectedRoute><EventEdit /></ProtectedRoute>} />
             <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
+            <Route path="/content" element={<ProtectedRoute><Content /></ProtectedRoute>} />
+            <Route path="/content/:id" element={<ProtectedRoute><ContentView /></ProtectedRoute>} />
+            <Route path="/content/new" element={<ProtectedRoute><ContentCreate /></ProtectedRoute>} />
+            <Route path="/content/edit/:id" element={<ProtectedRoute><ContentEdit /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
