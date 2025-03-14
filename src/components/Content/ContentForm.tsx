@@ -129,7 +129,7 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
                   <Input placeholder="Enter content source" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormDescription>
-                  The original source of the content (optional)
+                  The URL where the source of the content is located (optional)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
