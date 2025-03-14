@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Content, ContentType, ContentProvider, ContentStatus } from '@/types/content';
@@ -32,7 +31,6 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
   const [providerFilter, setProviderFilter] = useState<ContentProvider | null>(null);
   const [statusFilter, setStatusFilter] = useState<ContentStatus | null>(null);
 
-  // Extract unique types and providers for filter dropdowns
   const typeOptions = useMemo(() => {
     return [...new Set(contents.map(content => content.type))].sort() as ContentType[];
   }, [contents]);
@@ -55,17 +53,13 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
   };
 
   const filteredContents = contents.filter(content => {
-    // Text search filter
     const titleMatch = !searchText || 
       content.title.toLowerCase().includes(searchText.toLowerCase());
     
-    // Type filter
     const typeMatch = !typeFilter || content.type === typeFilter;
     
-    // Provider filter
     const providerMatch = !providerFilter || content.provider === providerFilter;
     
-    // Status filter
     const statusMatch = !statusFilter || content.status === statusFilter;
     
     return titleMatch && typeMatch && providerMatch && statusMatch;
@@ -143,17 +137,15 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
   };
 
   const getStatusBadge = (status: ContentStatus) => {
-    let variant: "default" | "destructive" | "outline" | "secondary" = "outline";
+    const statusStyles = {
+      published: "bg-green-500 hover:bg-green-600 text-white",
+      "in progress": "bg-blue-500 hover:bg-blue-600 text-white",
+      archived: "bg-gray-500 hover:bg-gray-600 text-white",
+      draft: "bg-yellow-500 hover:bg-yellow-600 text-white",
+      logged: "bg-purple-500 hover:bg-purple-600 text-white",
+    };
     
-    switch(status) {
-      case 'published': variant = "default"; break;
-      case 'in progress': variant = "secondary"; break;
-      case 'archived': variant = "secondary"; break;
-      case 'draft': variant = "outline"; break;
-      default: variant = "outline";
-    }
-    
-    return <Badge variant={variant}>{status}</Badge>;
+    return <Badge className={statusStyles[status] || ""}>{status}</Badge>;
   };
 
   if (contents.length === 0) {
