@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Content, ContentType, ContentProvider, ContentStatus } from '@/types/content';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import MDEditor from '@uiw/react-md-editor';
 import { DatePicker } from '@/components/ui/date-picker';
 import {
   Form,
@@ -83,12 +83,18 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea 
-                  placeholder="Enter content description" 
-                  {...field}
-                  value={field.value || ''}
-                />
+                <div data-color-mode="light" className="w-full">
+                  <MDEditor
+                    value={field.value || ''}
+                    onChange={(value) => field.onChange(value || '')}
+                    height={200}
+                    preview="edit"
+                  />
+                </div>
               </FormControl>
+              <FormDescription>
+                You can use Markdown syntax to format the description
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

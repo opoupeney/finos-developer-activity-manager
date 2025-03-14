@@ -5,6 +5,7 @@ import { Content } from '@/types/content';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import MDEditor from '@uiw/react-md-editor';
 import { Edit, ExternalLink, Calendar, FileText, Film, Presentation, User } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
@@ -83,7 +84,13 @@ const ContentDetail: React.FC<ContentDetailProps> = ({ content, isAdmin }) => {
         <div className="space-y-4">
           <div>
             <h3 className="font-medium mb-2">Description</h3>
-            <p className="text-muted-foreground">{content.description || 'No description provided.'}</p>
+            {content.description ? (
+              <div data-color-mode="light">
+                <MDEditor.Markdown source={content.description} />
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No description provided.</p>
+            )}
           </div>
         </div>
       </CardContent>
