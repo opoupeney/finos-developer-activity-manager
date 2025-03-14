@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Activity } from '@/types/activity';
+import { Ambassador } from '@/types/ambassador';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapIcon } from 'lucide-react';
 import MapSetupCard from './MapSetupCard';
@@ -8,9 +9,10 @@ import MapContainer from './MapContainer';
 
 interface ActivityMapProps {
   activities: Activity[];
+  ambassadors?: Ambassador[];
 }
 
-const ActivityMap: React.FC<ActivityMapProps> = ({ activities }) => {
+const ActivityMap: React.FC<ActivityMapProps> = ({ activities, ambassadors = [] }) => {
   const [mapboxToken, setMapboxToken] = useState<string>(
     localStorage.getItem('mapbox_token') || ''
   );
@@ -46,7 +48,11 @@ const ActivityMap: React.FC<ActivityMapProps> = ({ activities }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <MapContainer activities={nonRejectedActivities} mapboxToken={mapboxToken} />
+        <MapContainer 
+          activities={nonRejectedActivities} 
+          ambassadors={ambassadors}
+          mapboxToken={mapboxToken} 
+        />
       </CardContent>
     </Card>
   );

@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllActivities } from '../services/activityService';
+import { fetchAmbassadors } from '../services/ambassadorService';
 import FinosHeader from '../components/FinosHeader';
 import { useToast } from "@/hooks/use-toast";
 import { Activity, Building, BookOpen, Code, GraduationCap, MessageSquareCode, Mic, PenTool, Star, ListChecks, Archive } from "lucide-react";
@@ -58,6 +59,15 @@ const Dashboard = () => {
     }
   });
 
+  const {
+    data: ambassadors,
+    isLoading: ambassadorsLoading
+  } = useQuery({
+    queryKey: ['ambassadors'],
+    queryFn: fetchAmbassadors,
+    enabled: !authLoading, // Only run query when auth loading is complete
+  });
+
   useEffect(() => {
     if (!authLoading && user) {
       refetch();
@@ -68,7 +78,7 @@ const Dashboard = () => {
     return <DashboardLoading />;
   }
 
-  if (activitiesLoading && !authLoading) {
+  if ((activitiesLoading || ambassadorsLoading) && !authLoading) {
     return <DashboardLoading />;
   }
 
@@ -91,7 +101,7 @@ const Dashboard = () => {
         
         {activities && activities.length > 0 && (
           <div className="mb-8">
-            <ActivityMap activities={activities} />
+            <ActivityMap activities={activities} ambassadors={ambassadors} />
           </div>
         )}
         
