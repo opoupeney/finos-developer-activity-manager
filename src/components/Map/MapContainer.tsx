@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Activity } from '@/types/activity';
 import { Ambassador } from '@/types/ambassador';
-import { createActivityMarker, createAmbassadorMarker } from './MapUtils';
+import { createActivityMarker, createAmbassadorMarker, resetMarkerPositions } from './MapUtils';
 
 interface MapContainerProps {
   activities: Activity[];
@@ -42,6 +42,9 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
         // Clear any existing markers
         markersRef.current.forEach(marker => marker.remove());
         markersRef.current = [];
+        
+        // Reset marker position tracking
+        resetMarkerPositions();
 
         // Add markers for each activity with a valid location
         activities.forEach(activity => {
