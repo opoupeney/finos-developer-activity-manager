@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,6 +21,7 @@ interface FormValues {
   type: ContentType;
   provider: ContentProvider;
   status: ContentStatus;
+  publication_date: Date | null;
 }
 
 const ContentCreate = () => {
@@ -36,12 +37,18 @@ const ContentCreate = () => {
   }
 
   const breadcrumbItems = [
-    { label: 'Content', link: '/content' },
-    { label: 'Create New Content', link: '' },
+    { label: 'Content', href: '/content' },
+    { label: 'Create New Content', href: '' },
   ];
 
   const createContentMutation = useMutation({
-    mutationFn: (data: FormValues) => createContent(data),
+    mutationFn: (data: FormValues) => {
+      // Convert Date to ISO string for the database
+      return createContent({
+        ...data,
+        publication_date: data.publication_date ? data.publication_date.toISOString() : null,
+      });
+    },
     onSuccess: () => {
       toast({
         title: 'Success',

@@ -22,6 +22,7 @@ interface FormValues {
   type: ContentType;
   provider: ContentProvider;
   status: ContentStatus;
+  publication_date: Date | null;
 }
 
 const ContentEdit = () => {
@@ -45,13 +46,19 @@ const ContentEdit = () => {
   });
 
   const breadcrumbItems = [
-    { label: 'Content', link: '/content' },
-    { label: content?.title || 'Edit Content', link: `/content/${id}` },
-    { label: 'Edit', link: '' },
+    { label: 'Content', href: '/content' },
+    { label: content?.title || 'Edit Content', href: `/content/${id}` },
+    { label: 'Edit', href: '' },
   ];
 
   const updateContentMutation = useMutation({
-    mutationFn: (data: FormValues) => updateContent(id as string, data),
+    mutationFn: (data: FormValues) => {
+      // Convert Date to ISO string for the database
+      return updateContent(id as string, {
+        ...data,
+        publication_date: data.publication_date ? data.publication_date.toISOString() : null,
+      });
+    },
     onSuccess: () => {
       toast({
         title: 'Success',

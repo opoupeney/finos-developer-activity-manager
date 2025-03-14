@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowRight, ArrowUp, Edit, ExternalLink, FileText, Film, Presentation } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUp, Edit, ExternalLink, FileText, Film, Presentation, Calendar } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import SearchBar from '@/components/Content/SearchBar';
@@ -21,7 +21,7 @@ interface ContentGridProps {
   isAdmin: boolean;
 }
 
-type SortField = 'title' | 'type' | 'provider' | 'author' | 'status' | 'updated_at';
+type SortField = 'title' | 'type' | 'provider' | 'author' | 'status' | 'updated_at' | 'publication_date';
 type SortDirection = 'asc' | 'desc';
 
 const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
@@ -95,6 +95,10 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
         valueA = a.status?.toLowerCase() || '';
         valueB = b.status?.toLowerCase() || '';
         break;
+      case 'publication_date':
+        valueA = a.publication_date || '';
+        valueB = b.publication_date || '';
+        break;
       case 'updated_at':
         valueA = a.updated_at || '';
         valueB = b.updated_at || '';
@@ -139,12 +143,12 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
   };
 
   const getStatusBadge = (status: ContentStatus) => {
-    let variant: "default" | "destructive" | "outline" | "secondary" | "ghost" | null = "outline";
+    let variant: "default" | "destructive" | "outline" | "secondary" = "outline";
     
     switch(status) {
       case 'published': variant = "default"; break;
       case 'in progress': variant = "secondary"; break;
-      case 'archived': variant = "ghost"; break;
+      case 'archived': variant = "secondary"; break;
       case 'draft': variant = "outline"; break;
       default: variant = "outline";
     }
@@ -181,6 +185,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
             <SortableTableHead field="provider">Provider</SortableTableHead>
             <SortableTableHead field="author">Author</SortableTableHead>
             <SortableTableHead field="status">Status</SortableTableHead>
+            <SortableTableHead field="publication_date">Published</SortableTableHead>
             <SortableTableHead field="updated_at">Last Updated</SortableTableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -188,7 +193,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
         <TableBody>
           {sortedContents.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-8">
+              <TableCell colSpan={8} className="text-center py-8">
                 <p className="text-muted-foreground">No content found with the current filters</p>
               </TableCell>
             </TableRow>
@@ -205,6 +210,14 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
                 <TableCell className="capitalize">{content.provider}</TableCell>
                 <TableCell>{content.author || 'N/A'}</TableCell>
                 <TableCell>{getStatusBadge(content.status)}</TableCell>
+                <TableCell>
+                  {content.publication_date ? (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      {formatDate(content.publication_date)}
+                    </div>
+                  ) : 'Not published'}
+                </TableCell>
                 <TableCell>{formatDate(content.updated_at)}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -218,7 +231,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ contents, isAdmin }) => {
                     )}
                     {isAdmin && (
                       <Button asChild variant="ghost" size="icon">
-                        <Link to={`/content/${content.id}`}>
+                        <Link to={`/content/edit/${content.id}`}>
                           <Edit className="h-4 w-4" />
                           <span className="sr-only">Edit</span>
                         </Link>

@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Content } from '@/types/content';
+import { Content, ContentType, ContentProvider, ContentStatus } from '@/types/content';
 
 export const fetchContents = async (): Promise<Content[]> => {
   const { data, error } = await supabase
@@ -13,7 +13,12 @@ export const fetchContents = async (): Promise<Content[]> => {
     throw error;
   }
 
-  return data || [];
+  return (data || []).map(item => ({
+    ...item,
+    type: item.type as ContentType,
+    provider: item.provider as ContentProvider,
+    status: item.status as ContentStatus,
+  }));
 };
 
 export const fetchContentById = async (id: string): Promise<Content | null> => {
@@ -28,7 +33,14 @@ export const fetchContentById = async (id: string): Promise<Content | null> => {
     throw error;
   }
 
-  return data;
+  if (!data) return null;
+  
+  return {
+    ...data,
+    type: data.type as ContentType,
+    provider: data.provider as ContentProvider,
+    status: data.status as ContentStatus,
+  };
 };
 
 export const createContent = async (content: Omit<Content, 'id' | 'created_at' | 'updated_at'>): Promise<Content> => {
@@ -43,7 +55,12 @@ export const createContent = async (content: Omit<Content, 'id' | 'created_at' |
     throw error;
   }
 
-  return data;
+  return {
+    ...data,
+    type: data.type as ContentType,
+    provider: data.provider as ContentProvider,
+    status: data.status as ContentStatus,
+  };
 };
 
 export const updateContent = async (id: string, content: Partial<Omit<Content, 'id' | 'created_at' | 'updated_at'>>): Promise<Content> => {
@@ -59,7 +76,12 @@ export const updateContent = async (id: string, content: Partial<Omit<Content, '
     throw error;
   }
 
-  return data;
+  return {
+    ...data,
+    type: data.type as ContentType,
+    provider: data.provider as ContentProvider,
+    status: data.status as ContentStatus,
+  };
 };
 
 export const deleteContent = async (id: string): Promise<void> => {

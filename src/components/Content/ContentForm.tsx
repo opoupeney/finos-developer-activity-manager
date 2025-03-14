@@ -7,6 +7,7 @@ import { Content, ContentType, ContentProvider, ContentStatus } from '@/types/co
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   Form,
   FormControl,
@@ -32,6 +33,7 @@ const contentFormSchema = z.object({
   type: z.enum(['document', 'presentation', 'video'] as const),
   provider: z.enum(['gdoc', 'gslide', 'linkedin', 'youtube'] as const),
   status: z.enum(['logged', 'in progress', 'draft', 'published', 'archived'] as const),
+  publication_date: z.date().nullable(),
 });
 
 type ContentFormValues = z.infer<typeof contentFormSchema>;
@@ -53,6 +55,7 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
       type: initialData?.type || 'document',
       provider: initialData?.provider || 'gdoc',
       status: initialData?.status || 'draft',
+      publication_date: initialData?.publication_date ? new Date(initialData.publication_date) : null,
     },
   });
 
@@ -117,6 +120,27 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
                 </FormControl>
                 <FormDescription>
                   The URL where the content can be accessed
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="publication_date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Publication Date</FormLabel>
+                <DatePicker 
+                  date={field.value || undefined} 
+                  onDateChange={field.onChange}
+                  placeholder="Select publication date"
+                />
+                <FormDescription>
+                  When the content was or will be published
                 </FormDescription>
                 <FormMessage />
               </FormItem>

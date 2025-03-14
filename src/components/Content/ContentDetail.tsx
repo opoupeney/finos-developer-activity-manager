@@ -24,12 +24,12 @@ const ContentDetail: React.FC<ContentDetailProps> = ({ content, isAdmin }) => {
   };
 
   const getStatusBadge = () => {
-    let variant: "default" | "destructive" | "outline" | "secondary" | "ghost" | null = "outline";
+    let variant: "default" | "destructive" | "outline" | "secondary" = "outline";
     
     switch(content.status) {
       case 'published': variant = "default"; break;
       case 'in progress': variant = "secondary"; break;
-      case 'archived': variant = "ghost"; break;
+      case 'archived': variant = "secondary"; break;
       case 'draft': variant = "outline"; break;
       default: variant = "outline";
     }
@@ -65,6 +65,12 @@ const ContentDetail: React.FC<ContentDetailProps> = ({ content, isAdmin }) => {
               <Calendar className="mr-1 h-4 w-4 text-muted-foreground" />
               Last updated: {formatDate(content.updated_at)}
             </div>
+            {content.publication_date && (
+              <div className="flex items-center text-sm">
+                <Calendar className="mr-1 h-4 w-4 text-muted-foreground" />
+                Published: {formatDate(content.publication_date)}
+              </div>
+            )}
             <div className="flex items-center text-sm">
               <Badge variant="outline" className="capitalize">
                 {content.provider}

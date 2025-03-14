@@ -14,4 +14,5 @@ export interface Content {
   status: ContentStatus;
   created_at: string;
   updated_at: string;
+  publication_date: string | null;
 }

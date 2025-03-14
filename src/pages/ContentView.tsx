@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,8 +24,8 @@ const ContentView = () => {
   });
 
   const breadcrumbItems = [
-    { label: 'Content', link: '/content' },
-    { label: content?.title || 'Content Details', link: '' },
+    { label: 'Content', href: '/content' },
+    { label: content?.title || 'Content Details', href: '' },
   ];
 
   return (
