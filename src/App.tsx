@@ -19,6 +19,10 @@ import Content from "./pages/Content";
 import ContentView from "./pages/ContentView";
 import ContentCreate from "./pages/ContentCreate";
 import ContentEdit from "./pages/ContentEdit";
+import Ambassadors from "./pages/Ambassadors";
+import AmbassadorView from "./pages/AmbassadorView";
+import AmbassadorCreate from "./pages/AmbassadorCreate";
+import AmbassadorEdit from "./pages/AmbassadorEdit";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +56,10 @@ const App = () => (
             <Route path="/content/:id" element={<ProtectedRoute><ContentView /></ProtectedRoute>} />
             <Route path="/content/new" element={<ProtectedRoute><ContentCreate /></ProtectedRoute>} />
             <Route path="/content/edit/:id" element={<ProtectedRoute><ContentEdit /></ProtectedRoute>} />
+            <Route path="/ambassadors" element={<ProtectedRoute><Ambassadors /></ProtectedRoute>} />
+            <Route path="/ambassadors/:id" element={<ProtectedRoute><AmbassadorView /></ProtectedRoute>} />
+            <Route path="/ambassadors/new" element={<ProtectedRoute><AmbassadorCreate /></ProtectedRoute>} />
+            <Route path="/ambassadors/edit/:id" element={<ProtectedRoute><AmbassadorEdit /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

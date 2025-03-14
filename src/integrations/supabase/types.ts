@@ -57,6 +57,48 @@ export type Database = {
         }
         Relationships: []
       }
+      ambassadors: {
+        Row: {
+          bio: string | null
+          company: string | null
+          created_at: string
+          first_name: string
+          github_id: string | null
+          id: string
+          last_name: string
+          linkedin_profile: string | null
+          location: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          first_name: string
+          github_id?: string | null
+          id?: string
+          last_name: string
+          linkedin_profile?: string | null
+          location?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          first_name?: string
+          github_id?: string | null
+          id?: string
+          last_name?: string
+          linkedin_profile?: string | null
+          location?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contents: {
         Row: {
           author: string | null
