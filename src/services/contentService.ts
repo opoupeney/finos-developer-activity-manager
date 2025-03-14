@@ -19,6 +19,7 @@ export const fetchContents = async (): Promise<Content[]> => {
     provider: item.provider as ContentProvider,
     status: item.status as ContentStatus,
     publication_date: item.publication_date || null,
+    source: item.source || null,
   }));
 };
 
@@ -42,6 +43,7 @@ export const fetchContentById = async (id: string): Promise<Content | null> => {
     provider: data.provider as ContentProvider,
     status: data.status as ContentStatus,
     publication_date: data.publication_date || null,
+    source: data.source || null,
   };
 };
 
@@ -63,6 +65,7 @@ export const createContent = async (content: Omit<Content, 'id' | 'created_at' |
     provider: data.provider as ContentProvider,
     status: data.status as ContentStatus,
     publication_date: data.publication_date || null,
+    source: data.source || null,
   };
 };
 
@@ -85,6 +88,7 @@ export const updateContent = async (id: string, content: Partial<Omit<Content, '
     provider: data.provider as ContentProvider,
     status: data.status as ContentStatus,
     publication_date: data.publication_date || null,
+    source: data.source || null,
   };
 };
 

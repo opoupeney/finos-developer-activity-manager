@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import MDEditor from '@uiw/react-md-editor';
-import { Edit, ExternalLink, Calendar, FileText, Film, Presentation, User } from 'lucide-react';
+import { Edit, ExternalLink, Calendar, FileText, Film, Presentation, User, Link as LinkIcon } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
 interface ContentDetailProps {
@@ -25,17 +25,15 @@ const ContentDetail: React.FC<ContentDetailProps> = ({ content, isAdmin }) => {
   };
 
   const getStatusBadge = () => {
-    let variant: "default" | "destructive" | "outline" | "secondary" = "outline";
+    const statusStyles = {
+      published: "bg-green-500 hover:bg-green-600 text-white",
+      "in progress": "bg-blue-500 hover:bg-blue-600 text-white",
+      archived: "bg-gray-500 hover:bg-gray-600 text-white",
+      draft: "bg-yellow-500 hover:bg-yellow-600 text-white",
+      logged: "bg-purple-500 hover:bg-purple-600 text-white",
+    };
     
-    switch(content.status) {
-      case 'published': variant = "default"; break;
-      case 'in progress': variant = "secondary"; break;
-      case 'archived': variant = "secondary"; break;
-      case 'draft': variant = "outline"; break;
-      default: variant = "outline";
-    }
-    
-    return <Badge variant={variant} className="ml-2">{content.status}</Badge>;
+    return <Badge className={statusStyles[content.status] || ""}>{content.status}</Badge>;
   };
 
   return (
@@ -92,6 +90,16 @@ const ContentDetail: React.FC<ContentDetailProps> = ({ content, isAdmin }) => {
               <p className="text-muted-foreground">No description provided.</p>
             )}
           </div>
+          
+          {content.source && (
+            <div>
+              <h3 className="font-medium mb-2">Source</h3>
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <LinkIcon className="h-4 w-4" />
+                <span>{content.source}</span>
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
       {content.url && (

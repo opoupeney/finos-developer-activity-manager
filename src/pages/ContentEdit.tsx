@@ -19,6 +19,7 @@ interface FormValues {
   description: string | null;
   author: string | null;
   url: string | null;
+  source: string | null;
   type: ContentType;
   provider: ContentProvider;
   status: ContentStatus;

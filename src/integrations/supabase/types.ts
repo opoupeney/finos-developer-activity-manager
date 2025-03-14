@@ -65,6 +65,7 @@ export type Database = {
           id: string
           provider: string | null
           publication_date: string | null
+          source: string | null
           status: string | null
           title: string
           type: string | null
@@ -78,6 +79,7 @@ export type Database = {
           id?: string
           provider?: string | null
           publication_date?: string | null
+          source?: string | null
           status?: string | null
           title: string
           type?: string | null
@@ -91,6 +93,7 @@ export type Database = {
           id?: string
           provider?: string | null
           publication_date?: string | null
+          source?: string | null
           status?: string | null
           title?: string
           type?: string | null

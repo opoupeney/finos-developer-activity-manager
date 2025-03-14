@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -31,6 +32,7 @@ const contentFormSchema = z.object({
   url: z.string().refine(val => val === '' || /^https?:\/\//.test(val), {
     message: 'Must be a valid URL or empty',
   }).nullable().optional(),
+  source: z.string().nullable().optional(),
   type: z.enum(['document', 'presentation', 'video'] as const),
   provider: z.enum(['gdoc', 'gslide', 'linkedin', 'youtube'] as const),
   status: z.enum(['logged', 'in progress', 'draft', 'published', 'archived'] as const),
@@ -53,6 +55,7 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
       description: initialData?.description || '',
       author: initialData?.author || '',
       url: initialData?.url || '',
+      source: initialData?.source || '',
       type: initialData?.type || 'document',
       provider: initialData?.provider || 'gdoc',
       status: initialData?.status || 'draft',
@@ -118,6 +121,25 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
 
           <FormField
             control={form.control}
+            name="source"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Source</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter content source" {...field} value={field.value || ''} />
+                </FormControl>
+                <FormDescription>
+                  The original source of the content (optional)
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
             name="url"
             render={({ field }) => (
               <FormItem>
@@ -132,9 +154,7 @@ const ContentForm: React.FC<ContentFormProps> = ({ initialData, onSubmit, isSubm
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
             name="publication_date"
