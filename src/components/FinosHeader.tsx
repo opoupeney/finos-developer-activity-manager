@@ -23,11 +23,11 @@ const FinosHeader = () => {
             <Link to="/activity" className={`text-sm font-medium ${location.pathname === '/activity' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
               Developer Activities
             </Link>
-            <Link to="/schedule" className={`text-sm font-medium ${location.pathname === '/schedule' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
-              Schedule
-            </Link>
             <Link to="/content" className={`text-sm font-medium ${location.pathname.startsWith('/content') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
               Content Library
+            </Link>
+            <Link to="/schedule" className={`text-sm font-medium ${location.pathname === '/schedule' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
+              Schedule
             </Link>
             {userDetails?.role === 'admin' && (
               <Link to="/admin" className={`text-sm font-medium ${location.pathname === '/admin' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'} transition-colors`}>
