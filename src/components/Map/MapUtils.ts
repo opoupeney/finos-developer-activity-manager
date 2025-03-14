@@ -35,35 +35,62 @@ export const getCoordinates = (location: string): [number, number] | null => {
   return null;
 };
 
-// Create a map to track markers at each coordinate
-const markerPositions: Record<string, number> = {};
+// Create separate maps to track markers at each coordinate by type
+const activityMarkerPositions: Record<string, number> = {};
+const ambassadorMarkerPositions: Record<string, number> = {};
 
 // Reset marker positions when map is reinitialized
 export const resetMarkerPositions = () => {
-  Object.keys(markerPositions).forEach(key => delete markerPositions[key]);
+  Object.keys(activityMarkerPositions).forEach(key => delete activityMarkerPositions[key]);
+  Object.keys(ambassadorMarkerPositions).forEach(key => delete ambassadorMarkerPositions[key]);
 };
 
-// Function to get an offset for markers at the same position
-const getMarkerOffset = (coordinates: [number, number]): [number, number] => {
+// Function to get an offset for activity markers at the same position
+const getActivityMarkerOffset = (coordinates: [number, number]): [number, number] => {
   const coordKey = `${coordinates[0]},${coordinates[1]}`;
   
   // If this is the first marker at this position, no offset needed
-  if (!markerPositions[coordKey]) {
-    markerPositions[coordKey] = 0;
+  if (!activityMarkerPositions[coordKey]) {
+    activityMarkerPositions[coordKey] = 0;
     return [0, 0];
   }
   
   // Increment the count of markers at this position
-  markerPositions[coordKey]++;
+  activityMarkerPositions[coordKey]++;
   
   // Calculate offset based on count (create a spiral pattern)
-  const count = markerPositions[coordKey];
+  const count = activityMarkerPositions[coordKey];
   const angle = count * 0.8; // in radians
   const radius = Math.min(5 + count * 2, 25); // limit the max radius
   
   return [
     Math.cos(angle) * radius,
     Math.sin(angle) * radius
+  ];
+};
+
+// Function to get an offset for ambassador markers at the same position
+const getAmbassadorMarkerOffset = (coordinates: [number, number]): [number, number] => {
+  const coordKey = `${coordinates[0]},${coordinates[1]}`;
+  
+  // If this is the first marker at this position, start with a slight offset from activities
+  if (!ambassadorMarkerPositions[coordKey]) {
+    ambassadorMarkerPositions[coordKey] = 0;
+    // Start ambassadors with a different initial offset to separate from activities
+    return [10, -10]; 
+  }
+  
+  // Increment the count of markers at this position
+  ambassadorMarkerPositions[coordKey]++;
+  
+  // Calculate offset based on count (create a spiral pattern)
+  const count = ambassadorMarkerPositions[coordKey];
+  const angle = count * 0.8 + Math.PI; // in radians, offset by 180 degrees from activities
+  const radius = Math.min(5 + count * 2, 25); // limit the max radius
+  
+  return [
+    Math.cos(angle) * radius + 10,  // Add initial offset
+    Math.sin(angle) * radius - 10   // Add initial offset
   ];
 };
 
@@ -116,7 +143,7 @@ export const createActivityMarker = (
   el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
 
   // Get offset for this marker
-  const offset = getMarkerOffset(coordinates);
+  const offset = getActivityMarkerOffset(coordinates);
   
   // Create marker with custom element and apply offset
   return new mapboxgl.Marker(el)
@@ -165,8 +192,8 @@ export const createAmbassadorMarker = (
   el.style.border = '2px solid white';
   el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
 
-  // Get offset for this marker
-  const offset = getMarkerOffset(coordinates);
+  // Get offset for this marker using ambassador-specific function
+  const offset = getAmbassadorMarkerOffset(coordinates);
   
   // Create marker with custom element and apply offset
   return new mapboxgl.Marker(el)
