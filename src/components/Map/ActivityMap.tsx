@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Activity } from '@/types/activity';
 import { Ambassador } from '@/types/ambassador';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapIcon } from 'lucide-react';
-import MapSetupCard from './MapSetupCard';
 import MapContainer from './MapContainer';
+
+// Hardcoded Mapbox token
+const MAPBOX_TOKEN = "pk.eyJ1Ijoib3BvdXBlbmV5IiwiYSI6ImNtN3pwajV5dTAwN20ya29pZ3Q1ZmpiNWQifQ.mKi-872Gk8COifzbu-UVtA";
 
 interface ActivityMapProps {
   activities: Activity[];
@@ -13,31 +15,8 @@ interface ActivityMapProps {
 }
 
 const ActivityMap: React.FC<ActivityMapProps> = ({ activities, ambassadors = [] }) => {
-  const [mapboxToken, setMapboxToken] = useState<string>(
-    localStorage.getItem('mapbox_token') || ''
-  );
-  const [tokenInput, setTokenInput] = useState<string>(mapboxToken);
-  const [isMapReady, setIsMapReady] = useState<boolean>(!!mapboxToken);
-
-  const handleTokenSubmit = () => {
-    // Save token to localStorage
-    localStorage.setItem('mapbox_token', tokenInput);
-    setMapboxToken(tokenInput);
-    setIsMapReady(true);
-  };
-
   // Filter out rejected activities
   const nonRejectedActivities = activities.filter(activity => activity.status !== 'Rejected');
-
-  if (!isMapReady) {
-    return (
-      <MapSetupCard 
-        tokenInput={tokenInput}
-        setTokenInput={setTokenInput}
-        handleTokenSubmit={handleTokenSubmit}
-      />
-    );
-  }
 
   return (
     <Card className="animate-fade-in">
@@ -51,7 +30,7 @@ const ActivityMap: React.FC<ActivityMapProps> = ({ activities, ambassadors = [] 
         <MapContainer 
           activities={nonRejectedActivities} 
           ambassadors={ambassadors}
-          mapboxToken={mapboxToken} 
+          mapboxToken={MAPBOX_TOKEN} 
         />
       </CardContent>
     </Card>
