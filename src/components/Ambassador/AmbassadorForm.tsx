@@ -26,6 +26,7 @@ const ambassadorFormSchema = z.object({
   company: z.string().nullable().optional(),
   title: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
+  headshot_url: z.string().url('Must be a valid URL').nullable().optional(),
 });
 
 type AmbassadorFormValues = z.infer<typeof ambassadorFormSchema>;
@@ -48,6 +49,7 @@ const AmbassadorForm: React.FC<AmbassadorFormProps> = ({ initialData, onSubmit, 
       company: initialData?.company || '',
       title: initialData?.title || '',
       bio: initialData?.bio || '',
+      headshot_url: initialData?.headshot_url || '',
     },
   });
 
@@ -123,6 +125,27 @@ const AmbassadorForm: React.FC<AmbassadorFormProps> = ({ initialData, onSubmit, 
               <FormControl>
                 <Input placeholder="Enter location" {...field} value={field.value || ''} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="headshot_url"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Headshot URL</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="Enter headshot image URL" 
+                  {...field} 
+                  value={field.value || ''} 
+                />
+              </FormControl>
+              <FormDescription>
+                URL to the ambassador's profile image
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

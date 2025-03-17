@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, MapPin, Briefcase, Github, Linkedin, Building, User } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface AmbassadorDetailProps {
   ambassador: Ambassador;
@@ -14,17 +15,28 @@ interface AmbassadorDetailProps {
 }
 
 const AmbassadorDetail: React.FC<AmbassadorDetailProps> = ({ ambassador, isAdmin }) => {
+  const initials = `${ambassador.first_name[0]}${ambassador.last_name[0]}`;
+  
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-2xl">{ambassador.first_name} {ambassador.last_name}</CardTitle>
-            {ambassador.title && ambassador.company && (
-              <CardDescription className="text-lg mt-1">
-                {ambassador.title} at {ambassador.company}
-              </CardDescription>
-            )}
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16 border border-muted">
+              {ambassador.headshot_url ? (
+                <AvatarImage src={ambassador.headshot_url} alt={`${ambassador.first_name} ${ambassador.last_name}`} />
+              ) : (
+                <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+              )}
+            </Avatar>
+            <div>
+              <CardTitle className="text-2xl">{ambassador.first_name} {ambassador.last_name}</CardTitle>
+              {ambassador.title && ambassador.company && (
+                <CardDescription className="text-lg mt-1">
+                  {ambassador.title} at {ambassador.company}
+                </CardDescription>
+              )}
+            </div>
           </div>
           {isAdmin && (
             <Button asChild variant="outline" size="sm">

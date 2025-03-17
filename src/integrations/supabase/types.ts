@@ -64,6 +64,7 @@ export type Database = {
           created_at: string
           first_name: string
           github_id: string | null
+          headshot_url: string | null
           id: string
           last_name: string
           linkedin_profile: string | null
@@ -77,6 +78,7 @@ export type Database = {
           created_at?: string
           first_name: string
           github_id?: string | null
+          headshot_url?: string | null
           id?: string
           last_name: string
           linkedin_profile?: string | null
@@ -90,6 +92,7 @@ export type Database = {
           created_at?: string
           first_name?: string
           github_id?: string | null
+          headshot_url?: string | null
           id?: string
           last_name?: string
           linkedin_profile?: string | null

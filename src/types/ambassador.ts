@@ -9,6 +9,7 @@ export interface Ambassador {
   company: string | null;
   title: string | null;
   bio: string | null;
+  headshot_url: string | null;
   created_at: string;
   updated_at: string;
 }
