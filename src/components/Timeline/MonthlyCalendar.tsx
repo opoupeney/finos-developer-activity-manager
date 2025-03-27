@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getStatusColor } from './TimelineUtils';
 import { DayClickEventHandler, DayContent, DayContentProps } from 'react-day-picker';
-import { CalendarIcon, MapPinIcon, ClockIcon, BookOpenIcon, ChevronDown } from 'lucide-react';
+import { CalendarIcon, MapPinIcon, ClockIcon, BookOpenIcon, ChevronDown, CalendarDaysIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -36,6 +36,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
   const [month, setMonth] = useState<Date>(new Date());
   const [activitiesOpen, setActivitiesOpen] = useState(true);
   const [contentsOpen, setContentsOpen] = useState(true);
+  const [keyDatesOpen, setKeyDatesOpen] = useState(true);
   
   // State for selected items
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
@@ -49,6 +50,23 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
         return isSameDay(activityDate, date);
       } catch (error) {
         console.error("Error parsing date:", error);
+        return false;
+      }
+    });
+  };
+
+  // Function to get key dates for a specific date (only for the selected activity)
+  const getKeyDatesForDate = (date: Date) => {
+    if (!selectedActivity || !selectedActivity.keyDates || selectedActivity.keyDates.length === 0) {
+      return [];
+    }
+    
+    return selectedActivity.keyDates.filter(keyDate => {
+      try {
+        const keyDateValue = parseISO(keyDate.date);
+        return isSameDay(keyDateValue, date);
+      } catch (error) {
+        console.error("Error parsing key date:", error);
         return false;
       }
     });
@@ -87,6 +105,24 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     const dateB = b.publication_date ? parseISO(b.publication_date) : new Date(0);
     return dateA.getTime() - dateB.getTime();
   });
+
+  // Get key dates for the current month (only for the selected activity)
+  const keyDatesForCurrentMonth = selectedActivity?.keyDates
+    ? selectedActivity.keyDates.filter(keyDate => {
+        try {
+          const keyDateValue = parseISO(keyDate.date);
+          return isSameMonth(keyDateValue, month);
+        } catch (error) {
+          console.error("Error parsing key date for month filtering:", error);
+          return false;
+        }
+      }).sort((a, b) => {
+        // Sort by date
+        const dateA = parseISO(a.date);
+        const dateB = parseISO(b.date);
+        return dateA.getTime() - dateB.getTime();
+      })
+    : [];
 
   // Function to get icon for content type
   const getContentTypeIcon = (type: string) => {
@@ -145,6 +181,20 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     return false;
   };
 
+  // Format the date string
+  const formatDateString = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return format(date, 'MMMM d, yyyy h:mm a');
+      }
+      return dateStr;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateStr;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -158,25 +208,30 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                 className="p-3 flex-1 mx-auto"
                 modifiers={{
                   hasActivity: (date) => getActivitiesForDate(date).length > 0,
+                  hasKeyDate: (date) => getKeyDatesForDate(date).length > 0,
                   highlighted: (date) => isDateHighlighted(date)
                 }}
                 modifiersClassNames={{
                   hasActivity: "font-bold",
+                  hasKeyDate: "underline", // Underline dates that have key dates
                   highlighted: "bg-blue-100 dark:bg-blue-900/30 text-foreground"
                 }}
                 components={{
                   DayContent: (props: DayContentProps) => {
                     const dayActivities = getActivitiesForDate(props.date);
                     const hasActivities = dayActivities.length > 0;
+                    const dayKeyDates = getKeyDatesForDate(props.date);
+                    const hasKeyDates = dayKeyDates.length > 0;
 
                     return (
                       <div className="relative w-full h-full flex items-center justify-center">
                         <DayContent {...props} />
                         
-                        {hasActivities && (
+                        {(hasActivities || hasKeyDates) && (
                           <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-1">
+                            {/* Activity indicators */}
                             {dayActivities.slice(0, 3).map((activity, i) => (
-                              <Tooltip key={i}>
+                              <Tooltip key={`activity-${i}`}>
                                 <TooltipTrigger asChild>
                                   <div 
                                     className={`h-1.5 w-1.5 rounded-full ${getStatusColor(activity.status)}`}
@@ -191,6 +246,26 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                                 </TooltipContent>
                               </Tooltip>
                             ))}
+                            
+                            {/* Key date indicators */}
+                            {hasKeyDates && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <div className="space-y-1 max-w-xs">
+                                    <p className="font-semibold">Key Dates:</p>
+                                    {dayKeyDates.map((keyDate, i) => (
+                                      <div key={i} className="text-xs">
+                                        <p className="font-medium">{keyDate.description}</p>
+                                        <p>Owner: {keyDate.owner}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
                             
                             {dayActivities.length > 3 && (
                               <Tooltip>
@@ -292,6 +367,63 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                 )}
               </CollapsibleContent>
             </Collapsible>
+            
+            {/* Key Dates Collapsible (only shown when an activity is selected) */}
+            {selectedActivity && selectedActivity.keyDates && selectedActivity.keyDates.length > 0 && (
+              <Collapsible
+                open={keyDatesOpen}
+                onOpenChange={setKeyDatesOpen}
+                className="border rounded-md shadow-sm"
+              >
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-muted/30 hover:bg-muted/50 transition-colors rounded-t-md">
+                  <div className="flex items-center">
+                    <CalendarDaysIcon className="mr-2 h-5 w-5 text-purple-500" />
+                    <h3 className="text-lg font-semibold">
+                      Key Dates for {selectedActivity.title}
+                    </h3>
+                  </div>
+                  <ChevronDown className={`h-5 w-5 transition-transform ${keyDatesOpen ? "rotate-0" : "rotate-180"}`} />
+                </CollapsibleTrigger>
+                
+                <CollapsibleContent className="p-4">
+                  {keyDatesForCurrentMonth.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No key dates for this month
+                    </div>
+                  ) : (
+                    <ScrollArea className="h-[250px]">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Owner</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {keyDatesForCurrentMonth.map((keyDate, index) => {
+                            const keyDateValue = parseISO(keyDate.date);
+                            
+                            return (
+                              <TableRow key={index}>
+                                <TableCell>
+                                  <div className="flex items-center">
+                                    <CalendarDaysIcon className="h-3 w-3 mr-1 text-purple-500" />
+                                    {formatDateString(keyDate.date)}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="font-medium">{keyDate.description}</TableCell>
+                                <TableCell>{keyDate.owner}</TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </ScrollArea>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
             
             {/* Contents Collapsible */}
             <Collapsible
