@@ -182,6 +182,41 @@ export type Database = {
           },
         ]
       }
+      key_dates: {
+        Row: {
+          activity_id: string
+          created_at: string
+          date: string
+          description: string
+          id: string
+          owner: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          date: string
+          description: string
+          id?: string
+          owner: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          owner?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "key_dates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       metrics: {
         Row: {
           activity_id: string
