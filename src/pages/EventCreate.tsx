@@ -27,9 +27,50 @@ const EventCreate = () => {
 
   const handleSubmit = async (data: Activity) => {
     try {
-      // Remove id property before passing to createActivity to avoid serialization issues
+      // Remove id property and ensure all object properties are serializable
       const { id, ...eventWithoutId } = data;
-      await createActivity(eventWithoutId);
+      
+      // Create a plain serializable object by manually constructing it
+      const serializableEvent = {
+        title: eventWithoutId.title,
+        type: eventWithoutId.type,
+        date: eventWithoutId.date,
+        kickOffDate: eventWithoutId.kickOffDate,
+        endDate: eventWithoutId.endDate,
+        location: eventWithoutId.location,
+        marketingCampaign: eventWithoutId.marketingCampaign,
+        marketingDescription: eventWithoutId.marketingDescription,
+        status: eventWithoutId.status,
+        ownership: {
+          finosLead: eventWithoutId.ownership.finosLead,
+          finosTeam: [...eventWithoutId.ownership.finosTeam],
+          marketingLiaison: eventWithoutId.ownership.marketingLiaison,
+          memberSuccessLiaison: eventWithoutId.ownership.memberSuccessLiaison,
+          sponsorsPartners: [...eventWithoutId.ownership.sponsorsPartners],
+          channel: eventWithoutId.ownership.channel,
+          ambassador: eventWithoutId.ownership.ambassador,
+          toc: eventWithoutId.ownership.toc,
+        },
+        impacts: {
+          useCase: eventWithoutId.impacts.useCase,
+          strategicInitiative: eventWithoutId.impacts.strategicInitiative,
+          projects: [...eventWithoutId.impacts.projects],
+          targetedPersonas: [...eventWithoutId.impacts.targetedPersonas],
+        },
+        metrics: {
+          targetedRegistrations: eventWithoutId.metrics.targetedRegistrations,
+          currentRegistrations: eventWithoutId.metrics.currentRegistrations,
+          registrationPercentage: eventWithoutId.metrics.registrationPercentage,
+          targetedParticipants: eventWithoutId.metrics.targetedParticipants,
+          currentParticipants: eventWithoutId.metrics.currentParticipants,
+          participationPercentage: eventWithoutId.metrics.participationPercentage,
+        }
+      };
+      
+      // Log for debugging purposes
+      console.log("Sending serializable event:", JSON.stringify(serializableEvent));
+      
+      await createActivity(serializableEvent);
       
       toast({
         title: "Activity Created",
@@ -45,8 +86,6 @@ const EventCreate = () => {
         description: "Failed to create developer activity",
         variant: "destructive",
       });
-      
-      throw error;
     }
   };
 
