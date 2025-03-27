@@ -54,27 +54,22 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     });
   };
 
-  // Function to get key dates for a specific date
+  // Function to get key dates for a specific date, but only for the selected activity
   const getKeyDatesForDate = (date: Date) => {
-    // Get key dates from all activities for the specified date
-    const keyDates = activities.flatMap(activity => {
-      if (!activity.keyDates) return [];
-      
-      return activity.keyDates.filter(keyDate => {
-        try {
-          const keyDateValue = parseISO(keyDate.date);
-          return isSameDay(keyDateValue, date);
-        } catch (error) {
-          console.error("Error parsing key date:", error);
-          return false;
-        }
-      });
-    });
+    if (!selectedActivity || !selectedActivity.keyDates) return [];
     
-    return keyDates;
+    return selectedActivity.keyDates.filter(keyDate => {
+      try {
+        const keyDateValue = parseISO(keyDate.date);
+        return isSameDay(keyDateValue, date);
+      } catch (error) {
+        console.error("Error parsing key date:", error);
+        return false;
+      }
+    });
   };
 
-  // Function to check if a date has key dates
+  // Function to check if a date has key dates for the selected activity
   const hasKeyDatesForDate = (date: Date) => {
     const keyDates = getKeyDatesForDate(date);
     return keyDates.length > 0;
@@ -172,20 +167,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     return false;
   };
 
-  // Format the date string
-  const formatDateString = (dateStr: string) => {
-    try {
-      const date = new Date(dateStr);
-      if (!isNaN(date.getTime())) {
-        return format(date, 'MMMM d, yyyy h:mm a');
-      }
-      return dateStr;
-    } catch (error) {
-      console.error('Error formatting date:', error);
-      return dateStr;
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -237,7 +218,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                               </Tooltip>
                             ))}
                             
-                            {/* Key date indicators with purple dot */}
+                            {/* Key date indicators with purple dot - only show for selected activity */}
                             {hasKeyDates && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -245,7 +226,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <div className="space-y-1 max-w-xs">
-                                    <p className="font-semibold">Key Dates:</p>
+                                    <p className="font-semibold">Key Dates for {selectedActivity?.title}:</p>
                                     {dayKeyDates.map((keyDate, i) => (
                                       <div key={i} className="text-xs">
                                         <p className="font-medium">{keyDate.description}</p>
@@ -320,6 +301,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                         {activitiesForCurrentMonth.map((activity, index) => {
                           const activityDate = parseISO(activity.date);
                           const isSelected = selectedActivity?.id === activity.id;
+                          const hasKeyDates = activity.keyDates && activity.keyDates.length > 0;
                           
                           return (
                             <TableRow 
@@ -330,7 +312,14 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                               )}
                               onClick={() => handleSelectActivity(activity)}
                             >
-                              <TableCell className="font-medium">{activity.title}</TableCell>
+                              <TableCell className="font-medium">
+                                <div className="flex items-center">
+                                  {activity.title}
+                                  {hasKeyDates && (
+                                    <div className="ml-2 h-2 w-2 rounded-full bg-purple-500" />
+                                  )}
+                                </div>
+                              </TableCell>
                               <TableCell>
                                 <div className="flex items-center">
                                   <ClockIcon className="h-3 w-3 mr-1 text-muted-foreground" />
