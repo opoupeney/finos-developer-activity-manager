@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Activity } from '@/types/activity';
 import { Content } from '@/types/content';
-import { parseISO, isSameDay, isSameMonth, format } from 'date-fns';
+import { parseISO, isSameDay, isSameMonth, format, isWithinInterval } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getStatusColor } from './TimelineUtils';
@@ -36,6 +36,10 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
   const [month, setMonth] = useState<Date>(new Date());
   const [activitiesOpen, setActivitiesOpen] = useState(true);
   const [contentsOpen, setContentsOpen] = useState(true);
+  
+  // State for selected items
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedContent, setSelectedContent] = useState<Content | null>(null);
 
   // Function to get activities for a specific date
   const getActivitiesForDate = (date: Date) => {
@@ -94,6 +98,53 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     }
   };
 
+  // Function to handle selecting an activity
+  const handleSelectActivity = (activity: Activity) => {
+    if (selectedActivity?.id === activity.id) {
+      setSelectedActivity(null);
+    } else {
+      setSelectedActivity(activity);
+      setSelectedContent(null); // Clear content selection
+    }
+  };
+
+  // Function to handle selecting a content
+  const handleSelectContent = (content: Content) => {
+    if (selectedContent?.id === content.id) {
+      setSelectedContent(null);
+    } else {
+      setSelectedContent(content);
+      setSelectedActivity(null); // Clear activity selection
+    }
+  };
+
+  // Check if a date should be highlighted based on selected activity or content
+  const isDateHighlighted = (date: Date) => {
+    // Activity date range highlighting
+    if (selectedActivity) {
+      try {
+        const startDate = parseISO(selectedActivity.kickOffDate || selectedActivity.date);
+        const endDate = parseISO(selectedActivity.endDate || selectedActivity.date);
+        
+        return isWithinInterval(date, { start: startDate, end: endDate });
+      } catch (error) {
+        console.error("Error checking date range for activity:", error);
+      }
+    }
+    
+    // Content date highlighting (using publication date)
+    if (selectedContent && selectedContent.publication_date) {
+      try {
+        const pubDate = parseISO(selectedContent.publication_date);
+        return isSameDay(date, pubDate);
+      } catch (error) {
+        console.error("Error checking content publication date:", error);
+      }
+    }
+    
+    return false;
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -107,9 +158,11 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                 className="p-3 flex-1 mx-auto"
                 modifiers={{
                   hasActivity: (date) => getActivitiesForDate(date).length > 0,
+                  highlighted: (date) => isDateHighlighted(date)
                 }}
                 modifiersClassNames={{
                   hasActivity: "font-bold",
+                  highlighted: "bg-blue-100 dark:bg-blue-900/30 text-foreground"
                 }}
                 components={{
                   DayContent: (props: DayContentProps) => {
@@ -200,9 +253,17 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                       <TableBody>
                         {activitiesForCurrentMonth.map((activity, index) => {
                           const activityDate = parseISO(activity.date);
+                          const isSelected = selectedActivity?.id === activity.id;
                           
                           return (
-                            <TableRow key={index}>
+                            <TableRow 
+                              key={index}
+                              className={cn(
+                                "cursor-pointer hover:bg-muted/50 transition-colors",
+                                isSelected && "bg-blue-100 dark:bg-blue-900/30"
+                              )}
+                              onClick={() => handleSelectActivity(activity)}
+                            >
                               <TableCell className="font-medium">{activity.title}</TableCell>
                               <TableCell>
                                 <div className="flex items-center">
@@ -268,9 +329,17 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                       <TableBody>
                         {contentsForCurrentMonth.map((content, index) => {
                           const pubDate = content.publication_date ? parseISO(content.publication_date) : null;
+                          const isSelected = selectedContent?.id === content.id;
                           
                           return (
-                            <TableRow key={index}>
+                            <TableRow 
+                              key={index}
+                              className={cn(
+                                "cursor-pointer hover:bg-muted/50 transition-colors",
+                                isSelected && "bg-blue-100 dark:bg-blue-900/30"
+                              )}
+                              onClick={() => handleSelectContent(content)}
+                            >
                               <TableCell className="font-medium">{content.title}</TableCell>
                               <TableCell>
                                 {pubDate && (
