@@ -140,6 +140,10 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     } else {
       setSelectedActivity(activity);
       setSelectedContent(null); // Clear content selection
+      // Open key dates section when an activity is selected
+      if (activity.keyDates && activity.keyDates.length > 0) {
+        setKeyDatesOpen(true);
+      }
     }
   };
 
@@ -216,7 +220,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                   highlighted: "bg-blue-100 dark:bg-blue-900/30 text-foreground"
                 }}
                 components={{
-                  DayContent: ({ date, displayMonth }) => {
+                  DayContent: ({ date }) => {
                     const dayActivities = getActivitiesForDate(date);
                     const hasActivities = dayActivities.length > 0;
                     const dayKeyDates = getKeyDatesForDate(date);
@@ -368,7 +372,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
             </Collapsible>
             
             {/* Key Dates Collapsible (only shown when an activity is selected) */}
-            {selectedActivity && selectedActivity.keyDates && selectedActivity.keyDates.length > 0 && (
+            {selectedActivity && (
               <Collapsible
                 open={keyDatesOpen}
                 onOpenChange={setKeyDatesOpen}
@@ -385,9 +389,9 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                 </CollapsibleTrigger>
                 
                 <CollapsibleContent className="p-4">
-                  {keyDatesForCurrentMonth.length === 0 ? (
+                  {(!selectedActivity.keyDates || keyDatesForCurrentMonth.length === 0) ? (
                     <div className="text-center py-8 text-muted-foreground">
-                      No key dates for this month
+                      No key dates for this activity in the current month
                     </div>
                   ) : (
                     <ScrollArea className="h-[250px]">
@@ -401,8 +405,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                         </TableHeader>
                         <TableBody>
                           {keyDatesForCurrentMonth.map((keyDate, index) => {
-                            const keyDateValue = parseISO(keyDate.date);
-                            
                             return (
                               <TableRow key={index}>
                                 <TableCell>
