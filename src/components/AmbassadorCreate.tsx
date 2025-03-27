@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { createAmbassador } from '../services/ambassadorService';
@@ -11,9 +11,11 @@ import Breadcrumb from '../components/Breadcrumb';
 const AmbassadorCreate = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: Omit<Ambassador, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      setIsSubmitting(true);
       await createAmbassador(data);
       toast({
         title: "Success",
@@ -28,6 +30,8 @@ const AmbassadorCreate = () => {
         variant: "destructive",
       });
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -49,6 +53,7 @@ const AmbassadorCreate = () => {
         
         <AmbassadorForm 
           onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
         />
       </main>
       

@@ -216,15 +216,15 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                   highlighted: "bg-blue-100 dark:bg-blue-900/30 text-foreground"
                 }}
                 components={{
-                  DayContent: (props) => {
-                    const dayActivities = getActivitiesForDate(props.date);
+                  DayContent: ({ date, displayMonth }) => {
+                    const dayActivities = getActivitiesForDate(date);
                     const hasActivities = dayActivities.length > 0;
-                    const dayKeyDates = getKeyDatesForDate(props.date);
+                    const dayKeyDates = getKeyDatesForDate(date);
                     const hasKeyDates = dayKeyDates.length > 0;
 
                     return (
                       <div className="relative w-full h-full flex items-center justify-center">
-                        {props.children}
+                        <div>{date.getDate()}</div>
                         
                         {(hasActivities || hasKeyDates) && (
                           <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-1">
