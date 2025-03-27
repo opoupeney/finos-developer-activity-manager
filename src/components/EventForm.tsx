@@ -96,27 +96,27 @@ const EventForm: React.FC<EventFormProps> = ({
   const defaultValues: Partial<EventFormValues> = {
     title: initialData?.title || '',
     type: initialData?.type || '',
-    date: parseDate(initialData?.date) || undefined,
-    kickOffDate: parseDate(initialData?.kickOffDate) || undefined,
-    endDate: parseDate(initialData?.endDate) || undefined,
+    date: parseDate(initialData?.date) || new Date(),
+    kickOffDate: parseDate(initialData?.kickOffDate) || new Date(),
+    endDate: parseDate(initialData?.endDate) || new Date(),
     location: initialData?.location || '',
     marketingCampaign: initialData?.marketingCampaign || '',
     marketingDescription: initialData?.marketingDescription || '',
     status: initialData?.status || 'Pending',
     
     finosLead: initialData?.ownership.finosLead || '',
-    finosTeam: initialData?.ownership.finosTeam.join(', ') || '',
+    finosTeam: initialData?.ownership.finosTeam?.join(', ') || '',
     marketingLiaison: initialData?.ownership.marketingLiaison || '',
     memberSuccessLiaison: initialData?.ownership.memberSuccessLiaison || '',
-    sponsorsPartners: initialData?.ownership.sponsorsPartners.join(', ') || '',
+    sponsorsPartners: initialData?.ownership.sponsorsPartners?.join(', ') || '',
     channel: initialData?.ownership.channel || '',
     ambassador: initialData?.ownership.ambassador || '',
     toc: initialData?.ownership.toc || '',
     
     useCase: initialData?.impacts.useCase || '',
     strategicInitiative: initialData?.impacts.strategicInitiative || '',
-    projects: initialData?.impacts.projects.join(', ') || '',
-    targetedPersonas: initialData?.impacts.targetedPersonas.join(', ') || '',
+    projects: initialData?.impacts.projects?.join(', ') || '',
+    targetedPersonas: initialData?.impacts.targetedPersonas?.join(', ') || '',
     
     targetedRegistrations: initialData?.metrics.targetedRegistrations || 0,
     currentRegistrations: initialData?.metrics.currentRegistrations || 0,
@@ -132,6 +132,7 @@ const EventForm: React.FC<EventFormProps> = ({
   const handleSubmit = async (values: EventFormValues) => {
     try {
       setIsSubmitting(true);
+      console.log("EventForm handleSubmit called with values:", values);
       
       const eventData: Activity = {
         id: initialData?.id || '',
@@ -174,14 +175,8 @@ const EventForm: React.FC<EventFormProps> = ({
         }
       };
       
+      console.log("Calling onSubmit with eventData:", eventData);
       await onSubmit(eventData);
-      
-      toast({
-        title: `Developer Activity ${isEditing ? 'Updated' : 'Created'}`,
-        description: `Successfully ${isEditing ? 'updated' : 'created'} developer activity "${values.title}"`,
-      });
-      
-      navigate('/');
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
