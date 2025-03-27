@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Activity, KeyDate } from "../types/activity";
 
@@ -385,6 +386,25 @@ export const getAllActivities = async (): Promise<Activity[]> => {
         continue;
       }
       
+      // Get key dates data for this activity
+      const { data: keyDates, error: keyDatesError } = await supabase
+        .from('key_dates')
+        .select('*')
+        .eq('activity_id', event.id);
+      
+      if (keyDatesError) {
+        console.error("Error fetching key dates for activity:", event.id, keyDatesError);
+      }
+      
+      // Format key dates to match our interface
+      const formattedKeyDates: KeyDate[] = keyDates ? keyDates.map(kd => ({
+        id: kd.id,
+        activityId: event.custom_id,
+        date: kd.date,
+        description: kd.description,
+        owner: kd.owner
+      })) : [];
+      
       // Add event to result
       result.push({
         id: event.custom_id,
@@ -421,6 +441,7 @@ export const getAllActivities = async (): Promise<Activity[]> => {
           currentParticipants: metrics.current_participants,
           participationPercentage: metrics.participation_percentage,
         },
+        keyDates: formattedKeyDates
       });
     }
     
