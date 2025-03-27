@@ -1,3 +1,4 @@
+
 import React from 'react';
 import FinosHeader from '../components/FinosHeader';
 import EventForm from '../components/EventForm';
@@ -25,11 +26,26 @@ const EventCreate = () => {
   }, [userDetails, navigate, toast]);
 
   const handleSubmit = async (data: Activity) => {
-    const { id, ...eventWithoutId } = data;
     try {
+      // Remove id property before passing to createActivity to avoid serialization issues
+      const { id, ...eventWithoutId } = data;
       await createActivity(eventWithoutId);
+      
+      toast({
+        title: "Activity Created",
+        description: "Developer activity has been created successfully",
+      });
+      
+      navigate('/');
     } catch (error) {
       console.error("Error creating developer activity:", error);
+      
+      toast({
+        title: "Error",
+        description: "Failed to create developer activity",
+        variant: "destructive",
+      });
+      
       throw error;
     }
   };
