@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -72,10 +73,16 @@ const EventEdit = () => {
   const handleDelete = async () => {
     if (!id) return;
     try {
+      toast({
+        title: "Deleting...",
+        description: "Removing developer activity and all related data",
+      });
+      
       await deleteActivity(id);
+      
       toast({
         title: "Success",
-        description: "Developer activity deleted successfully",
+        description: "Developer activity and all related data deleted successfully",
       });
       navigate('/');
     } catch (error: any) {
