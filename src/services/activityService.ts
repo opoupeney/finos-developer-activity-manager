@@ -454,72 +454,80 @@ export const getAllActivities = async (): Promise<Activity[]> => {
 
 export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Activity> => {
   try {
-    // Create a custom ID for the new event
-    const timestamp = Date.now();
-    const customId = `de-${timestamp.toString().slice(-6)}`;
+    // Ensure all data is serializable by creating a clean object
+    const activityPayload = {
+      title: activity.title,
+      type: activity.type,
+      date: activity.date,
+      kick_off_date: activity.kickOffDate,
+      end_date: activity.endDate,
+      location: activity.location,
+      marketing_campaign: activity.marketingCampaign,
+      marketing_description: activity.marketingDescription,
+      status: activity.status,
+      custom_id: `de-${Date.now().toString().slice(-6)}`,
+    };
     
     // Insert activity record
     const { data: eventData, error: eventError } = await supabase
       .from('activities')
-      .insert({
-        title: activity.title,
-        type: activity.type,
-        date: activity.date,
-        kick_off_date: activity.kickOffDate,
-        end_date: activity.endDate,
-        location: activity.location,
-        marketing_campaign: activity.marketingCampaign,
-        marketing_description: activity.marketingDescription,
-        status: activity.status,
-        custom_id: customId,
-      })
+      .insert(activityPayload)
       .select('id, custom_id')
       .single();
     
     if (eventError) throw eventError;
+
+    // Create clean ownership object
+    const ownershipPayload = {
+      activity_id: eventData.id,
+      finos_lead: activity.ownership.finosLead,
+      finos_team: Array.isArray(activity.ownership.finosTeam) ? activity.ownership.finosTeam : [],
+      marketing_liaison: activity.ownership.marketingLiaison,
+      member_success_liaison: activity.ownership.memberSuccessLiaison,
+      sponsors_partners: Array.isArray(activity.ownership.sponsorsPartners) ? activity.ownership.sponsorsPartners : [],
+      channel: activity.ownership.channel,
+      ambassador: activity.ownership.ambassador,
+      toc: activity.ownership.toc,
+    };
     
     // Insert ownership data
     const { error: ownershipError } = await supabase
       .from('ownerships')
-      .insert({
-        activity_id: eventData.id,
-        finos_lead: activity.ownership.finosLead,
-        finos_team: activity.ownership.finosTeam,
-        marketing_liaison: activity.ownership.marketingLiaison,
-        member_success_liaison: activity.ownership.memberSuccessLiaison,
-        sponsors_partners: activity.ownership.sponsorsPartners,
-        channel: activity.ownership.channel,
-        ambassador: activity.ownership.ambassador,
-        toc: activity.ownership.toc,
-      });
+      .insert(ownershipPayload);
     
     if (ownershipError) throw ownershipError;
+    
+    // Create clean impacts object
+    const impactsPayload = {
+      activity_id: eventData.id,
+      use_case: activity.impacts.useCase,
+      strategic_initiative: activity.impacts.strategicInitiative,
+      projects: Array.isArray(activity.impacts.projects) ? activity.impacts.projects : [],
+      targeted_personas: Array.isArray(activity.impacts.targetedPersonas) ? activity.impacts.targetedPersonas : [],
+    };
     
     // Insert impacts data
     const { error: impactsError } = await supabase
       .from('impacts')
-      .insert({
-        activity_id: eventData.id,
-        use_case: activity.impacts.useCase,
-        strategic_initiative: activity.impacts.strategicInitiative,
-        projects: activity.impacts.projects,
-        targeted_personas: activity.impacts.targetedPersonas,
-      });
+      .insert(impactsPayload);
     
     if (impactsError) throw impactsError;
+    
+    // Create clean metrics object
+    const metricsPayload = {
+      activity_id: eventData.id,
+      targeted_registrations: Number(activity.metrics.targetedRegistrations) || 0,
+      current_registrations: Number(activity.metrics.currentRegistrations) || 0,
+      registration_percentage: Number(activity.metrics.registrationPercentage) || 0,
+      targeted_participants: Number(activity.metrics.targetedParticipants) || 0,
+      current_participants: Number(activity.metrics.currentParticipants) || 0,
+      participation_percentage: Number(activity.metrics.participationPercentage) || 0,
+    };
     
     // Insert metrics data
     const { error: metricsError } = await supabase
       .from('metrics')
-      .insert({
-        activity_id: eventData.id,
-        targeted_registrations: activity.metrics.targetedRegistrations,
-        current_registrations: activity.metrics.currentRegistrations,
-        registration_percentage: activity.metrics.registrationPercentage,
-        targeted_participants: activity.metrics.targetedParticipants,
-        current_participants: activity.metrics.currentParticipants,
-        participation_percentage: activity.metrics.participationPercentage,
-      });
+      .insert(metricsPayload);
     
     if (metricsError) throw metricsError;
     

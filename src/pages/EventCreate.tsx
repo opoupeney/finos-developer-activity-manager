@@ -32,7 +32,10 @@ const EventCreate = () => {
       // Remove id property as it's not needed for creation
       const { id, ...eventWithoutId } = data;
       
-      await createActivity(eventWithoutId);
+      // Ensure all data is serializable
+      const serializableData = JSON.parse(JSON.stringify(eventWithoutId));
+      
+      await createActivity(serializableData);
       
       toast({
         title: "Activity Created",
@@ -55,7 +58,9 @@ const EventCreate = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
       <div className="container max-w-7xl mx-auto px-4 pt-4">
-        <Breadcrumb />
+        <div className="breadcrumb-container">
+          <Breadcrumb />
+        </div>
       </div>
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 animate-fade-in">
