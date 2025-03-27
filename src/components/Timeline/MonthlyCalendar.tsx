@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Activity } from '@/types/activity';
@@ -75,7 +75,8 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
 
   // Function to check if a date has key dates
   const hasKeyDatesForDate = (date: Date) => {
-    return getKeyDatesForDate(date).length > 0;
+    const keyDates = getKeyDatesForDate(date);
+    return keyDates.length > 0;
   };
 
   // Get activities for the current month
@@ -142,6 +143,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
 
   // Function to handle selecting an activity
   const handleSelectActivity = (activity: Activity) => {
+    console.log("Selected activity:", activity);
     if (selectedActivity?.id === activity.id) {
       setSelectedActivity(null);
     } else {
@@ -205,6 +207,24 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     }
   };
 
+  // Add some logging for debugging
+  useEffect(() => {
+    if (selectedActivity) {
+      console.log("Selected activity with key dates:", selectedActivity.keyDates);
+      
+      // Log how many key dates are found for each day of the current month
+      const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
+      const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+      
+      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const keyDates = getKeyDatesForDate(new Date(d));
+        if (keyDates.length > 0) {
+          console.log(`${format(d, 'yyyy-MM-dd')} has ${keyDates.length} key dates:`, keyDates);
+        }
+      }
+    }
+  }, [selectedActivity, month]);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -232,7 +252,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                     const hasActivities = dayActivities.length > 0;
                     const dayKeyDates = getKeyDatesForDate(date);
                     const hasKeyDates = dayKeyDates.length > 0;
-
+                    
                     return (
                       <div className="relative w-full h-full flex items-center justify-center">
                         <div>{date.getDate()}</div>
@@ -257,7 +277,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                               </Tooltip>
                             ))}
                             
-                            {/* Key date indicators */}
+                            {/* Key date indicators with purple dot */}
                             {hasKeyDates && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -277,6 +297,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                               </Tooltip>
                             )}
                             
+                            {/* More indicator for many activities */}
                             {dayActivities.length > 3 && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
