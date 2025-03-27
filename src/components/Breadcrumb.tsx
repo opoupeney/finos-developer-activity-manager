@@ -45,7 +45,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
         </li>
         
         {breadcrumbItems.map((item, index) => (
-          <React.Fragment key={item.href}>
+          <React.Fragment key={index}>
             <li className="flex items-center">
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </li>
