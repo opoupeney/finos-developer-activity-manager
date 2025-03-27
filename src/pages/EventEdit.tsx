@@ -1,19 +1,26 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FinosHeader from '../components/FinosHeader';
 import EventForm from '../components/EventForm';
 import { getActivityByID, updateActivity, deleteActivity } from '../services/activityService';
-import { Activity } from '../types/activity';
+import { Activity, KeyDate } from '../types/activity';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import Breadcrumb from '../components/Breadcrumb';
+import KeyDates from '@/components/KeyDates';
+import KeyDateDialog from '@/components/KeyDateDialog';
 
 const EventEdit = () => {
   const { id } = useParams<{ id: string }>();
   const { userDetails } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  const [isKeyDateDialogOpen, setIsKeyDateDialogOpen] = useState(false);
+  const [currentKeyDate, setCurrentKeyDate] = useState<KeyDate | undefined>(undefined);
+  const [keyDates, setKeyDates] = useState<KeyDate[]>([]);
   
   React.useEffect(() => {
     if (userDetails && userDetails.role !== 'admin') {
@@ -30,6 +37,11 @@ const EventEdit = () => {
     queryKey: ['event', id],
     queryFn: () => getActivityByID(id!),
     enabled: !!id,
+    onSuccess: (data) => {
+      if (data && data.keyDates) {
+        setKeyDates(data.keyDates);
+      }
+    },
     meta: {
       onError: (err: any) => {
         console.error("Error loading developer activity data:", err);
@@ -45,7 +57,13 @@ const EventEdit = () => {
 
   const handleSubmit = async (data: Activity) => {
     try {
-      await updateActivity(data);
+      // Include keyDates in the update
+      const updatedActivity = {
+        ...data,
+        keyDates
+      };
+      
+      await updateActivity(updatedActivity);
       toast({
         title: "Success",
         description: "Developer activity updated successfully",
@@ -79,6 +97,53 @@ const EventEdit = () => {
         variant: "destructive",
       });
       throw error;
+    }
+  };
+
+  const handleOpenAddKeyDate = () => {
+    setCurrentKeyDate(undefined);
+    setIsKeyDateDialogOpen(true);
+  };
+
+  const handleOpenEditKeyDate = (keyDate: KeyDate) => {
+    setCurrentKeyDate(keyDate);
+    setIsKeyDateDialogOpen(true);
+  };
+
+  const handleDeleteKeyDate = (keyDateId: string) => {
+    setKeyDates(prevKeyDates => prevKeyDates.filter(kd => kd.id !== keyDateId));
+    toast({
+      title: "Key date removed",
+      description: "The key date has been removed from this activity.",
+    });
+  };
+
+  const handleSaveKeyDate = (keyDateData: Omit<KeyDate, 'id' | 'activityId'>) => {
+    if (currentKeyDate) {
+      // Editing existing key date
+      setKeyDates(prevKeyDates => 
+        prevKeyDates.map(kd => 
+          kd.id === currentKeyDate.id 
+            ? { ...kd, ...keyDateData } 
+            : kd
+        )
+      );
+      toast({
+        title: "Key date updated",
+        description: "The key date has been successfully updated.",
+      });
+    } else {
+      // Adding new key date
+      const newKeyDate: KeyDate = {
+        id: `kd-${Date.now()}`,
+        activityId: id!,
+        ...keyDateData
+      };
+      setKeyDates(prevKeyDates => [...prevKeyDates, newKeyDate]);
+      toast({
+        title: "Key date added",
+        description: "A new key date has been added to this activity.",
+      });
     }
   };
 
@@ -131,6 +196,23 @@ const EventEdit = () => {
           onSubmit={handleSubmit} 
           onDelete={handleDelete}
           isEditing={true}
+        />
+        
+        <div className="mt-8">
+          <KeyDates 
+            keyDates={keyDates}
+            isEditable={true}
+            onAddKeyDate={handleOpenAddKeyDate}
+            onEditKeyDate={handleOpenEditKeyDate}
+            onDeleteKeyDate={handleDeleteKeyDate}
+          />
+        </div>
+        
+        <KeyDateDialog 
+          isOpen={isKeyDateDialogOpen}
+          onClose={() => setIsKeyDateDialogOpen(false)}
+          onSave={handleSaveKeyDate}
+          keyDate={currentKeyDate}
         />
       </main>
       

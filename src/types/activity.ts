@@ -13,6 +13,15 @@ export interface Activity {
   ownership: Ownership;
   impacts: Impacts;
   metrics: Metrics;
+  keyDates?: KeyDate[];
+}
+
+export interface KeyDate {
+  id: string;
+  activityId: string;
+  date: string; // ISO string for timestamp
+  description: string;
+  owner: string;
 }
 
 export interface Ownership {

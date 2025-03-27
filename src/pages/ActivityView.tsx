@@ -1,7 +1,8 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getActivityByID } from '@/services/activityService';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getActivityByID, updateKeyDates } from '@/services/activityService';
 import FinosHeader from '@/components/FinosHeader';
 import ActivityHeader from '@/components/ActivityHeader';
 import ActivityDetails from '@/components/ActivityDetails';
@@ -11,13 +12,20 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Breadcrumb from '@/components/Breadcrumb';
+import KeyDates from '@/components/KeyDates';
+import KeyDateDialog from '@/components/KeyDateDialog';
+import { KeyDate } from '@/types/activity';
 
 const ActivityView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { userDetails } = useAuth();
+  const queryClient = useQueryClient();
   const isAdmin = userDetails?.role === 'admin';
+  
+  const [isKeyDateDialogOpen, setIsKeyDateDialogOpen] = useState(false);
+  const [currentKeyDate, setCurrentKeyDate] = useState<KeyDate | undefined>(undefined);
 
   const { data: activity, isLoading, error } = useQuery({
     queryKey: ['activity', id],
@@ -34,6 +42,66 @@ const ActivityView = () => {
       }
     }
   });
+
+  const updateKeyDatesMutation = useMutation({
+    mutationFn: (keyDates: KeyDate[]) => updateKeyDates(id!, keyDates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activity', id] });
+      toast({
+        title: "Success",
+        description: "Key dates updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      console.error('Error updating key dates:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update key dates",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleOpenAddKeyDate = () => {
+    setCurrentKeyDate(undefined);
+    setIsKeyDateDialogOpen(true);
+  };
+
+  const handleOpenEditKeyDate = (keyDate: KeyDate) => {
+    setCurrentKeyDate(keyDate);
+    setIsKeyDateDialogOpen(true);
+  };
+
+  const handleDeleteKeyDate = (keyDateId: string) => {
+    if (!activity || !activity.keyDates) return;
+    
+    const updatedKeyDates = activity.keyDates.filter(kd => kd.id !== keyDateId);
+    updateKeyDatesMutation.mutate(updatedKeyDates);
+  };
+
+  const handleSaveKeyDate = (keyDateData: Omit<KeyDate, 'id' | 'activityId'>) => {
+    if (!activity) return;
+    
+    const keyDates = activity.keyDates || [];
+    
+    if (currentKeyDate) {
+      // Editing existing key date
+      const updatedKeyDates = keyDates.map(kd => 
+        kd.id === currentKeyDate.id 
+          ? { ...kd, ...keyDateData } 
+          : kd
+      );
+      updateKeyDatesMutation.mutate(updatedKeyDates);
+    } else {
+      // Adding new key date
+      const newKeyDate: KeyDate = {
+        id: `kd-${Date.now()}`,
+        activityId: id!,
+        ...keyDateData
+      };
+      updateKeyDatesMutation.mutate([...keyDates, newKeyDate]);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -110,6 +178,25 @@ const ActivityView = () => {
             <ActivityStats activity={activity} />
           </div>
         </div>
+        
+        {isAdmin && (
+          <div className="mb-8">
+            <KeyDates 
+              keyDates={activity.keyDates || []}
+              isEditable={true}
+              onAddKeyDate={handleOpenAddKeyDate}
+              onEditKeyDate={handleOpenEditKeyDate}
+              onDeleteKeyDate={handleDeleteKeyDate}
+            />
+          </div>
+        )}
+        
+        <KeyDateDialog 
+          isOpen={isKeyDateDialogOpen}
+          onClose={() => setIsKeyDateDialogOpen(false)}
+          onSave={handleSaveKeyDate}
+          keyDate={currentKeyDate}
+        />
       </main>
       
       <footer className="border-t py-6 mt-12">

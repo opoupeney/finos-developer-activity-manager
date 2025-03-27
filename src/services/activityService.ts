@@ -1,6 +1,5 @@
-
 import { supabase } from "@/integrations/supabase/client";
-import { Activity } from "../types/activity";
+import { Activity, KeyDate } from "../types/activity";
 
 export const getActivityData = async (): Promise<Activity> => {
   try {
@@ -121,6 +120,26 @@ export const getActivityByID = async (id: string): Promise<Activity | undefined>
     
     if (metricsError) throw metricsError;
     
+    // Get key dates data
+    const { data: keyDates, error: keyDatesError } = await supabase
+      .from('key_dates')
+      .select('*')
+      .eq('activity_id', events.id);
+    
+    if (keyDatesError) {
+      console.error("Error fetching key dates:", keyDatesError);
+      // Continue with other data even if key dates fail
+    }
+    
+    // Transform key dates to match our interface
+    const formattedKeyDates: KeyDate[] = keyDates ? keyDates.map(kd => ({
+      id: kd.id,
+      activityId: events.custom_id,
+      date: kd.date,
+      description: kd.description,
+      owner: kd.owner
+    })) : [];
+    
     // Combine all data into an Activity object
     return {
       id: events.custom_id,
@@ -157,6 +176,7 @@ export const getActivityByID = async (id: string): Promise<Activity | undefined>
         currentParticipants: metrics.current_participants,
         participationPercentage: metrics.participation_percentage,
       },
+      keyDates: formattedKeyDates
     };
   } catch (error) {
     console.error("Error fetching activity by ID:", error);
@@ -241,9 +261,79 @@ export const updateActivity = async (activity: Activity): Promise<Activity> => {
     
     if (metricsError) throw metricsError;
     
+    // Update key dates (delete and insert approach)
+    if (activity.keyDates) {
+      // First delete existing key dates
+      const { error: deleteKeyDatesError } = await supabase
+        .from('key_dates')
+        .delete()
+        .eq('activity_id', eventId);
+      
+      if (deleteKeyDatesError) throw deleteKeyDatesError;
+      
+      // Then insert new ones if there are any
+      if (activity.keyDates.length > 0) {
+        const keyDatesForInsert = activity.keyDates.map(kd => ({
+          activity_id: eventId,
+          date: kd.date,
+          description: kd.description,
+          owner: kd.owner
+        }));
+        
+        const { error: insertKeyDatesError } = await supabase
+          .from('key_dates')
+          .insert(keyDatesForInsert);
+        
+        if (insertKeyDatesError) throw insertKeyDatesError;
+      }
+    }
+    
     return activity;
   } catch (error) {
     console.error("Error updating activity:", error);
+    throw error;
+  }
+};
+
+// Function to update only key dates
+export const updateKeyDates = async (activityId: string, keyDates: KeyDate[]): Promise<void> => {
+  try {
+    // Get the UUID of the event
+    const { data: eventData, error: eventError } = await supabase
+      .from('activities')
+      .select('id')
+      .eq('custom_id', activityId)
+      .single();
+    
+    if (eventError) throw eventError;
+    
+    const eventId = eventData.id;
+    
+    // First delete existing key dates
+    const { error: deleteKeyDatesError } = await supabase
+      .from('key_dates')
+      .delete()
+      .eq('activity_id', eventId);
+    
+    if (deleteKeyDatesError) throw deleteKeyDatesError;
+    
+    // Then insert new ones if there are any
+    if (keyDates.length > 0) {
+      const keyDatesForInsert = keyDates.map(kd => ({
+        activity_id: eventId,
+        date: kd.date,
+        description: kd.description,
+        owner: kd.owner
+      }));
+      
+      const { error: insertKeyDatesError } = await supabase
+        .from('key_dates')
+        .insert(keyDatesForInsert);
+      
+      if (insertKeyDatesError) throw insertKeyDatesError;
+    }
+  } catch (error) {
+    console.error("Error updating key dates:", error);
     throw error;
   }
 };

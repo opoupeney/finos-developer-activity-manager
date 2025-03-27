@@ -3,6 +3,7 @@ import React from 'react';
 import DetailCard from './DetailCard';
 import { Activity } from '../types/activity';
 import { format } from 'date-fns';
+import KeyDates from './KeyDates';
 
 interface ActivityDetailsProps {
   activity: Activity;
@@ -53,23 +54,30 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = ({ activity }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <DetailCard 
-        title="General Information" 
-        items={generalDetails} 
-        className="animate-slide-in-left"
-      />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <DetailCard 
+          title="General Information" 
+          items={generalDetails} 
+          className="animate-slide-in-left"
+        />
+        
+        <DetailCard 
+          title="Ownership" 
+          items={ownershipDetails} 
+          className="animate-slide-in-left"
+        />
+        
+        <DetailCard 
+          title="Impacts" 
+          items={impactDetails} 
+          className="animate-slide-in-left"
+        />
+      </div>
       
-      <DetailCard 
-        title="Ownership" 
-        items={ownershipDetails} 
-        className="animate-slide-in-left"
-      />
-      
-      <DetailCard 
-        title="Impacts" 
-        items={impactDetails} 
-        className="animate-slide-in-left"
+      {/* Key Dates Section */}
+      <KeyDates 
+        keyDates={activity.keyDates || []}
       />
     </div>
   );
