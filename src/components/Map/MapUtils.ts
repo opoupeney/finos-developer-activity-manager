@@ -1,4 +1,3 @@
-
 import { Activity } from '@/types/activity';
 import { Ambassador } from '@/types/ambassador';
 import mapboxgl from 'mapbox-gl';
@@ -19,6 +18,7 @@ export const getCoordinates = (location: string): [number, number] | null => {
     'Chicago': [-87.6298, 41.8781],
     'Los Angeles': [-118.2437, 34.0522],
     'Singapore': [103.8198, 1.3521],
+    'Bangalore': [77.5946, 12.9716], // Added Bangalore coordinates
     'Remote': [0, 0], // Center of the map for remote activities
     'Virtual': [0, 0],  // Center of the map for virtual activities
     'Online': [0, 0]    // Center of the map for online activities
