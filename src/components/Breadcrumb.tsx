@@ -44,27 +44,30 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
           </Link>
         </li>
         
-        {breadcrumbItems.map((item, index) => (
-          <React.Fragment key={index}>
-            <li className="flex items-center">
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </li>
-            <li>
-              {item.current ? (
-                <span className="font-medium" aria-current="page">
-                  {item.label}
-                </span>
-              ) : (
-                <Link
-                  to={item.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item.label}
-                </Link>
-              )}
-            </li>
-          </React.Fragment>
-        ))}
+        {breadcrumbItems.map((item, index) => {
+          // Use a keyed div instead of React.Fragment to avoid the data-lov-id issue
+          return (
+            <div key={index} className="flex items-center">
+              <li className="flex items-center">
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </li>
+              <li>
+                {item.current ? (
+                  <span className="font-medium" aria-current="page">
+                    {item.label}
+                  </span>
+                ) : (
+                  <Link
+                    to={item.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                )}
+              </li>
+            </div>
+          );
+        })}
       </ol>
     </nav>
   );
