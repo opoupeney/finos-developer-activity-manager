@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Activity } from '@/types/activity';
@@ -35,7 +36,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
   const [month, setMonth] = useState<Date>(new Date());
   const [activitiesOpen, setActivitiesOpen] = useState(true);
   const [contentsOpen, setContentsOpen] = useState(true);
-  const [keyDatesOpen, setKeyDatesOpen] = useState(true);
   
   // State for selected items
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
@@ -56,21 +56,22 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
 
   // Function to get key dates for a specific date
   const getKeyDatesForDate = (date: Date) => {
-    // Check if we have a selected activity and if it has key dates
-    if (!selectedActivity || !selectedActivity.keyDates) {
-      return [];
-    }
-
-    // Return key dates that match the given date
-    return selectedActivity.keyDates.filter(keyDate => {
-      try {
-        const keyDateValue = parseISO(keyDate.date);
-        return isSameDay(keyDateValue, date);
-      } catch (error) {
-        console.error("Error parsing key date:", error);
-        return false;
-      }
+    // Get key dates from all activities for the specified date
+    const keyDates = activities.flatMap(activity => {
+      if (!activity.keyDates) return [];
+      
+      return activity.keyDates.filter(keyDate => {
+        try {
+          const keyDateValue = parseISO(keyDate.date);
+          return isSameDay(keyDateValue, date);
+        } catch (error) {
+          console.error("Error parsing key date:", error);
+          return false;
+        }
+      });
     });
+    
+    return keyDates;
   };
 
   // Function to check if a date has key dates
@@ -113,24 +114,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     return dateA.getTime() - dateB.getTime();
   });
 
-  // Get key dates for the current month (only for the selected activity)
-  const keyDatesForCurrentMonth = selectedActivity?.keyDates
-    ? selectedActivity.keyDates.filter(keyDate => {
-        try {
-          const keyDateValue = parseISO(keyDate.date);
-          return isSameMonth(keyDateValue, month);
-        } catch (error) {
-          console.error("Error parsing key date for month filtering:", error);
-          return false;
-        }
-      }).sort((a, b) => {
-        // Sort by date
-        const dateA = parseISO(a.date);
-        const dateB = parseISO(b.date);
-        return dateA.getTime() - dateB.getTime();
-      })
-    : [];
-
   // Function to get icon for content type
   const getContentTypeIcon = (type: string) => {
     switch(type) {
@@ -149,10 +132,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     } else {
       setSelectedActivity(activity);
       setSelectedContent(null); // Clear content selection
-      // Open key dates section when an activity is selected
-      if (activity.keyDates && activity.keyDates.length > 0) {
-        setKeyDatesOpen(true);
-      }
     }
   };
 
@@ -207,24 +186,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     }
   };
 
-  // Add some logging for debugging
-  useEffect(() => {
-    if (selectedActivity) {
-      console.log("Selected activity with key dates:", selectedActivity.keyDates);
-      
-      // Log how many key dates are found for each day of the current month
-      const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
-      const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0);
-      
-      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        const keyDates = getKeyDatesForDate(new Date(d));
-        if (keyDates.length > 0) {
-          console.log(`${format(d, 'yyyy-MM-dd')} has ${keyDates.length} key dates:`, keyDates);
-        }
-      }
-    }
-  }, [selectedActivity, month]);
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -243,7 +204,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                 }}
                 modifiersClassNames={{
                   hasActivity: "font-bold",
-                  hasKeyDate: "underline", // Underline dates that have key dates
                   highlighted: "bg-blue-100 dark:bg-blue-900/30 text-foreground"
                 }}
                 components={{
@@ -398,61 +358,6 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                 )}
               </CollapsibleContent>
             </Collapsible>
-            
-            {/* Key Dates Collapsible (only shown when an activity is selected) */}
-            {selectedActivity && (
-              <Collapsible
-                open={keyDatesOpen}
-                onOpenChange={setKeyDatesOpen}
-                className="border rounded-md shadow-sm"
-              >
-                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-muted/30 hover:bg-muted/50 transition-colors rounded-t-md">
-                  <div className="flex items-center">
-                    <CalendarDaysIcon className="mr-2 h-5 w-5 text-purple-500" />
-                    <h3 className="text-lg font-semibold">
-                      Key Dates for {selectedActivity.title}
-                    </h3>
-                  </div>
-                  <ChevronDown className={`h-5 w-5 transition-transform ${keyDatesOpen ? "rotate-0" : "rotate-180"}`} />
-                </CollapsibleTrigger>
-                
-                <CollapsibleContent className="p-4">
-                  {(!selectedActivity.keyDates || keyDatesForCurrentMonth.length === 0) ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No key dates for this activity in the current month
-                    </div>
-                  ) : (
-                    <ScrollArea className="h-[250px]">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead>Owner</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {keyDatesForCurrentMonth.map((keyDate, index) => {
-                            return (
-                              <TableRow key={index}>
-                                <TableCell>
-                                  <div className="flex items-center">
-                                    <CalendarDaysIcon className="h-3 w-3 mr-1 text-purple-500" />
-                                    {formatDateString(keyDate.date)}
-                                  </div>
-                                </TableCell>
-                                <TableCell className="font-medium">{keyDate.description}</TableCell>
-                                <TableCell>{keyDate.owner}</TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </ScrollArea>
-                  )}
-                </CollapsibleContent>
-              </Collapsible>
-            )}
             
             {/* Contents Collapsible */}
             <Collapsible
