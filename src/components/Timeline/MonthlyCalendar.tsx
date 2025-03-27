@@ -56,10 +56,12 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
 
   // Function to get key dates for a specific date
   const getKeyDatesForDate = (date: Date) => {
+    // Check if we have a selected activity and if it has key dates
     if (!selectedActivity || !selectedActivity.keyDates) {
       return [];
     }
 
+    // Return key dates that match the given date
     return selectedActivity.keyDates.filter(keyDate => {
       try {
         const keyDateValue = parseISO(keyDate.date);
@@ -69,6 +71,11 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
         return false;
       }
     });
+  };
+
+  // Function to check if a date has key dates
+  const hasKeyDatesForDate = (date: Date) => {
+    return getKeyDatesForDate(date).length > 0;
   };
 
   // Get activities for the current month
@@ -211,7 +218,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                 className="p-3 flex-1 mx-auto"
                 modifiers={{
                   hasActivity: (date) => getActivitiesForDate(date).length > 0,
-                  hasKeyDate: (date) => getKeyDatesForDate(date).length > 0,
+                  hasKeyDate: (date) => hasKeyDatesForDate(date),
                   highlighted: (date) => isDateHighlighted(date)
                 }}
                 modifiersClassNames={{
