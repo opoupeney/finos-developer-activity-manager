@@ -48,8 +48,7 @@ const AmbassadorCreate = () => {
         </div>
         
         <AmbassadorForm 
-          onSubmit={handleSubmit} 
-          isEditing={false}
+          onSubmit={handleSubmit}
         />
       </main>
       

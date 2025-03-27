@@ -8,7 +8,6 @@ import { parseISO, isSameDay, isSameMonth, format, isWithinInterval } from 'date
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getStatusColor } from './TimelineUtils';
-import { DayClickEventHandler, DayContent, DayContentProps } from 'react-day-picker';
 import { CalendarIcon, MapPinIcon, ClockIcon, BookOpenIcon, ChevronDown, CalendarDaysIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -55,12 +54,12 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
     });
   };
 
-  // Function to get key dates for a specific date (only for the selected activity)
+  // Function to get key dates for a specific date
   const getKeyDatesForDate = (date: Date) => {
-    if (!selectedActivity || !selectedActivity.keyDates || selectedActivity.keyDates.length === 0) {
+    if (!selectedActivity || !selectedActivity.keyDates) {
       return [];
     }
-    
+
     return selectedActivity.keyDates.filter(keyDate => {
       try {
         const keyDateValue = parseISO(keyDate.date);
@@ -217,7 +216,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
                   highlighted: "bg-blue-100 dark:bg-blue-900/30 text-foreground"
                 }}
                 components={{
-                  DayContent: (props: DayContentProps) => {
+                  DayContent: (props) => {
                     const dayActivities = getActivitiesForDate(props.date);
                     const hasActivities = dayActivities.length > 0;
                     const dayKeyDates = getKeyDatesForDate(props.date);
@@ -225,7 +224,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({ activities, contents 
 
                     return (
                       <div className="relative w-full h-full flex items-center justify-center">
-                        <DayContent {...props} />
+                        {props.children}
                         
                         {(hasActivities || hasKeyDates) && (
                           <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-1">
