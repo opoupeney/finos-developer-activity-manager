@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -179,17 +178,15 @@ const ActivityView = () => {
           </div>
         </div>
         
-        {isAdmin && (
-          <div className="mb-8">
-            <KeyDates 
-              keyDates={activity.keyDates || []}
-              isEditable={true}
-              onAddKeyDate={handleOpenAddKeyDate}
-              onEditKeyDate={handleOpenEditKeyDate}
-              onDeleteKeyDate={handleDeleteKeyDate}
-            />
-          </div>
-        )}
+        <div className="mb-8">
+          <KeyDates 
+            keyDates={activity.keyDates || []}
+            isEditable={isAdmin}
+            onAddKeyDate={handleOpenAddKeyDate}
+            onEditKeyDate={handleOpenEditKeyDate}
+            onDeleteKeyDate={handleDeleteKeyDate}
+          />
+        </div>
         
         <KeyDateDialog 
           isOpen={isKeyDateDialogOpen}

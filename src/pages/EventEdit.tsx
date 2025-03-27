@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -37,27 +36,17 @@ const EventEdit = () => {
     queryKey: ['event', id],
     queryFn: () => getActivityByID(id!),
     enabled: !!id,
-    onSuccess: (data) => {
-      if (data && data.keyDates) {
-        setKeyDates(data.keyDates);
-      }
-    },
     meta: {
-      onError: (err: any) => {
-        console.error("Error loading developer activity data:", err);
-        toast({
-          title: "Error loading data",
-          description: err.message || "There was a problem retrieving the developer activity information",
-          variant: "destructive",
-        });
-        navigate('/');
+      onSettled: (data: Activity | undefined) => {
+        if (data && data.keyDates) {
+          setKeyDates(data.keyDates);
+        }
       }
     }
   });
 
   const handleSubmit = async (data: Activity) => {
     try {
-      // Include keyDates in the update
       const updatedActivity = {
         ...data,
         keyDates
@@ -120,7 +109,6 @@ const EventEdit = () => {
 
   const handleSaveKeyDate = (keyDateData: Omit<KeyDate, 'id' | 'activityId'>) => {
     if (currentKeyDate) {
-      // Editing existing key date
       setKeyDates(prevKeyDates => 
         prevKeyDates.map(kd => 
           kd.id === currentKeyDate.id 
@@ -133,7 +121,6 @@ const EventEdit = () => {
         description: "The key date has been successfully updated.",
       });
     } else {
-      // Adding new key date
       const newKeyDate: KeyDate = {
         id: `kd-${Date.now()}`,
         activityId: id!,
