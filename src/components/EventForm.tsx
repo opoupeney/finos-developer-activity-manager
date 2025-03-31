@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity } from '@/types/activity';
@@ -103,24 +104,24 @@ const EventForm: React.FC<EventFormProps> = ({
     marketingDescription: initialData?.marketingDescription || '',
     status: initialData?.status || 'Pending',
     
-    finosLead: initialData?.ownership.finosLead || '',
-    finosTeam: initialData?.ownership.finosTeam?.join(', ') || '',
-    marketingLiaison: initialData?.ownership.marketingLiaison || '',
-    memberSuccessLiaison: initialData?.ownership.memberSuccessLiaison || '',
-    sponsorsPartners: initialData?.ownership.sponsorsPartners?.join(', ') || '',
-    channel: initialData?.ownership.channel || '',
-    ambassador: initialData?.ownership.ambassador || '',
-    toc: initialData?.ownership.toc || '',
+    finosLead: initialData?.ownership?.finosLead || '',
+    finosTeam: initialData?.ownership?.finosTeam?.join(', ') || '',
+    marketingLiaison: initialData?.ownership?.marketingLiaison || '',
+    memberSuccessLiaison: initialData?.ownership?.memberSuccessLiaison || '',
+    sponsorsPartners: initialData?.ownership?.sponsorsPartners?.join(', ') || '',
+    channel: initialData?.ownership?.channel || '',
+    ambassador: initialData?.ownership?.ambassador || '',
+    toc: initialData?.ownership?.toc || '',
     
-    useCase: initialData?.impacts.useCase || '',
-    strategicInitiative: initialData?.impacts.strategicInitiative || '',
-    projects: initialData?.impacts.projects?.join(', ') || '',
-    targetedPersonas: initialData?.impacts.targetedPersonas?.join(', ') || '',
+    useCase: initialData?.impacts?.useCase || '',
+    strategicInitiative: initialData?.impacts?.strategicInitiative || '',
+    projects: initialData?.impacts?.projects?.join(', ') || '',
+    targetedPersonas: initialData?.impacts?.targetedPersonas?.join(', ') || '',
     
-    targetedRegistrations: initialData?.metrics.targetedRegistrations || 0,
-    currentRegistrations: initialData?.metrics.currentRegistrations || 0,
-    targetedParticipants: initialData?.metrics.targetedParticipants || 0,
-    currentParticipants: initialData?.metrics.currentParticipants || 0,
+    targetedRegistrations: initialData?.metrics?.targetedRegistrations || 0,
+    currentRegistrations: initialData?.metrics?.currentRegistrations || 0,
+    targetedParticipants: initialData?.metrics?.targetedParticipants || 0,
+    currentParticipants: initialData?.metrics?.currentParticipants || 0,
   };
 
   const form = useForm<EventFormValues>({
@@ -135,7 +136,7 @@ const EventForm: React.FC<EventFormProps> = ({
       
       // Update the markdown description from the editor state
       if (!mdDescription) {
-        console.error("Warning: mdDescription is empty");
+        console.warn("Warning: mdDescription is empty");
       }
       
       const eventData: Activity = {
@@ -217,6 +218,11 @@ const EventForm: React.FC<EventFormProps> = ({
       setIsDeleting(false);
     }
   };
+
+  // Add debug
+  console.log("Form state:", form.formState);
+  console.log("Is form valid:", form.formState.isValid);
+  console.log("Form errors:", form.formState.errors);
 
   return (
     <Form {...form}>
@@ -713,6 +719,7 @@ const EventForm: React.FC<EventFormProps> = ({
               type="submit" 
               className="bg-finos-blue hover:bg-finos-blue/90"
               disabled={isSubmitting || isDeleting}
+              onClick={() => console.log("Submit button clicked")}
             >
               {isSubmitting ? (
                 <>Saving...</>

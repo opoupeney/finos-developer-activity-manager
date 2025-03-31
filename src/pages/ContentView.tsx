@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import FinosHeader from '../components/FinosHeader';
@@ -5,12 +6,14 @@ import Breadcrumb from '../components/Breadcrumb';
 import { fetchContentById } from '../services/contentService'; 
 import { Content } from '@/types/content';
 import ContentDetail from '../components/Content/ContentDetail';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ContentView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [content, setContent] = useState<Content | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userDetails } = useAuth();
 
   useEffect(() => {
     const loadContent = async () => {
@@ -102,6 +105,8 @@ const ContentView: React.FC = () => {
     );
   }
 
+  const isAdmin = userDetails?.role === 'admin';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
@@ -119,7 +124,7 @@ const ContentView: React.FC = () => {
             View the details of the content below.
           </p>
         </div>
-        <ContentDetail content={content} />
+        <ContentDetail content={content} isAdmin={isAdmin} />
       </main>
       <footer className="border-t py-6 mt-12">
         <div className="container max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
