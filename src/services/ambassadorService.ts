@@ -73,3 +73,6 @@ export const deleteAmbassador = async (id: string): Promise<void> => {
     throw new Error(error.message);
   }
 };
+
+// Alias for backward compatibility
+export const getAmbassador = fetchAmbassadorById;

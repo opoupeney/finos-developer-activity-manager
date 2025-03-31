@@ -1,7 +1,8 @@
+
 import React from 'react';
 import FinosHeader from '../components/FinosHeader';
-import ContentForm from '../components/ContentForm';
-import { updateContent, getContent } from '../services/contentService';
+import ContentForm from '../components/Content/ContentForm';
+import { updateContent, fetchContentById as getContent } from '../services/contentService';
 import { Content } from '../types/content';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -122,8 +123,7 @@ const ContentEdit = () => {
         <ContentForm
           initialData={content}
           onSubmit={handleSubmit}
-          onDelete={handleDelete}
-          isEditing={true}
+          isSubmitting={false} 
         />
       </main>
       

@@ -1,7 +1,8 @@
+
 import React from 'react';
 import FinosHeader from '../components/FinosHeader';
-import AmbassadorForm from '../components/AmbassadorForm';
-import { getAmbassador, updateAmbassador } from '../services/ambassadorService';
+import AmbassadorForm from '../components/Ambassador/AmbassadorForm';
+import { fetchAmbassadorById as getAmbassador, updateAmbassador } from '../services/ambassadorService';
 import { Ambassador } from '../types/ambassador';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -93,7 +94,11 @@ const AmbassadorEdit = () => {
             Update the details of the ambassador
           </p>
         </div>
-        <AmbassadorForm initialData={ambassador} onSubmit={handleSubmit} />
+        <AmbassadorForm 
+          initialData={ambassador} 
+          onSubmit={handleSubmit} 
+          isSubmitting={false} 
+        />
       </main>
       <footer className="border-t py-6 mt-12">
         <div className="container max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">

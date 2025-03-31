@@ -103,3 +103,6 @@ export const deleteContent = async (id: string): Promise<void> => {
     throw error;
   }
 };
+
+// Alias for backward compatibility
+export const getContent = fetchContentById;
