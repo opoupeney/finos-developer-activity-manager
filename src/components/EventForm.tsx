@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity } from '@/types/activity';
 import { 
@@ -79,8 +78,7 @@ const EventForm: React.FC<EventFormProps> = ({
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [mdDescription, setMdDescription] = useState(initialData?.marketingDescription || '');
-
+  
   const parseDate = (dateValue: string | Date | null | undefined): Date | undefined => {
     if (!dateValue) return undefined;
     
@@ -129,15 +127,19 @@ const EventForm: React.FC<EventFormProps> = ({
     defaultValues
   });
 
+  const [mdDescription, setMdDescription] = useState(defaultValues.marketingDescription || '');
+
+  useEffect(() => {
+    form.setValue("marketingDescription", mdDescription, { 
+      shouldValidate: true,
+      shouldDirty: true
+    });
+  }, [mdDescription, form]);
+
   const handleFormSubmit = async (values: EventFormValues) => {
     try {
       setIsSubmitting(true);
       console.log("EventForm handleFormSubmit called with values:", values);
-      
-      // Update the markdown description from the editor state
-      if (!mdDescription) {
-        console.warn("Warning: mdDescription is empty");
-      }
       
       const eventData: Activity = {
         id: initialData?.id || '',
@@ -219,10 +221,10 @@ const EventForm: React.FC<EventFormProps> = ({
     }
   };
 
-  // Add debug
   console.log("Form state:", form.formState);
   console.log("Is form valid:", form.formState.isValid);
   console.log("Form errors:", form.formState.errors);
+  console.log("Current mdDescription:", mdDescription);
 
   return (
     <Form {...form}>
@@ -242,17 +244,26 @@ const EventForm: React.FC<EventFormProps> = ({
             )}
           />
           
-          <FormItem>
-            <FormLabel>Description</FormLabel>
-            <div data-color-mode="light" style={{ height: "250px" }}>
-              <MDEditor
-                value={mdDescription}
-                onChange={(val) => setMdDescription(val || '')}
-                height={250}
-                preview="edit"
-              />
-            </div>
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="marketingDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <div data-color-mode="light" style={{ height: "250px" }}>
+                    <MDEditor
+                      value={mdDescription}
+                      onChange={(val) => setMdDescription(val || '')}
+                      height={250}
+                      preview="edit"
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -719,7 +730,6 @@ const EventForm: React.FC<EventFormProps> = ({
               type="submit" 
               className="bg-finos-blue hover:bg-finos-blue/90"
               disabled={isSubmitting || isDeleting}
-              onClick={() => console.log("Submit button clicked")}
             >
               {isSubmitting ? (
                 <>Saving...</>
