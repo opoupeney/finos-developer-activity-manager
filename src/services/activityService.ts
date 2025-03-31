@@ -467,6 +467,8 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
       status: activity.status,
       custom_id: `de-${Date.now().toString().slice(-6)}`,
     };
+
+    console.log('HEEERRRE activity', activityPayload);
     
     // Insert activity record
     const { data: eventData, error: eventError } = await supabase
@@ -489,6 +491,8 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
       ambassador: activity.ownership.ambassador,
       toc: activity.ownership.toc,
     };
+
+    console.log('HEEERRRE ownership', ownershipPayload);
     
     // Insert ownership data
     const { error: ownershipError } = await supabase
@@ -505,6 +509,8 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
       projects: Array.isArray(activity.impacts.projects) ? activity.impacts.projects : [],
       targeted_personas: Array.isArray(activity.impacts.targetedPersonas) ? activity.impacts.targetedPersonas : [],
     };
+
+    console.log('HEEERRRE impact', activityPayload);
     
     // Insert impacts data
     const { error: impactsError } = await supabase
@@ -523,6 +529,8 @@ export const createActivity = async (activity: Omit<Activity, 'id'>): Promise<Ac
       current_participants: Number(activity.metrics.currentParticipants) || 0,
       participation_percentage: Number(activity.metrics.participationPercentage) || 0,
     };
+
+    console.log('HEEERRRE metrics', activityPayload);
     
     // Insert metrics data
     const { error: metricsError } = await supabase
