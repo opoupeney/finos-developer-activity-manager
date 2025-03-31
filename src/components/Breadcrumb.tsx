@@ -10,7 +10,11 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 
-const Breadcrumb = () => {
+interface BreadcrumbProps {
+  // No items prop needed - we'll generate from the current path
+}
+
+const Breadcrumb: React.FC<BreadcrumbProps> = () => {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((path) => path);
 
@@ -37,7 +41,7 @@ const Breadcrumb = () => {
           if (path === 'activity') displayName = 'Activities';
           
           return (
-            <React.Fragment key={route}>
+            <div key={route}>
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{displayName}</BreadcrumbPage>
@@ -48,7 +52,7 @@ const Breadcrumb = () => {
                 )}
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}
-            </React.Fragment>
+            </div>
           );
         })}
       </BreadcrumbList>

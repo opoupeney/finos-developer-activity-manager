@@ -32,9 +32,10 @@ const EventCreate = () => {
       // Remove id property as it's not needed for creation
       const { id, ...eventWithoutId } = data;
       
-      // Ensure all data is serializable
+      // Ensure all data is serializable by converting to and from JSON
       const serializableData = JSON.parse(JSON.stringify(eventWithoutId));
       
+      console.log("Calling createActivity with:", serializableData);
       await createActivity(serializableData);
       
       toast({

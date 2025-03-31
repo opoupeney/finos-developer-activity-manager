@@ -20,7 +20,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Save, Trash, GraduationCap, Code, Building, Users, MessageSquareCode, PenTool, UserPlus } from 'lucide-react';
-import { format, parse } from 'date-fns';
 import MDEditor from '@uiw/react-md-editor';
 
 const eventFormSchema = z.object({
@@ -129,10 +128,10 @@ const EventForm: React.FC<EventFormProps> = ({
     defaultValues
   });
 
-  const handleSubmit = async (values: EventFormValues) => {
+  const handleFormSubmit = async (values: EventFormValues) => {
     try {
       setIsSubmitting(true);
-      console.log("EventForm handleSubmit called with values:", values);
+      console.log("EventForm handleFormSubmit called with values:", values);
       
       const eventData: Activity = {
         id: initialData?.id || '',
@@ -175,7 +174,7 @@ const EventForm: React.FC<EventFormProps> = ({
         }
       };
       
-      console.log("Calling onSubmit with eventData:", eventData);
+      console.log("Calling parent onSubmit with eventData:", eventData);
       await onSubmit(eventData);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -216,7 +215,7 @@ const EventForm: React.FC<EventFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
         <div className="space-y-4">
           <FormField
             control={form.control}
@@ -709,6 +708,7 @@ const EventForm: React.FC<EventFormProps> = ({
               type="submit" 
               className="bg-finos-blue hover:bg-finos-blue/90"
               disabled={isSubmitting || isDeleting}
+              onClick={() => console.log("Submit button clicked")}
             >
               {isSubmitting ? (
                 <>Saving...</>
