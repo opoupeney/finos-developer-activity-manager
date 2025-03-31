@@ -1,77 +1,45 @@
-
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
-import { fetchAmbassadorById } from '@/services/ambassadorService';
-import FinosHeader from '@/components/FinosHeader';
-import Breadcrumb from '@/components/Breadcrumb';
-import AmbassadorDetail from '@/components/Ambassador/AmbassadorDetail';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import DashboardFooter from '@/components/Dashboard/DashboardFooter';
+import FinosHeader from '../components/FinosHeader';
+import Breadcrumb from '../components/Breadcrumb';
 
 const AmbassadorView = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { userDetails } = useAuth();
-  const isAdmin = userDetails?.role === 'admin';
-  
-  const { data: ambassador, isLoading, error } = useQuery({
-    queryKey: ['ambassador', id],
-    queryFn: () => fetchAmbassadorById(id as string),
-    enabled: !!id,
-  });
-
-  const breadcrumbItems = ambassador ? [
-    { label: 'Ambassadors', href: '/ambassadors' },
-    { label: `${ambassador.first_name} ${ambassador.last_name}`, href: '' },
-  ] : [
-    { label: 'Ambassadors', href: '/ambassadors' },
-    { label: 'Ambassador Details', href: '' },
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
-      
       <div className="container max-w-7xl mx-auto px-4 pt-4">
-        <Breadcrumb items={breadcrumbItems} />
+        <div className="breadcrumb-container">
+          <Breadcrumb />
+        </div>
       </div>
-      
-      <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-6"
-          onClick={() => navigate(-1)}
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        
-        {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-96 w-full" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-destructive">Error loading ambassador</h2>
-            <p className="text-muted-foreground mt-2">There was a problem loading this ambassador's information.</p>
-          </div>
-        ) : ambassador ? (
-          <AmbassadorDetail ambassador={ambassador} isAdmin={isAdmin} />
-        ) : (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-muted-foreground">Ambassador not found</h2>
-            <p className="text-muted-foreground mt-2">The requested ambassador does not exist.</p>
-          </div>
-        )}
+      <main className="container max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Ambassador View
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Details of a specific ambassador
+          </p>
+        </div>
       </main>
-      
-      <DashboardFooter />
+      <footer className="border-t py-6 mt-12">
+        <div className="container max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+          <div className="text-sm text-muted-foreground mb-4 md:mb-0">
+            © {new Date().getFullYear()} FINOS - Fintech Open Source Foundation
+          </div>
+          
+          <div className="flex space-x-6">
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Privacy Policy
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Terms of Service
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Contact
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

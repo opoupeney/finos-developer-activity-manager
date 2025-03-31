@@ -10,9 +10,8 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 
-interface BreadcrumbProps {
-  // No items prop needed - we'll generate from the current path
-}
+// Interface for the component props
+interface BreadcrumbProps {}
 
 const Breadcrumb: React.FC<BreadcrumbProps> = () => {
   const location = useLocation();

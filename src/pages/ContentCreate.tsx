@@ -1,108 +1,101 @@
-
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import FinosHeader from '../components/FinosHeader';
+import EventForm from '../components/EventForm';
+import { createActivity } from '../services/activityService';
+import { Activity } from '../types/activity';
 import { useAuth } from '@/contexts/AuthContext';
-import { createContent } from '@/services/contentService';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import FinosHeader from '@/components/FinosHeader';
-import Breadcrumb from '@/components/Breadcrumb';
-import ContentForm from '@/components/Content/ContentForm';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ContentType, ContentProvider, ContentStatus } from '@/types/content';
+import Breadcrumb from '../components/Breadcrumb';
 
-interface FormValues {
-  title: string;
-  description: string | null;
-  author: string | null;
-  url: string | null;
-  source: string | null;
-  type: ContentType;
-  provider: ContentProvider;
-  status: ContentStatus;
-  publication_date: Date | null;
-}
-
-const ContentCreate = () => {
+const EventCreate = () => {
+  const { userDetails } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userDetails } = useAuth();
-  const isAdmin = userDetails?.role === 'admin';
   
-  // Redirect non-admin users
-  if (!isAdmin) {
-    navigate('/content');
-    return null;
-  }
-
-  const breadcrumbItems = [
-    { label: 'Content', href: '/content' },
-    { label: 'Create New Content', href: '' },
-  ];
-
-  const createContentMutation = useMutation({
-    mutationFn: (data: FormValues) => {
-      // Convert Date to ISO string for the database
-      return createContent({
-        ...data,
-        publication_date: data.publication_date ? data.publication_date.toISOString() : null,
-      });
-    },
-    onSuccess: () => {
+  React.useEffect(() => {
+    if (userDetails && userDetails.role !== 'admin') {
       toast({
-        title: 'Success',
-        description: 'Content was successfully created.',
+        title: "Access Denied",
+        description: "You do not have permission to create developer activities",
+        variant: "destructive",
       });
-      navigate('/content');
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to create content.',
-        variant: 'destructive',
-      });
-    },
-  });
+      navigate('/');
+    }
+  }, [userDetails, navigate, toast]);
 
-  const handleSubmit = (data: FormValues) => {
-    createContentMutation.mutate(data);
+  const handleSubmit = async (data: Activity) => {
+    try {
+      console.log("EventCreate handleSubmit called with data:", data);
+      
+      // Remove id property as it's not needed for creation
+      const { id, ...eventWithoutId } = data;
+      
+      // Ensure all data is serializable by converting to and from JSON
+      const serializableData = JSON.parse(JSON.stringify(eventWithoutId));
+      
+      console.log("Calling createActivity with:", serializableData);
+      await createActivity(serializableData);
+      
+      toast({
+        title: "Activity Created",
+        description: "Developer activity has been created successfully",
+      });
+      
+      navigate('/');
+    } catch (error) {
+      console.error("Error creating developer activity:", error);
+      
+      toast({
+        title: "Error",
+        description: "Failed to create developer activity",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
-      
-      <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
-        <Breadcrumb items={breadcrumbItems} />
-        
-        <div className="mt-4 mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mb-4"
-            onClick={() => navigate(-1)}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Create New Content</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ContentForm 
-                onSubmit={handleSubmit} 
-                isSubmitting={createContentMutation.isPending} 
-              />
-            </CardContent>
-          </Card>
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
+        <div className="breadcrumb-container">
+          <Breadcrumb />
         </div>
+      </div>
+      <main className="container max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Create New Developer Activity
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Fill out the form below to create a new developer activity
+          </p>
+        </div>
+        
+        <EventForm onSubmit={handleSubmit} />
       </main>
+      
+      <footer className="border-t py-6 mt-12">
+        <div className="container max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+          <div className="text-sm text-muted-foreground mb-4 md:mb-0">
+            © {new Date().getFullYear()} FINOS - Fintech Open Source Foundation
+          </div>
+          
+          <div className="flex space-x-6">
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Privacy Policy
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Terms of Service
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Contact
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
 
-export default ContentCreate;
+export default EventCreate;

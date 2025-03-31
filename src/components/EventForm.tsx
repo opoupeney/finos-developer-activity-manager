@@ -133,6 +133,11 @@ const EventForm: React.FC<EventFormProps> = ({
       setIsSubmitting(true);
       console.log("EventForm handleFormSubmit called with values:", values);
       
+      // Update the markdown description from the editor state
+      if (!mdDescription) {
+        console.error("Warning: mdDescription is empty");
+      }
+      
       const eventData: Activity = {
         id: initialData?.id || '',
         title: values.title,
@@ -215,7 +220,7 @@ const EventForm: React.FC<EventFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
         <div className="space-y-4">
           <FormField
             control={form.control}
@@ -676,7 +681,7 @@ const EventForm: React.FC<EventFormProps> = ({
           </Card>
         </div>
         
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-8">
           <Button 
             type="button" 
             variant="outline" 
@@ -708,7 +713,6 @@ const EventForm: React.FC<EventFormProps> = ({
               type="submit" 
               className="bg-finos-blue hover:bg-finos-blue/90"
               disabled={isSubmitting || isDeleting}
-              onClick={() => console.log("Submit button clicked")}
             >
               {isSubmitting ? (
                 <>Saving...</>

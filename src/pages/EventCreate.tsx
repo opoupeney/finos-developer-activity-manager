@@ -27,7 +27,7 @@ const EventCreate = () => {
 
   const handleSubmit = async (data: Activity) => {
     try {
-      console.log("Form submitted with data:", data);
+      console.log("EventCreate handleSubmit called with data:", data);
       
       // Remove id property as it's not needed for creation
       const { id, ...eventWithoutId } = data;

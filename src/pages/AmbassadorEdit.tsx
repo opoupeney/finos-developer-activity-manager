@@ -1,137 +1,118 @@
-
 import React from 'react';
+import FinosHeader from '../components/FinosHeader';
+import AmbassadorForm from '../components/AmbassadorForm';
+import { getAmbassador, updateAmbassador } from '../services/ambassadorService';
+import { Ambassador } from '../types/ambassador';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
-import { fetchAmbassadorById, updateAmbassador } from '@/services/ambassadorService';
 import { useToast } from '@/hooks/use-toast';
-import FinosHeader from '@/components/FinosHeader';
-import Breadcrumb from '@/components/Breadcrumb';
-import AmbassadorForm from '@/components/Ambassador/AmbassadorForm';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import DashboardFooter from '@/components/Dashboard/DashboardFooter';
-
-interface FormValues {
-  first_name: string;
-  last_name: string;
-  location: string | null;
-  linkedin_profile: string | null;
-  github_id: string | null;
-  company: string | null;
-  title: string | null;
-  bio: string | null;
-}
+import { useAuth } from '@/contexts/AuthContext';
+import Breadcrumb from '../components/Breadcrumb';
 
 const AmbassadorEdit = () => {
   const { id } = useParams<{ id: string }>();
+  const [ambassador, setAmbassador] = React.useState<Ambassador | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const { userDetails } = useAuth();
-  const isAdmin = userDetails?.role === 'admin';
-  
-  // Redirect non-admin users
+
   React.useEffect(() => {
-    if (userDetails && !isAdmin) {
-      navigate('/ambassadors');
+    if (userDetails && userDetails.role !== 'admin') {
+      toast({
+        title: "Access Denied",
+        description: "You do not have permission to edit ambassadors",
+        variant: "destructive",
+      });
+      navigate('/');
     }
-  }, [userDetails, isAdmin, navigate]);
+  }, [userDetails, navigate, toast]);
 
-  const { data: ambassador, isLoading, error } = useQuery({
-    queryKey: ['ambassador', id],
-    queryFn: () => fetchAmbassadorById(id as string),
-    enabled: !!id && isAdmin,
-  });
+  React.useEffect(() => {
+    if (id) {
+      fetchAmbassador(id);
+    }
+  }, [id]);
 
-  const breadcrumbItems = ambassador ? [
-    { label: 'Ambassadors', href: '/ambassadors' },
-    { label: `${ambassador.first_name} ${ambassador.last_name}`, href: `/ambassadors/${id}` },
-    { label: 'Edit', href: '' },
-  ] : [
-    { label: 'Ambassadors', href: '/ambassadors' },
-    { label: 'Edit Ambassador', href: '' },
-  ];
-
-  const updateAmbassadorMutation = useMutation({
-    mutationFn: (data: FormValues) => updateAmbassador(id as string, data),
-    onSuccess: () => {
+  const fetchAmbassador = async (id: string) => {
+    try {
+      const ambassadorData = await getAmbassador(id);
+      setAmbassador(ambassadorData);
+    } catch (error) {
+      console.error("Error fetching ambassador:", error);
       toast({
-        title: 'Success',
-        description: 'Ambassador was successfully updated.',
+        title: "Error",
+        description: "Failed to fetch ambassador",
+        variant: "destructive",
       });
-      queryClient.invalidateQueries({ queryKey: ['ambassador', id] });
-      queryClient.invalidateQueries({ queryKey: ['ambassadors'] });
-      navigate(`/ambassadors/${id}`);
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to update ambassador.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const handleSubmit = (data: FormValues) => {
-    updateAmbassadorMutation.mutate(data);
+    }
   };
 
-  if (!isAdmin) return null;
+  const handleSubmit = async (data: Ambassador) => {
+    try {
+      if (id) {
+        await updateAmbassador(id, data);
+        toast({
+          title: "Ambassador Updated",
+          description: "Ambassador has been updated successfully",
+        });
+        navigate('/ambassadors');
+      } else {
+        toast({
+          title: "Error",
+          description: "Ambassador ID is missing",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error updating ambassador:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update ambassador",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (!ambassador) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <FinosHeader />
-      
       <div className="container max-w-7xl mx-auto px-4 pt-4">
-        <Breadcrumb items={breadcrumbItems} />
+        <div className="breadcrumb-container">
+          <Breadcrumb />
+        </div>
       </div>
-      
-      <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-6"
-          onClick={() => navigate(-1)}
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        
-        {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-96 w-full" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-destructive">Error loading ambassador</h2>
-            <p className="text-muted-foreground mt-2">There was a problem loading this ambassador's information.</p>
-          </div>
-        ) : ambassador ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>Edit Ambassador: {ambassador.first_name} {ambassador.last_name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AmbassadorForm 
-                initialData={ambassador}
-                onSubmit={handleSubmit} 
-                isSubmitting={updateAmbassadorMutation.isPending} 
-              />
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-muted-foreground">Ambassador not found</h2>
-            <p className="text-muted-foreground mt-2">The requested ambassador does not exist.</p>
-          </div>
-        )}
+      <main className="container max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Edit Ambassador
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Update the details of the ambassador
+          </p>
+        </div>
+        <AmbassadorForm initialData={ambassador} onSubmit={handleSubmit} />
       </main>
-      
-      <DashboardFooter />
+      <footer className="border-t py-6 mt-12">
+        <div className="container max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+          <div className="text-sm text-muted-foreground mb-4 md:mb-0">
+            © {new Date().getFullYear()} FINOS - Fintech Open Source Foundation
+          </div>
+          <div className="flex space-x-6">
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Privacy Policy
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Terms of Service
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Contact
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

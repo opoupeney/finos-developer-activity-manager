@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,7 +26,7 @@ const Content = () => {
       <FinosHeader />
       
       <div className="container max-w-7xl mx-auto px-4 pt-4">
-        <Breadcrumb items={breadcrumbItems} />
+        <Breadcrumb />
       </div>
       
       <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">

@@ -1,136 +1,151 @@
-
 import React from 'react';
+import FinosHeader from '../components/FinosHeader';
+import ContentForm from '../components/ContentForm';
+import { updateContent, getContent } from '../services/contentService';
+import { Content } from '../types/content';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { fetchContentById, updateContent } from '@/services/contentService';
 import { useToast } from '@/hooks/use-toast';
-import FinosHeader from '@/components/FinosHeader';
-import Breadcrumb from '@/components/Breadcrumb';
-import ContentForm from '@/components/Content/ContentForm';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ContentType, ContentProvider, ContentStatus } from '@/types/content';
-
-interface FormValues {
-  title: string;
-  description: string | null;
-  author: string | null;
-  url: string | null;
-  source: string | null;
-  type: ContentType;
-  provider: ContentProvider;
-  status: ContentStatus;
-  publication_date: Date | null;
-}
+import Breadcrumb from '../components/Breadcrumb';
 
 const ContentEdit = () => {
   const { id } = useParams<{ id: string }>();
+  const [content, setContent] = React.useState<Content | null>(null);
+  const { userDetails } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const { userDetails } = useAuth();
-  const isAdmin = userDetails?.role === 'admin';
+
+  React.useEffect(() => {
+    if (userDetails && userDetails.role !== 'admin') {
+      toast({
+        title: "Access Denied",
+        description: "You do not have permission to edit content",
+        variant: "destructive",
+      });
+      navigate('/');
+    }
+  }, [userDetails, navigate, toast]);
   
-  // Redirect non-admin users
-  if (!isAdmin) {
-    navigate('/content');
-    return null;
-  }
+  React.useEffect(() => {
+    const fetchContent = async () => {
+      if (id) {
+        try {
+          const fetchedContent = await getContent(id);
+          setContent(fetchedContent);
+        } catch (error) {
+          console.error("Error fetching content:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load content for editing",
+            variant: "destructive",
+          });
+          navigate('/content');
+        }
+      }
+    };
 
-  const { data: content, isLoading, error } = useQuery({
-    queryKey: ['content', id],
-    queryFn: () => fetchContentById(id as string),
-    enabled: !!id,
-  });
+    fetchContent();
+  }, [id, navigate, toast]);
 
-  const breadcrumbItems = [
-    { label: 'Content', href: '/content' },
-    { label: content?.title || 'Edit Content', href: `/content/${id}` },
-    { label: 'Edit', href: '' },
-  ];
-
-  const updateContentMutation = useMutation({
-    mutationFn: (data: FormValues) => {
-      // Convert Date to ISO string for the database
-      return updateContent(id as string, {
-        ...data,
-        publication_date: data.publication_date ? data.publication_date.toISOString() : null,
-      });
-    },
-    onSuccess: () => {
+  const handleSubmit = async (data: Content) => {
+    if (!id) {
       toast({
-        title: 'Success',
-        description: 'Content was successfully updated.',
+        title: "Error",
+        description: "Content ID is missing",
+        variant: "destructive",
       });
-      queryClient.invalidateQueries({ queryKey: ['content', id] });
-      queryClient.invalidateQueries({ queryKey: ['contents'] });
-      navigate(`/content/${id}`);
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to update content.',
-        variant: 'destructive',
-      });
-    },
-  });
+      return;
+    }
 
-  const handleSubmit = (data: FormValues) => {
-    updateContentMutation.mutate(data);
+    try {
+      await updateContent(id, data);
+      toast({
+        title: "Content Updated",
+        description: "Content has been updated successfully",
+      });
+      navigate('/content');
+    } catch (error) {
+      console.error("Error updating content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update content",
+        variant: "destructive",
+      });
+    }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <FinosHeader />
-      
-      <main className="flex-1 container max-w-7xl mx-auto px-4 py-6">
-        <Breadcrumb items={breadcrumbItems} />
-        
-        <div className="mt-4 mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mb-4"
-            onClick={() => navigate(-1)}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          
-          {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-64" />
-              <Skeleton className="h-96 w-full" />
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <h2 className="text-xl font-semibold text-destructive">Error loading content</h2>
-              <p className="text-muted-foreground mt-2">There was a problem loading this content item.</p>
-            </div>
-          ) : content ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>Edit Content: {content.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ContentForm 
-                  initialData={content}
-                  onSubmit={handleSubmit} 
-                  isSubmitting={updateContentMutation.isPending} 
-                />
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="text-center py-12">
-              <h2 className="text-xl font-semibold text-muted-foreground">Content not found</h2>
-              <p className="text-muted-foreground mt-2">The requested content item does not exist.</p>
-            </div>
-          )}
+  const handleDelete = async () => {
+    // Implement delete functionality here if needed
+  };
+
+  if (!content) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+        <FinosHeader />
+        <div className="container max-w-7xl mx-auto px-4 pt-4">
+          <div className="breadcrumb-container">
+            <Breadcrumb />
+          </div>
         </div>
+        <main className="container max-w-7xl mx-auto px-4 py-12">
+          <div className="mb-8 animate-fade-in">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Loading Content...
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Please wait while we fetch the content for editing.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <FinosHeader />
+      <div className="container max-w-7xl mx-auto px-4 pt-4">
+        <div className="breadcrumb-container">
+          <Breadcrumb />
+        </div>
+      </div>
+      <main className="container max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Edit Content
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Edit the content using the form below.
+          </p>
+        </div>
+        
+        <ContentForm
+          initialData={content}
+          onSubmit={handleSubmit}
+          onDelete={handleDelete}
+          isEditing={true}
+        />
       </main>
+      
+      <footer className="border-t py-6 mt-12">
+        <div className="container max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+          <div className="text-sm text-muted-foreground mb-4 md:mb-0">
+            © {new Date().getFullYear()} FINOS - Fintech Open Source Foundation
+          </div>
+          
+          <div className="flex space-x-6">
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Privacy Policy
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Terms of Service
+            </a>
+            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+              Contact
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
