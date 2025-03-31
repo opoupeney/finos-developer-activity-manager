@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -48,6 +47,8 @@ const EventEdit = () => {
 
   const handleSubmit = async (data: Activity) => {
     try {
+      console.log("EventEdit handleSubmit called with data:", data);
+      
       const updatedActivity = {
         ...data,
         keyDates
@@ -168,6 +169,8 @@ const EventEdit = () => {
       </div>
     );
   }
+
+  console.log("Event in EventEdit:", event);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

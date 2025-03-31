@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity } from '@/types/activity';
@@ -91,6 +92,7 @@ const EventForm: React.FC<EventFormProps> = ({
     return undefined;
   };
 
+  // Make sure we correctly initialize the form with the existing data
   const defaultValues: Partial<EventFormValues> = {
     title: initialData?.title || '',
     type: initialData?.type || '',
@@ -127,12 +129,16 @@ const EventForm: React.FC<EventFormProps> = ({
     defaultValues
   });
 
-  const [mdDescription, setMdDescription] = useState(defaultValues.marketingDescription || '');
+  // Initialize the MDEditor state with the description from the form
+  const [mdDescription, setMdDescription] = useState<string>(initialData?.marketingDescription || '');
 
+  // Sync the MDEditor content with the form field
   useEffect(() => {
+    // Update the form value when the MD editor changes
     form.setValue("marketingDescription", mdDescription, { 
       shouldValidate: true,
-      shouldDirty: true
+      shouldDirty: true,
+      shouldTouch: true
     });
   }, [mdDescription, form]);
 
