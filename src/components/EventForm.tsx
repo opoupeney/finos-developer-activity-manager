@@ -92,6 +92,9 @@ const EventForm: React.FC<EventFormProps> = ({
     return undefined;
   };
 
+  // Initialize the MDEditor state with the description from initialData
+  const [mdDescription, setMdDescription] = useState<string>('');
+  
   // Make sure we correctly initialize the form with the existing data
   const defaultValues: Partial<EventFormValues> = {
     title: initialData?.title || '',
@@ -129,8 +132,13 @@ const EventForm: React.FC<EventFormProps> = ({
     defaultValues
   });
 
-  // Initialize the MDEditor state with the description from the form
-  const [mdDescription, setMdDescription] = useState<string>(initialData?.marketingDescription || '');
+  // Set the initial description when initialData changes or is loaded
+  useEffect(() => {
+    if (initialData?.marketingDescription) {
+      console.log("Setting initial description from initialData:", initialData.marketingDescription);
+      setMdDescription(initialData.marketingDescription);
+    }
+  }, [initialData]);
 
   // Sync the MDEditor content with the form field
   useEffect(() => {
@@ -146,6 +154,7 @@ const EventForm: React.FC<EventFormProps> = ({
     try {
       setIsSubmitting(true);
       console.log("EventForm handleFormSubmit called with values:", values);
+      console.log("Current mdDescription value:", mdDescription);
       
       const eventData: Activity = {
         id: initialData?.id || '',

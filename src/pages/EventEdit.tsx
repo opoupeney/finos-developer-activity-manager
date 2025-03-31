@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FinosHeader from '../components/FinosHeader';
@@ -36,14 +37,23 @@ const EventEdit = () => {
     queryKey: ['event', id],
     queryFn: () => getActivityByID(id!),
     enabled: !!id,
-    meta: {
-      onSettled: (data: Activity | undefined) => {
-        if (data && data.keyDates) {
-          setKeyDates(data.keyDates);
-        }
+    onSuccess: (data: Activity) => {
+      console.log("Fetched activity data:", data);
+      if (data && data.keyDates) {
+        setKeyDates(data.keyDates);
       }
+    },
+    onError: (error) => {
+      console.error("Error fetching event:", error);
     }
   });
+
+  useEffect(() => {
+    if (event) {
+      console.log("Event data loaded:", event);
+      console.log("Marketing description:", event.marketingDescription);
+    }
+  }, [event]);
 
   const handleSubmit = async (data: Activity) => {
     try {
@@ -170,7 +180,8 @@ const EventEdit = () => {
     );
   }
 
-  console.log("Event in EventEdit:", event);
+  console.log("Event in EventEdit render:", event);
+  console.log("Event description in render:", event.marketingDescription);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
