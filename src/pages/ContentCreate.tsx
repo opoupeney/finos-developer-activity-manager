@@ -1,14 +1,16 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import FinosHeader from '../components/FinosHeader';
-import EventForm from '../components/EventForm';
-import { createActivity } from '../services/activityService';
-import { Activity } from '../types/activity';
-import { useAuth } from '@/contexts/AuthContext';
+import ContentForm from '../components/Content/ContentForm';
+import { createContent } from '../services/contentService';
+import { Content } from '../types/content';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import Breadcrumb from '../components/Breadcrumb';
 
-const EventCreate = () => {
+const ContentCreate = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { userDetails } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -17,40 +19,35 @@ const EventCreate = () => {
     if (userDetails && userDetails.role !== 'admin') {
       toast({
         title: "Access Denied",
-        description: "You do not have permission to create developer activities",
+        description: "You do not have permission to create content",
         variant: "destructive",
       });
       navigate('/');
     }
   }, [userDetails, navigate, toast]);
 
-  const handleSubmit = async (data: Activity) => {
+  const handleSubmit = async (data: any) => {
     try {
-      console.log("EventCreate handleSubmit called with data:", data);
-      
-      // Remove id property as it's not needed for creation
-      const { id, ...eventWithoutId } = data;
-      
-      // Ensure all data is serializable by converting to and from JSON
-      const serializableData = JSON.parse(JSON.stringify(eventWithoutId));
-      
-      console.log("Calling createActivity with:", serializableData);
-      await createActivity(serializableData);
+      setIsSubmitting(true);
+      console.log("ContentCreate handleSubmit called with data:", data);
+      await createContent(data);
       
       toast({
-        title: "Activity Created",
-        description: "Developer activity has been created successfully",
+        title: "Content Created",
+        description: "Content has been created successfully",
       });
       
-      navigate('/');
+      navigate('/content');
     } catch (error) {
-      console.error("Error creating developer activity:", error);
+      console.error("Error creating content:", error);
       
       toast({
         title: "Error",
-        description: "Failed to create developer activity",
+        description: "Failed to create content",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -65,14 +62,17 @@ const EventCreate = () => {
       <main className="container max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            Create New Developer Activity
+            Create New Content
           </h1>
           <p className="text-muted-foreground mt-1">
-            Fill out the form below to create a new developer activity
+            Fill out the form below to create new content
           </p>
         </div>
         
-        <EventForm onSubmit={handleSubmit} />
+        <ContentForm 
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
       </main>
       
       <footer className="border-t py-6 mt-12">
@@ -98,4 +98,4 @@ const EventCreate = () => {
   );
 };
 
-export default EventCreate;
+export default ContentCreate;

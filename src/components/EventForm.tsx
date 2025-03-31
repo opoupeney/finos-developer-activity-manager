@@ -220,7 +220,7 @@ const EventForm: React.FC<EventFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
         <div className="space-y-4">
           <FormField
             control={form.control}

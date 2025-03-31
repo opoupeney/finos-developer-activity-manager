@@ -2,8 +2,8 @@
 import React from 'react';
 import FinosHeader from '../components/FinosHeader';
 import ContentForm from '../components/Content/ContentForm';
-import { updateContent, fetchContentById as getContent } from '../services/contentService';
-import { Content } from '../types/content';
+import { fetchContentById as getContent, updateContent } from '../services/contentService';
+import { Content, ContentType, ContentProvider, ContentStatus } from '@/types/content';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -48,7 +48,7 @@ const ContentEdit = () => {
     fetchContent();
   }, [id, navigate, toast]);
 
-  const handleSubmit = async (data: Content) => {
+  const handleSubmit = async (formData: any) => {
     if (!id) {
       toast({
         title: "Error",
@@ -59,7 +59,8 @@ const ContentEdit = () => {
     }
 
     try {
-      await updateContent(id, data);
+      console.log("Submitting content update with data:", formData);
+      await updateContent(id, formData);
       toast({
         title: "Content Updated",
         description: "Content has been updated successfully",
