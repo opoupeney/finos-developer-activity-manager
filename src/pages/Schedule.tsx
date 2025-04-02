@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllActivities } from '@/services/activityService';
@@ -31,12 +30,10 @@ const Schedule = () => {
   const isLoading = activitiesLoading || contentsLoading;
   const error = activitiesError || contentsError;
 
-  // Add some debug logging to check activities data
   useEffect(() => {
     if (filteredActivities && filteredActivities.length > 0) {
       console.log('Filtered activities:', filteredActivities);
       
-      // Check which activities have key dates
       const activitiesWithKeyDates = filteredActivities.filter(
         activity => activity.keyDates && activity.keyDates.length > 0
       );
@@ -49,7 +46,7 @@ const Schedule = () => {
   }, [filteredActivities]);
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <div className="min-h-screen flex flex-col">
         <FinosHeader />
         <div className="container max-w-7xl mx-auto px-4 pt-4">

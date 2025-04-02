@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -37,14 +36,12 @@ const EventEdit = () => {
     queryKey: ['event', id],
     queryFn: () => getActivityByID(id!),
     enabled: !!id,
-    onSuccess: (data: Activity) => {
-      console.log("Fetched activity data:", data);
+    onSettled: (data: Activity | undefined) => {
+      console.log("Query settled with data:", data);
       if (data && data.keyDates) {
+        console.log("Setting key dates:", data.keyDates);
         setKeyDates(data.keyDates);
       }
-    },
-    onError: (error) => {
-      console.error("Error fetching event:", error);
     }
   });
 
