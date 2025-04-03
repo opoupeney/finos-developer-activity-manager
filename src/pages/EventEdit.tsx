@@ -37,11 +37,13 @@ const EventEdit = () => {
     queryKey: ['event', id],
     queryFn: () => getActivityByID(id!),
     enabled: !!id,
-    onSuccess: (data) => {
-      console.log("Query succeeded with data:", data);
-      if (data && data.keyDates) {
-        console.log("Setting key dates:", data.keyDates);
-        setKeyDates(data.keyDates);
+    meta: {
+      onSuccess: (data: Activity) => {
+        console.log("Query succeeded with data:", data);
+        if (data && data.keyDates) {
+          console.log("Setting key dates:", data.keyDates);
+          setKeyDates(data.keyDates);
+        }
       }
     }
   });
