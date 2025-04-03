@@ -105,7 +105,7 @@ export const createActivityMarker = (
   // Create custom marker element with color based on activity status
   const el = document.createElement('div');
   el.className = 'marker';
-  el.style.position = 'relative';
+  el.style.position = 'absolute';
   
   // Set marker color - if multiple activities, use a special color
   let color;
