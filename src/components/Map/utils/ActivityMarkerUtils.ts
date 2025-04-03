@@ -58,12 +58,12 @@ export const createActivityMarker = (
     }
   }
 
-  // Create pin icon SVG instead of a plain circle
+  // Create pin icon SVG
   const pinIconSvg = renderToString(
     React.createElement(MapPin, {
       color: "white",
       fill: color,
-      size: 20,
+      size: 24,  // Slightly larger than previous marker
       strokeWidth: 1.5,
     })
   );
