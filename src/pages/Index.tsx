@@ -73,7 +73,7 @@ const Index = () => {
       </div>
       <div className="flex-1 container max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Developer Activities</h1>
+          <h1 className="text-3xl font-bold">Developer Engagements</h1>
           {isAdmin && (
             <Button asChild>
               <Link to="/create">Create Activity</Link>
