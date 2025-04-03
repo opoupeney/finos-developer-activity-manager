@@ -1,13 +1,9 @@
 
 import React from 'react';
+import { useToast } from '@/hooks/use-toast';
+import MapContainer from './MapContainer';
 import { Activity } from '@/types/activity';
 import { Ambassador } from '@/types/ambassador';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapIcon } from 'lucide-react';
-import MapContainer from './MapContainer';
-
-// Hardcoded Mapbox token
-const MAPBOX_TOKEN = "pk.eyJ1Ijoib3BvdXBlbmV5IiwiYSI6ImNtN3pwajV5dTAwN20ya29pZ3Q1ZmpiNWQifQ.mKi-872Gk8COifzbu-UVtA";
 
 interface ActivityMapProps {
   activities: Activity[];
@@ -15,26 +11,27 @@ interface ActivityMapProps {
 }
 
 const ActivityMap: React.FC<ActivityMapProps> = ({ activities, ambassadors = [] }) => {
-  // Filter out rejected activities
-  const nonRejectedActivities = activities.filter(activity => activity.status !== 'Rejected');
+  const { toast } = useToast();
+  const mapboxToken = 'pk.eyJ1IjoiZGVtby1maW5vcyIsImEiOiJjbHY4c3VkMWIwNTAyMmxxeHU0N2E3aWJpIn0.eA2Eda5zc3-vP9Wc4NU4XQ';
 
-  return (
-    <Card className="animate-fade-in">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-semibold flex items-center gap-2">
-          <MapIcon className="h-5 w-5 text-finos-blue" />
-          Activity Locations
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <MapContainer 
-          activities={nonRejectedActivities} 
-          ambassadors={ambassadors}
-          mapboxToken={MAPBOX_TOKEN} 
-        />
-      </CardContent>
-    </Card>
-  );
+  if (!mapboxToken) {
+    // Show a warning toast if Mapbox token is missing
+    React.useEffect(() => {
+      toast({
+        title: "Mapbox Token Missing",
+        description: "Please provide a valid Mapbox token to display the map.",
+        variant: "destructive"
+      });
+    }, [toast]);
+
+    return (
+      <div className="bg-muted p-8 text-center rounded-md">
+        <p className="text-muted-foreground">Map cannot be displayed. Mapbox token is missing.</p>
+      </div>
+    );
+  }
+
+  return <MapContainer activities={activities} ambassadors={ambassadors} mapboxToken={mapboxToken} />;
 };
 
 export default ActivityMap;

@@ -1,9 +1,10 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Activity } from '@/types/activity';
 import { Ambassador } from '@/types/ambassador';
+import MapToolbar, { MapFilters } from './MapToolbar';
 import { 
   createActivityMarker, 
   createAmbassadorMarker, 
@@ -21,7 +22,48 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
+  
+  // Initialize filter state
+  const [filters, setFilters] = useState<MapFilters>({
+    showActivities: true,
+    showAmbassadors: true
+  });
 
+  // Function to update markers based on current filters
+  const updateMarkers = () => {
+    if (!map.current) return;
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+    
+    // Reset marker position tracking
+    resetMarkerPositions();
+    
+    // Add activity markers if filter is enabled
+    if (filters.showActivities) {
+      const groupedActivities = groupActivitiesByLocation(activities);
+      
+      Object.values(groupedActivities).forEach(activitiesAtLocation => {
+        const marker = createActivityMarker(activitiesAtLocation, map.current!);
+        if (marker) {
+          markersRef.current.push(marker);
+        }
+      });
+    }
+    
+    // Add ambassador markers if filter is enabled
+    if (filters.showAmbassadors) {
+      ambassadors.forEach(ambassador => {
+        const marker = createAmbassadorMarker(ambassador, map.current!);
+        if (marker) {
+          markersRef.current.push(marker);
+        }
+      });
+    }
+  };
+
+  // Setup map
   useEffect(() => {
     if (!mapContainer.current || !mapboxToken) return;
 
@@ -45,39 +87,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
       // Add markers when map loads
       map.current.on('load', () => {
         console.log('Map loaded, adding markers...');
-        // Clear any existing markers
-        markersRef.current.forEach(marker => marker.remove());
-        markersRef.current = [];
-        
-        // Reset marker position tracking
-        resetMarkerPositions();
-
-        // Log original activities count
-        console.log('Original activities count:', activities.length);
-
-        // Group activities by location
-        const groupedActivities = groupActivitiesByLocation(activities);
-        console.log('Grouped activities:', Object.keys(groupedActivities).length, 'unique locations');
-        
-        // Add markers for each group of activities
-        Object.values(groupedActivities).forEach(activitiesAtLocation => {
-          console.log(`Adding marker for ${activitiesAtLocation.length} activities at ${activitiesAtLocation[0].location}`);
-          const marker = createActivityMarker(activitiesAtLocation, map.current!);
-          if (marker) {
-            markersRef.current.push(marker);
-          }
-        });
-
-        // Add markers for each ambassador with a valid location
-        // Adding ambassadors after activities ensures their positioning logic can check for existing activity markers
-        ambassadors.forEach(ambassador => {
-          const marker = createAmbassadorMarker(ambassador, map.current!);
-          if (marker) {
-            markersRef.current.push(marker);
-          }
-        });
-
-        console.log('Total markers added:', markersRef.current.length);
+        updateMarkers();
       });
     } catch (error) {
       console.error("Error initializing map:", error);
@@ -89,10 +99,24 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
         map.current.remove();
       }
     };
-  }, [mapboxToken, activities, ambassadors]);
+  }, [mapboxToken]);
+
+  // Update markers when activities, ambassadors, or filters change
+  useEffect(() => {
+    if (map.current && map.current.loaded()) {
+      updateMarkers();
+    }
+  }, [activities, ambassadors, filters]);
 
   return (
-    <div ref={mapContainer} className="w-full h-[400px] rounded-md overflow-hidden" />
+    <div className="relative w-full h-[400px] rounded-md overflow-hidden">
+      <MapToolbar 
+        filters={filters} 
+        onChange={setFilters} 
+        className="absolute top-2 left-2 z-10" 
+      />
+      <div ref={mapContainer} className="w-full h-full" />
+    </div>
   );
 };
 
