@@ -1,3 +1,4 @@
+
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -198,12 +199,12 @@ export const createAmbassadorMarker = (
   
   // Convert UserRound icon to SVG string
   const userIconSvg = renderToString(
-    <UserRound 
-      color="#FF6B6B" 
-      size={32} 
-      strokeWidth={1.5}
-      className="bg-white rounded-full p-1 shadow-md" 
-    />
+    React.createElement(UserRound, {
+      color: "#FF6B6B", 
+      size: 32,
+      strokeWidth: 1.5,
+      className: "bg-white rounded-full p-1 shadow-md"
+    })
   );
 
   // Set innerHTML to the SVG string
@@ -235,3 +236,4 @@ export const createAmbassadorMarker = (
     .setPopup(popup)
     .addTo(map);
 };
+
