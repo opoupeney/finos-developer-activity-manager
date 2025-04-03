@@ -12,7 +12,7 @@ interface ActivityMapProps {
 
 const ActivityMap: React.FC<ActivityMapProps> = ({ activities, ambassadors = [] }) => {
   const { toast } = useToast();
-  const mapboxToken = 'pk.eyJ1IjoiZGVtby1maW5vcyIsImEiOiJjbHY4c3VkMWIwNTAyMmxxeHU0N2E3aWJpIn0.eA2Eda5zc3-vP9Wc4NU4XQ';
+  const mapboxToken = 'pk.eyJ1Ijoib3BvdXBlbmV5IiwiYSI6ImNtN3pwajV5dTAwN20ya29pZ3Q1ZmpiNWQifQ.mKi-872Gk8COifzbu-UVtA';
 
   if (!mapboxToken) {
     // Show a warning toast if Mapbox token is missing
