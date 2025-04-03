@@ -58,7 +58,7 @@ const MapToolbar: React.FC<MapToolbarProps> = ({
               <ToggleGroupItem
                 value="activities"
                 aria-label="Toggle activities"
-                pressed={showActivities}
+                data-state={showActivities ? "on" : "off"}
                 onClick={() => toggleFilter('showActivities')}
                 className="flex items-center gap-1 h-8"
               >
@@ -76,7 +76,7 @@ const MapToolbar: React.FC<MapToolbarProps> = ({
               <ToggleGroupItem
                 value="ambassadors"
                 aria-label="Toggle ambassadors"
-                pressed={showAmbassadors}
+                data-state={showAmbassadors ? "on" : "off"}
                 onClick={() => toggleFilter('showAmbassadors')}
                 className="flex items-center gap-1 h-8"
               >
