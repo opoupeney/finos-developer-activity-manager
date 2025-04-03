@@ -44,6 +44,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
 
       // Add markers when map loads
       map.current.on('load', () => {
+        console.log('Map loaded, adding markers...');
         // Clear any existing markers
         markersRef.current.forEach(marker => marker.remove());
         markersRef.current = [];
@@ -51,11 +52,16 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
         // Reset marker position tracking
         resetMarkerPositions();
 
+        // Log original activities count
+        console.log('Original activities count:', activities.length);
+
         // Group activities by location
         const groupedActivities = groupActivitiesByLocation(activities);
+        console.log('Grouped activities:', Object.keys(groupedActivities).length, 'unique locations');
         
         // Add markers for each group of activities
         Object.values(groupedActivities).forEach(activitiesAtLocation => {
+          console.log(`Adding marker for ${activitiesAtLocation.length} activities at ${activitiesAtLocation[0].location}`);
           const marker = createActivityMarker(activitiesAtLocation, map.current!);
           if (marker) {
             markersRef.current.push(marker);
@@ -69,6 +75,8 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
             markersRef.current.push(marker);
           }
         });
+
+        console.log('Total markers added:', markersRef.current.length);
       });
     } catch (error) {
       console.error("Error initializing map:", error);

@@ -144,7 +144,7 @@ export const createActivityMarker = (
             <p class="font-semibold text-xs">${activity.title}</p>
             <p class="text-xs text-muted-foreground">${activity.type}</p>
             <div class="text-xs text-finos-blue mt-0.5">
-              ${activity.metrics.currentRegistrations} registrations
+              ${activity.metrics?.currentRegistrations || 0} registrations
             </div>
           </div>
         `).join('')}
