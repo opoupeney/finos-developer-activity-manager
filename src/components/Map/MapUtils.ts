@@ -159,12 +159,14 @@ export const createActivityMarker = (
   // Create custom marker element with color based on activity status
   const el = document.createElement('div');
   el.className = 'marker';
+  el.style.position = 'relative';
   
   // Set marker color - if multiple activities, use a special color
   let color;
   if (activities.length > 1) {
     color = '#0091CD'; // Special color for multiple activities
-    // Add a badge showing the number of activities
+    
+    // Add a badge showing the number of activities - using absolute positioning
     const badge = document.createElement('div');
     badge.className = 'activity-count';
     badge.textContent = activities.length.toString();
@@ -202,17 +204,14 @@ export const createActivityMarker = (
   el.style.cursor = 'pointer';
   el.style.border = '2px solid white';
   el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
-  el.style.position = 'relative';
-
-  // Get offset for this marker
-  const offset = getActivityMarkerOffset(coordinates);
   
-  // Create marker with custom element and apply offset
-  return new mapboxgl.Marker(el)
+  // Important: Create marker at exact coordinates without applying offset to the marker position
+  const marker = new mapboxgl.Marker(el)
     .setLngLat(coordinates)
     .setPopup(popup)
-    .setOffset(offset)
     .addTo(map);
+    
+  return marker;
 };
 
 export const createAmbassadorMarker = (
@@ -254,13 +253,9 @@ export const createAmbassadorMarker = (
   el.style.border = '2px solid white';
   el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
 
-  // Get offset for this marker using ambassador-specific function
-  const offset = getAmbassadorMarkerOffset(coordinates);
-  
-  // Create marker with custom element and apply offset
+  // Create marker at exact coordinates (no offset applied to marker position)
   return new mapboxgl.Marker(el)
     .setLngLat(coordinates)
     .setPopup(popup)
-    .setOffset(offset)
     .addTo(map);
 };
