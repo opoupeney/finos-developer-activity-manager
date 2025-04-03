@@ -212,8 +212,8 @@ export const createAmbassadorMarker = (
   if (hasActivity) {
     // Add a slight offset to the north-east (up and right)
     adjustedCoordinates = [
-      coordinates[0] + 0.008, // Small longitude offset
-      coordinates[1] + 0.004  // Small latitude offset
+      coordinates[0] + 0.016, // Small longitude offset
+      coordinates[1] + 0.08  // Small latitude offset
     ];
   }
 
