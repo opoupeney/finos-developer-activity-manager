@@ -2,6 +2,9 @@
 import mapboxgl from 'mapbox-gl';
 import { Activity } from '@/types/activity';
 import { getCoordinates } from './CoordinateUtils';
+import { renderToString } from 'react-dom/server';
+import { MapPin } from 'lucide-react';
+import React from 'react';
 
 // Create activity markers on the map
 export const createActivityMarker = (
@@ -39,35 +42,10 @@ export const createActivityMarker = (
   const popup = new mapboxgl.Popup({ offset: 25 })
     .setHTML(popupContent);
 
-  // Create custom marker element with color based on activity status
-  const el = document.createElement('div');
-  el.className = 'marker';
-  el.style.position = 'absolute';
-  
   // Set marker color - if multiple activities, use a special color
   let color;
   if (activities.length > 1) {
     color = '#0091CD'; // Special color for multiple activities
-    
-    // Add a badge showing the number of activities - using absolute positioning
-    const badge = document.createElement('div');
-    badge.className = 'activity-count';
-    badge.textContent = activities.length.toString();
-    badge.style.position = 'absolute';
-    badge.style.top = '-8px';
-    badge.style.right = '-8px';
-    badge.style.backgroundColor = '#FF3E00';
-    badge.style.color = 'white';
-    badge.style.borderRadius = '50%';
-    badge.style.width = '16px';
-    badge.style.height = '16px';
-    badge.style.fontSize = '10px';
-    badge.style.fontWeight = 'bold';
-    badge.style.display = 'flex';
-    badge.style.justifyContent = 'center';
-    badge.style.alignItems = 'center';
-    badge.style.border = '1px solid white';
-    el.appendChild(badge);
   } else {
     // If single activity, use its status color
     const activity = activities[0];
@@ -79,17 +57,47 @@ export const createActivityMarker = (
       default: color = '#0091CD'; break;
     }
   }
-  
-  el.style.backgroundColor = color;
-  el.style.width = '24px';
-  el.style.height = '24px';
-  el.style.borderRadius = '50%';
+
+  // Create pin icon SVG instead of a plain circle
+  const pinIconSvg = renderToString(
+    React.createElement(MapPin, {
+      color: "white",
+      fill: color,
+      size: 20,
+      strokeWidth: 1.5,
+    })
+  );
+
+  // Create custom marker element
+  const el = document.createElement('div');
+  el.className = 'activity-marker';
+  el.innerHTML = pinIconSvg;
   el.style.cursor = 'pointer';
-  el.style.border = '2px solid white';
-  el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
+  
+  // If multiple activities, add a badge showing the number
+  if (activities.length > 1) {
+    const badge = document.createElement('div');
+    badge.className = 'activity-count';
+    badge.textContent = activities.length.toString();
+    badge.style.position = 'absolute';
+    badge.style.top = '-5px';
+    badge.style.right = '-5px';
+    badge.style.backgroundColor = '#FF3E00';
+    badge.style.color = 'white';
+    badge.style.borderRadius = '50%';
+    badge.style.width = '14px';
+    badge.style.height = '14px';
+    badge.style.fontSize = '9px';
+    badge.style.fontWeight = 'bold';
+    badge.style.display = 'flex';
+    badge.style.justifyContent = 'center';
+    badge.style.alignItems = 'center';
+    badge.style.border = '1px solid white';
+    el.appendChild(badge);
+  }
   
   // Create marker at exact coordinates without any offset
-  return new mapboxgl.Marker(el)
+  return new mapboxgl.Marker({ element: el })
     .setLngLat(coordinates)
     .setPopup(popup)
     .addTo(map);

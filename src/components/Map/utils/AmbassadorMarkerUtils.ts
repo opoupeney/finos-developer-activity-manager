@@ -34,28 +34,29 @@ export const createAmbassadorMarker = (
   const popup = new mapboxgl.Popup({ offset: 25 })
     .setHTML(popupContent);
 
-  // Create custom marker element using UserRound icon
-  const el = document.createElement('div');
-  el.className = 'ambassador-marker';
-  
-  // Convert UserRound icon to SVG string
+  // Convert UserRound icon to SVG string with smaller size
   const userIconSvg = renderToString(
     React.createElement(UserRound, {
-      color: "#FF6B6B", 
-      size: 32,
+      color: "white", 
+      size: 16,
       strokeWidth: 1.5,
-      className: "bg-white rounded-full p-1 shadow-md"
+      fill: "#FF6B6B",
+      className: "ambassador-icon"
     })
   );
 
-  // Set innerHTML to the SVG string
+  // Create custom marker element
+  const el = document.createElement('div');
+  el.className = 'ambassador-marker';
   el.innerHTML = userIconSvg;
-  
-  // Style the container
   el.style.cursor = 'pointer';
   el.style.borderRadius = '50%';
-  el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
-  el.style.background = 'white';
+  el.style.background = '#FF6B6B';
+  el.style.padding = '2px';
+  el.style.display = 'flex';
+  el.style.alignItems = 'center';
+  el.style.justifyContent = 'center';
+  el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
   
   // Check if there's already an activity at this location
   const coordKey = `${coordinates[0]},${coordinates[1]}`;
@@ -72,7 +73,7 @@ export const createAmbassadorMarker = (
   }
 
   // Create marker with possibly adjusted coordinates
-  return new mapboxgl.Marker(el)
+  return new mapboxgl.Marker({ element: el })
     .setLngLat(adjustedCoordinates)
     .setPopup(popup)
     .addTo(map);
