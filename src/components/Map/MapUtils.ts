@@ -1,7 +1,9 @@
-
-import { Activity } from '@/types/activity';
-import { Ambassador } from '@/types/ambassador';
+import React from 'react';
 import mapboxgl from 'mapbox-gl';
+import { Ambassador } from '@/types/ambassador';
+import { UserRound } from 'lucide-react';
+import { renderToString } from 'react-dom/server';
+import { Activity } from '@/types/activity';
 
 // Function to convert location strings to coordinates
 // This is a simplified version - in a real app you would use a geocoding service
@@ -190,24 +192,34 @@ export const createAmbassadorMarker = (
   const popup = new mapboxgl.Popup({ offset: 25 })
     .setHTML(popupContent);
 
-  // Create custom marker element for ambassadors - using a diamond shape
+  // Create custom marker element using UserRound icon
   const el = document.createElement('div');
   el.className = 'ambassador-marker';
   
-  // Ambassador markers are a different color and shape
-  el.style.backgroundColor = '#FF6B6B'; // Different color for ambassadors
-  el.style.width = '20px';
-  el.style.height = '20px';
-  el.style.transform = 'rotate(45deg)'; // Diamond shape
-  el.style.cursor = 'pointer';
-  el.style.border = '2px solid white';
-  el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
+  // Convert UserRound icon to SVG string
+  const userIconSvg = renderToString(
+    <UserRound 
+      color="#FF6B6B" 
+      size={32} 
+      strokeWidth={1.5}
+      className="bg-white rounded-full p-1 shadow-md" 
+    />
+  );
 
+  // Set innerHTML to the SVG string
+  el.innerHTML = userIconSvg;
+  
+  // Style the container
+  el.style.cursor = 'pointer';
+  el.style.borderRadius = '50%';
+  el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
+  el.style.background = 'white';
+  
   // Check if there's already an activity at this location
   const coordKey = `${coordinates[0]},${coordinates[1]}`;
   const hasActivity = locationHasActivity.get(coordKey) || false;
   
-  // If there's an activity at this location, add a small offset to the ambassador marker
+  // If there's an activity at this location, add a slight offset to the ambassador marker
   let adjustedCoordinates = [...coordinates] as [number, number];
   if (hasActivity) {
     // Add a slight offset to the north-east (up and right)
