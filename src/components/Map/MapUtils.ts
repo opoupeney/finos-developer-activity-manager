@@ -36,9 +36,12 @@ export const getCoordinates = (location: string): [number, number] | null => {
   return null;
 };
 
-// Reset marker positions when map is reinitialized
+// Track locations that have activities to adjust ambassador positions
+const locationHasActivity = new Map<string, boolean>();
+
+// Reset tracking when map is reinitialized
 export const resetMarkerPositions = () => {
-  // We no longer need to track marker positions for offsets
+  locationHasActivity.clear();
 };
 
 // New function to group activities by location
@@ -61,6 +64,9 @@ export const groupActivitiesByLocation = (activities: Activity[]): Record<string
     }
     
     groupedActivities[coordKey].push(activity);
+    
+    // Mark this location as having an activity
+    locationHasActivity.set(coordKey, true);
   });
   
   return groupedActivities;
@@ -197,9 +203,23 @@ export const createAmbassadorMarker = (
   el.style.border = '2px solid white';
   el.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
 
-  // Create marker at exact coordinates without any offset
+  // Check if there's already an activity at this location
+  const coordKey = `${coordinates[0]},${coordinates[1]}`;
+  const hasActivity = locationHasActivity.get(coordKey) || false;
+  
+  // If there's an activity at this location, add a small offset to the ambassador marker
+  let adjustedCoordinates = [...coordinates] as [number, number];
+  if (hasActivity) {
+    // Add a slight offset to the north-east (up and right)
+    adjustedCoordinates = [
+      coordinates[0] + 0.008, // Small longitude offset
+      coordinates[1] + 0.004  // Small latitude offset
+    ];
+  }
+
+  // Create marker with possibly adjusted coordinates
   return new mapboxgl.Marker(el)
-    .setLngLat(coordinates)
+    .setLngLat(adjustedCoordinates)
     .setPopup(popup)
     .addTo(map);
 };

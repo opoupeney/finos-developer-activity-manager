@@ -69,6 +69,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
         });
 
         // Add markers for each ambassador with a valid location
+        // Adding ambassadors after activities ensures their positioning logic can check for existing activity markers
         ambassadors.forEach(ambassador => {
           const marker = createAmbassadorMarker(ambassador, map.current!);
           if (marker) {
