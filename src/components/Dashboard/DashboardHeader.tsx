@@ -12,7 +12,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ isAdmin }) => {
   return (
     <div className="flex justify-between items-center mb-8 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">FINOS Developer Activities</h1>
+        <h1 className="text-3xl font-bold tracking-tight">FINOS Developer Engagement</h1>
         <p className="text-muted-foreground mt-1">Manage and monitor all developer activities</p>
       </div>
       
