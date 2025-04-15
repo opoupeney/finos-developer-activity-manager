@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -40,12 +41,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Configure signOut to remove persistent sessions
       await supabase.auth.signOut({ scope: 'global' });
       
-      // Store a flag in localStorage to indicate signed out state for page refreshes
-      localStorage.setItem('authSignedOut', 'true');
-      
-      // Clear any other auth-related storage
-      localStorage.removeItem('supabase.auth.token');
-      
       console.log('User signed out successfully');
     } catch (error: any) {
       console.error('Error signing out:', error.message);
@@ -80,13 +75,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
-    
     const initializeAuth = async () => {
       try {
         setLoading(true);
         
-        // Get the initial session
+        // Set up auth state change listener first
+        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, changedSession) => {
+          console.log('Auth state changed:', event, changedSession?.user?.id);
+          
+          if (event === 'SIGNED_OUT') {
+            setSession(null);
+            setUser(null);
+            setUserDetails(null);
+          } else if (changedSession) {
+            setSession(changedSession);
+            setUser(changedSession.user);
+            
+            // For events that include a user, fetch user details 
+            if (changedSession.user) {
+              const details = await fetchUserDetails(changedSession.user.id);
+              setUserDetails(details);
+            }
+          }
+        });
+
+        // Then check for existing session
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -101,23 +114,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUserDetails(details);
         }
 
-        // Set up auth state change listener
-        const { data: listener } = supabase.auth.onAuthStateChange(async (event, changedSession) => {
-          console.log('Auth state changed:', event, changedSession?.user?.id);
-          
-          if (event === 'SIGNED_OUT') {
-            setSession(null);
-            setUser(null);
-            setUserDetails(null);
-          } else if (changedSession?.user) {
-            setSession(changedSession);
-            setUser(changedSession.user);
-            const details = await fetchUserDetails(changedSession.user.id);
-            setUserDetails(details);
+        return () => {
+          if (authListener?.subscription) {
+            console.log('Cleaning up auth listener');
+            authListener.subscription.unsubscribe();
           }
-        });
-
-        authListener = listener;
+        };
       } catch (error: any) {
         console.error('Error initializing auth:', error);
         toast({
@@ -135,13 +137,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    initializeAuth();
-
+    const cleanup = initializeAuth();
+    
     return () => {
-      if (authListener) {
-        console.log('Cleaning up auth listener');
-        authListener.subscription.unsubscribe();
-      }
+      cleanup.then(unsubscribe => {
+        if (unsubscribe) unsubscribe();
+      });
     };
   }, [toast]);
 

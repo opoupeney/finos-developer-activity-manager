@@ -91,13 +91,21 @@ const AuthForm = () => {
     try {
       setLoading(true);
       
-      // Use the current window origin for the redirect
-      const redirectTo = `${window.location.origin}/auth`;
+      // Get the current URL origin for the redirectTo
+      const origin = window.location.origin;
+      
+      // Make sure the redirectTo exactly matches what's configured in Supabase
+      const redirectTo = `${origin}/auth`;
+      
+      console.log("Redirecting to Google auth with redirectTo:", redirectTo);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: redirectTo,
+          queryParams: {
+            prompt: 'select_account',
+          }
         }
       });
       
@@ -105,10 +113,10 @@ const AuthForm = () => {
         throw error;
       }
       
-      // We don't need to show a success toast here since the redirect will happen
-      // and the Auth page will handle the success message after redirect
+      // The redirect will happen automatically
       
     } catch (error: any) {
+      console.error("Google sign-in error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to sign in with Google",

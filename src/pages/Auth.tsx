@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import FinosHeader from '../components/FinosHeader';
 import AuthForm from '../components/Auth/AuthForm';
@@ -14,33 +15,37 @@ const Auth = () => {
   const [authLoading, setAuthLoading] = useState(false);
   
   useEffect(() => {
+    // Handle OAuth redirects and session recovery
     const handleAuthSession = async () => {
       try {
         setAuthLoading(true);
-        const { data, error } = await supabase.auth.getSession();
         
-        if (data.session?.provider_token || data.session?.provider_refresh_token) {
+        // Get the current session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Error checking auth session:", error);
+          throw error;
+        }
+        
+        // If we have a valid session, show success and redirect
+        if (session) {
+          console.log("Valid session found after redirect:", session.user.id);
+          
           toast({
             title: "Signed in successfully",
-            description: "You have been signed in with Google",
+            description: session.user.app_metadata.provider === 'google' 
+              ? "You have been signed in with Google" 
+              : "You have been signed in successfully",
           });
           
           navigate('/', { replace: true });
         }
-        
-        if (error) {
-          console.error("Error checking auth session:", error);
-          toast({
-            title: "Authentication Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
       } catch (error: any) {
-        console.error("Unexpected error during auth check:", error);
+        console.error("Authentication error:", error);
         toast({
           title: "Authentication Error",
-          description: "An unexpected error occurred",
+          description: error.message || "An unexpected error occurred",
           variant: "destructive",
         });
       } finally {
@@ -48,19 +53,28 @@ const Auth = () => {
       }
     };
     
-    if (!loading && !user) {
-      const hasHashParams = window.location.hash && window.location.hash.includes('access_token');
-      const hasQueryParams = window.location.search && (
-        window.location.search.includes('error_description') || 
-        window.location.search.includes('code=')
-      );
-      
-      if (hasHashParams || hasQueryParams) {
-        handleAuthSession();
-      }
+    // Check if we're coming back from an OAuth redirect
+    const hasHashParams = window.location.hash && (
+      window.location.hash.includes('access_token') || 
+      window.location.hash.includes('error')
+    );
+    
+    const hasQueryParams = window.location.search && (
+      window.location.search.includes('error_description') || 
+      window.location.search.includes('code=')
+    );
+    
+    // Only try to handle the session if:
+    // 1. We're not already loading auth state
+    // 2. We don't already have a user
+    // 3. We have either hash or query params indicating we're in a redirect flow
+    if (!loading && !user && (hasHashParams || hasQueryParams)) {
+      console.log("Detected auth redirect, handling session");
+      handleAuthSession();
     }
   }, [loading, user, navigate, toast]);
   
+  // If the user is already logged in, redirect to home
   if (user && !loading && !authLoading) {
     return <Navigate to="/" replace />;
   }
