@@ -53,7 +53,7 @@ const Auth = () => {
       }
     };
     
-    // Check if we're coming back from an OAuth redirect
+    // Improved detection of OAuth redirects
     const hasHashParams = window.location.hash && (
       window.location.hash.includes('access_token') || 
       window.location.hash.includes('error')

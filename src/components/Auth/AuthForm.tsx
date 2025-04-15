@@ -99,12 +99,17 @@ const AuthForm = () => {
       
       console.log("Redirecting to Google auth with redirectTo:", redirectTo);
       
+      // Using a direct redirect approach instead of popup to avoid frame issues
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: redirectTo,
+          // Don't use popup as it can trigger iframe issues
           queryParams: {
+            // Always prompt for account selection to avoid cached credentials issues
             prompt: 'select_account',
+            // Add access_type parameter to request offline access (refresh tokens)
+            access_type: 'offline'
           }
         }
       });
