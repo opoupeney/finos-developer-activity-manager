@@ -13,15 +13,27 @@ const AmbassadorCreate = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreateAmbassador = async (formData: any) => {
+    if (isSubmitting) return; // Prevent multiple submissions
+    
     setIsSubmitting(true);
     try {
-      // Fix for the missing headshot_url
+      console.log('Submitting ambassador data:', formData);
+      
+      // Fix for the missing headshot_url and other nullable fields
       const ambassadorData = {
         ...formData,
-        headshot_url: formData.headshot_url || null
+        headshot_url: formData.headshot_url || null,
+        location: formData.location || null,
+        linkedin_profile: formData.linkedin_profile || null,
+        github_id: formData.github_id || null,
+        company: formData.company || null,
+        title: formData.title || null,
+        bio: formData.bio || null
       };
       
       const newAmbassador = await createAmbassador(ambassadorData);
+      console.log('Ambassador created successfully:', newAmbassador);
+      
       toast({
         title: 'Success',
         description: 'Ambassador created successfully',

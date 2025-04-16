@@ -32,9 +32,23 @@ export const fetchAmbassadorById = async (id: string): Promise<Ambassador> => {
 };
 
 export const createAmbassador = async (ambassador: Omit<Ambassador, 'id' | 'created_at' | 'updated_at'>): Promise<Ambassador> => {
+  console.log('Creating ambassador with data:', ambassador);
+  
+  // Ensure all fields are properly formatted
+  const formattedData = {
+    ...ambassador,
+    location: ambassador.location || null,
+    linkedin_profile: ambassador.linkedin_profile || null,
+    github_id: ambassador.github_id || null,
+    company: ambassador.company || null,
+    title: ambassador.title || null,
+    bio: ambassador.bio || null,
+    headshot_url: ambassador.headshot_url || null
+  };
+  
   const { data, error } = await supabase
     .from('ambassadors')
-    .insert(ambassador)
+    .insert(formattedData)
     .select()
     .single();
 
@@ -43,6 +57,7 @@ export const createAmbassador = async (ambassador: Omit<Ambassador, 'id' | 'crea
     throw new Error(error.message);
   }
 
+  console.log('Ambassador created successfully:', data);
   return data;
 };
 

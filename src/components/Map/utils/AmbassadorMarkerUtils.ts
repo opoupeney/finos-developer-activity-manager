@@ -26,7 +26,7 @@ export const createAmbassadorMarker = (
       <h3 class="font-bold text-sm">${ambassador.first_name} ${ambassador.last_name}</h3>
       ${ambassador.title ? `<p class="text-xs text-muted-foreground">${ambassador.title}</p>` : ''}
       ${ambassador.company ? `<p class="text-xs text-muted-foreground">${ambassador.company}</p>` : ''}
-      <p class="text-xs text-muted-foreground">${ambassador.location}</p>
+      ${ambassador.location ? `<p class="text-xs text-muted-foreground">${ambassador.location}</p>` : ''}
     </div>
   `;
 
@@ -72,9 +72,14 @@ export const createAmbassadorMarker = (
     ];
   }
 
-  // Create marker with possibly adjusted coordinates
-  return new mapboxgl.Marker({ element: el })
-    .setLngLat(adjustedCoordinates)
-    .setPopup(popup)
-    .addTo(map);
+  try {
+    // Create marker with possibly adjusted coordinates
+    return new mapboxgl.Marker({ element: el })
+      .setLngLat(adjustedCoordinates)
+      .setPopup(popup)
+      .addTo(map);
+  } catch (error) {
+    console.error('Error creating ambassador marker:', error);
+    return null;
+  }
 };
