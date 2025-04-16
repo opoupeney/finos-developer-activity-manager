@@ -1,4 +1,3 @@
-
 import { Activity } from '@/types/activity';
 
 // Function to convert location strings to coordinates
@@ -17,10 +16,11 @@ export const getCoordinates = (location: string): [number, number] | null => {
     'Chicago': [-87.6298, 41.8781],
     'Los Angeles': [-118.2437, 34.0522],
     'Singapore': [103.8198, 1.3521],
-    'Bangalore': [77.5946, 12.9716], // Added Bangalore coordinates
-    'Remote': [0, 0], // Center of the map for remote activities
-    'Virtual': [0, 0],  // Center of the map for virtual activities
-    'Online': [0, 0]    // Center of the map for online activities
+    'Bangalore': [77.5946, 12.9716],
+    'Barcelona': [2.1734, 41.3851],
+    'Remote': [0, 0],
+    'Virtual': [0, 0],
+    'Online': [0, 0]
   };
 
   // Try to match the location
