@@ -27,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [userDetails, setUserDetails] = useState<{ full_name?: string; email?: string; avatar_url?: string; role?: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
   const { toast } = useToast();
 
   const signOut = async () => {
@@ -75,9 +76,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let authListenerCleanup: (() => void) | undefined;
+
     const initializeAuth = async () => {
+      if (initialized) return;
+      
       try {
         setLoading(true);
+        console.log('Initializing auth context...');
         
         // Set up auth state change listener first
         const { data: authListener } = supabase.auth.onAuthStateChange(async (event, changedSession) => {
@@ -91,13 +97,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setSession(changedSession);
             setUser(changedSession.user);
             
-            // For events that include a user, fetch user details 
+            // For events that include a user, fetch user details with a small delay to prevent deadlocks
             if (changedSession.user) {
-              const details = await fetchUserDetails(changedSession.user.id);
-              setUserDetails(details);
+              // Use a small timeout to prevent any potential auth deadlocks
+              setTimeout(async () => {
+                const details = await fetchUserDetails(changedSession.user!.id);
+                setUserDetails(details);
+              }, 0);
             }
           }
         });
+
+        authListenerCleanup = () => {
+          console.log('Cleaning up auth listener');
+          authListener.subscription.unsubscribe();
+        };
 
         // Then check for existing session
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
@@ -108,18 +122,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // If we have a session, set up the auth state
         if (initialSession?.user) {
+          console.log('Found existing session for user:', initialSession.user.id);
           setSession(initialSession);
           setUser(initialSession.user);
           const details = await fetchUserDetails(initialSession.user.id);
           setUserDetails(details);
+        } else {
+          console.log('No session found, user is not authenticated');
         }
-
-        return () => {
-          if (authListener?.subscription) {
-            console.log('Cleaning up auth listener');
-            authListener.subscription.unsubscribe();
-          }
-        };
+        
+        setInitialized(true);
       } catch (error: any) {
         console.error('Error initializing auth:', error);
         toast({
@@ -132,19 +144,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(null);
         setUser(null);
         setUserDetails(null);
+        setInitialized(true);
       } finally {
         setLoading(false);
       }
     };
 
-    const cleanup = initializeAuth();
+    initializeAuth();
     
     return () => {
-      cleanup.then(unsubscribe => {
-        if (unsubscribe) unsubscribe();
-      });
+      if (authListenerCleanup) {
+        authListenerCleanup();
+      }
     };
-  }, [toast]);
+  }, [toast, initialized]);
 
   const value = {
     session,

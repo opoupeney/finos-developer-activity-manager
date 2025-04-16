@@ -16,14 +16,17 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     console.log('ProtectedRoute - Auth state:', { user: !!user, loading });
   }, [user, loading]);
 
+  // Show loading state while authentication is being checked
   if (loading) {
     return <DashboardLoading />;
   }
 
+  // If user is not authenticated, redirect to auth page
   if (!user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
+  // User is authenticated, render children
   return <>{children}</>;
 };
 
