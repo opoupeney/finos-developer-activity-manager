@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import FinosHeader from '../components/FinosHeader';
 import AuthForm from '../components/Auth/AuthForm';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -11,12 +11,57 @@ import Breadcrumb from '@/components/Breadcrumb';
 const Auth = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [authLoading, setAuthLoading] = useState(false);
   
   useEffect(() => {
+    // Check URL for redirects from external OAuth providers
+    const checkForExternalAuth = async () => {
+      // Check if this might be a redirect from external auth provider
+      const hasHash = window.location.hash && window.location.hash.length > 0;
+      
+      if (hasHash) {
+        console.log("Detected potential OAuth redirect with hash params");
+        try {
+          setAuthLoading(true);
+          
+          // This will attempt to exchange the auth code for a session
+          const { data, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            throw error;
+          }
+          
+          if (data.session) {
+            toast({
+              title: "Signed in successfully",
+              description: "You have been authenticated",
+            });
+            
+            // Clear the hash to prevent repeated processing
+            window.history.replaceState(null, '', window.location.pathname);
+            
+            navigate('/', { replace: true });
+          }
+        } catch (error: any) {
+          console.error("Error processing OAuth redirect:", error);
+          toast({
+            title: "Authentication Error",
+            description: error.message || "Failed to complete authentication",
+            variant: "destructive",
+          });
+        } finally {
+          setAuthLoading(false);
+        }
+      }
+    };
+    
     // Handle OAuth redirects, password resets, and session recovery
     const handleAuthSession = async () => {
+      // Skip if already processing external auth
+      if (authLoading) return;
+      
       try {
         setAuthLoading(true);
         
@@ -81,19 +126,22 @@ const Auth = () => {
       window.location.search.includes('type=recovery')
     );
     
-    // Only try to handle the session if:
-    // 1. We're not already loading auth state
-    // 2. We don't already have a user
-    // 3. We have either hash or query params indicating we're in a redirect flow
-    if (!loading && !user && (hasHashParams || hasQueryParams)) {
+    // First check for external auth (OAuth redirects)
+    if (hasHashParams) {
+      checkForExternalAuth();
+    } 
+    // Then check for other auth flows (password reset, etc.)
+    else if (!loading && !user && hasQueryParams) {
       console.log("Detected auth redirect or password reset, handling session");
       handleAuthSession();
     }
-  }, [loading, user, navigate, toast]);
+  }, [loading, user, navigate, toast, authLoading]);
   
   // If the user is already logged in, redirect to home
   if (user && !loading && !authLoading) {
-    return <Navigate to="/" replace />;
+    // If there's a from location in state, redirect there instead of home
+    const from = location.state?.from?.pathname || '/';
+    return <Navigate to={from} replace />;
   }
   
   return (

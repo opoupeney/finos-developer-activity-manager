@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 const AuthForm = () => {
   const [email, setEmail] = useState('');
@@ -16,8 +18,14 @@ const AuthForm = () => {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [isResetMode, setIsResetMode] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if we're in an iframe
+    setIsInIframe(window !== window.parent);
+  }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,28 +100,55 @@ const AuthForm = () => {
     try {
       setLoading(true);
       
+      // In an iframe (preview), we need to open Google auth in a new tab
+      // Get the current origin for proper redirection
       const origin = window.location.origin;
-      
       const redirectTo = `${origin}/auth`;
       
       console.log("Redirecting to Google auth with redirectTo:", redirectTo);
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectTo,
-          queryParams: {
-            prompt: 'select_account',
-            access_type: 'offline'
+      // For iframe preview, we need to open in a new window/tab
+      if (isInIframe) {
+        // Open in a new window/tab
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: redirectTo,
+            skipBrowserRedirect: true, // This prevents automatic redirect
+            queryParams: {
+              prompt: 'select_account',
+              access_type: 'offline'
+            }
           }
+        });
+        
+        if (error) throw error;
+        
+        // Open the URL in a new tab
+        if (data?.url) {
+          window.open(data.url, '_blank');
+          toast({
+            title: "Google Login",
+            description: "Please complete the sign-in in the new window/tab that opened.",
+          });
         }
-      });
-      
-      if (error) {
-        throw error;
+      } else {
+        // Normal flow for non-iframe environments
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: redirectTo,
+            queryParams: {
+              prompt: 'select_account',
+              access_type: 'offline'
+            }
+          }
+        });
+        
+        if (error) {
+          throw error;
+        }
       }
-      
-      console.log("Google sign-in success:", data);
       
     } catch (error: any) {
       console.error("Google sign-in error:", error);
@@ -122,6 +157,7 @@ const AuthForm = () => {
         description: error.message || "Failed to sign in with Google",
         variant: "destructive",
       });
+    } finally {
       setLoading(false);
     }
   };
@@ -214,6 +250,16 @@ const AuthForm = () => {
 
   return (
     <Card className="w-full max-w-md mx-auto">
+      {isInIframe && (
+        <Alert className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            You are viewing this page in the Lovable preview. Google authentication will open in a new tab. 
+            After completing authentication, please return to this window.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <Tabs defaultValue="signin">
         <CardHeader>
           <TabsList className="grid w-full grid-cols-2">
