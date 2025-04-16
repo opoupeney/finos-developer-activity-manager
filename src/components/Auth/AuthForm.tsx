@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -140,8 +141,14 @@ const AuthForm = () => {
     try {
       setLoading(true);
       
+      // Get the current origin for proper redirection
+      const origin = window.location.origin;
+      const redirectTo = `${origin}/auth`;
+      
+      console.log("Sending password reset with redirectTo:", redirectTo);
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth?reset=true`,
+        redirectTo: redirectTo,
       });
       
       if (error) throw error;

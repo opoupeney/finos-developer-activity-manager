@@ -15,7 +15,7 @@ const Auth = () => {
   const [authLoading, setAuthLoading] = useState(false);
   
   useEffect(() => {
-    // Handle OAuth redirects and session recovery
+    // Handle OAuth redirects, password resets, and session recovery
     const handleAuthSession = async () => {
       try {
         setAuthLoading(true);
@@ -32,14 +32,30 @@ const Auth = () => {
         if (session) {
           console.log("Valid session found after redirect:", session.user.id);
           
-          toast({
-            title: "Signed in successfully",
-            description: session.user.app_metadata.provider === 'google' 
-              ? "You have been signed in with Google" 
-              : "You have been signed in successfully",
-          });
+          // Check if this is a password reset flow
+          const urlParams = new URLSearchParams(window.location.search);
+          const isReset = urlParams.get('type') === 'recovery';
           
-          navigate('/', { replace: true });
+          if (isReset) {
+            toast({
+              title: "Password Reset",
+              description: "You can now set a new password",
+            });
+            
+            // Optionally redirect to a password reset form
+            // navigate('/reset-password', { replace: true });
+            // For now, we'll just redirect to home
+            navigate('/', { replace: true });
+          } else {
+            toast({
+              title: "Signed in successfully",
+              description: session.user.app_metadata.provider === 'google' 
+                ? "You have been signed in with Google" 
+                : "You have been signed in successfully",
+            });
+            
+            navigate('/', { replace: true });
+          }
         }
       } catch (error: any) {
         console.error("Authentication error:", error);
@@ -53,7 +69,7 @@ const Auth = () => {
       }
     };
     
-    // Improved detection of OAuth redirects
+    // Improved detection of OAuth redirects and password reset
     const hasHashParams = window.location.hash && (
       window.location.hash.includes('access_token') || 
       window.location.hash.includes('error')
@@ -61,7 +77,8 @@ const Auth = () => {
     
     const hasQueryParams = window.location.search && (
       window.location.search.includes('error_description') || 
-      window.location.search.includes('code=')
+      window.location.search.includes('code=') ||
+      window.location.search.includes('type=recovery')
     );
     
     // Only try to handle the session if:
@@ -69,7 +86,7 @@ const Auth = () => {
     // 2. We don't already have a user
     // 3. We have either hash or query params indicating we're in a redirect flow
     if (!loading && !user && (hasHashParams || hasQueryParams)) {
-      console.log("Detected auth redirect, handling session");
+      console.log("Detected auth redirect or password reset, handling session");
       handleAuthSession();
     }
   }, [loading, user, navigate, toast]);
