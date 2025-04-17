@@ -40,6 +40,10 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
     // Reset marker position tracking
     resetMarkerPositions();
     
+    console.log('Updating markers with filters:', filters);
+    console.log('Number of activities:', activities.length);
+    console.log('Number of ambassadors:', ambassadors.length);
+    
     // Add activity markers if filter is enabled
     if (filters.showActivities) {
       const groupedActivities = groupActivitiesByLocation(activities);
@@ -50,16 +54,22 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
           markersRef.current.push(marker);
         }
       });
+      
+      console.log('Added activity markers:', Object.values(groupedActivities).length);
     }
     
     // Add ambassador markers if filter is enabled
     if (filters.showAmbassadors) {
+      console.log('Adding ambassador markers...');
       ambassadors.forEach(ambassador => {
+        console.log('Processing ambassador:', ambassador.first_name, ambassador.last_name, ambassador.location);
         const marker = createAmbassadorMarker(ambassador, map.current!);
         if (marker) {
           markersRef.current.push(marker);
         }
       });
+      
+      console.log('Total ambassador markers added:', markersRef.current.length);
     }
   };
 
@@ -104,6 +114,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
   // Update markers when activities, ambassadors, or filters change
   useEffect(() => {
     if (map.current && map.current.loaded()) {
+      console.log('Data or filters changed, updating markers...');
       updateMarkers();
     }
   }, [activities, ambassadors, filters]);

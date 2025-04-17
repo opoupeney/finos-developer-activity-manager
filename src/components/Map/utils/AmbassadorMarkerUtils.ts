@@ -15,6 +15,7 @@ export const createAmbassadorMarker = (
   
   // Log the ambassador location for debugging
   console.log('Creating ambassador marker for location:', ambassador.location);
+  console.log('Ambassador name:', ambassador.first_name, ambassador.last_name);
   
   const coordinates = getCoordinates(ambassador.location);
   if (!coordinates) {
@@ -66,28 +67,42 @@ export const createAmbassadorMarker = (
   el.style.justifyContent = 'center';
   el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
   
-  // Check if there's already an activity at this location
+  // Create a unique key for this location to check for activities
   const coordKey = `${coordinates[0]},${coordinates[1]}`;
+  console.log('Checking if location has activity:', coordKey, 'Has activity:', locationHasActivity.get(coordKey));
+  
+  // Check if there's already an activity at this location
   const hasActivity = locationHasActivity.get(coordKey) || false;
   
-  // If there's an activity at this location, add a slight offset to the ambassador marker
+  // Always apply an offset for Lakewood, OH locations to make sure they're visible
   let adjustedCoordinates = [...coordinates] as [number, number];
-  if (hasActivity) {
-    // Adjust the offset to ensure it's visible for all locations including Lakewood
-    // Add a slight offset to the north-east (up and right)
-    adjustedCoordinates = [
-      coordinates[0] + 0.03, // Increased longitude offset
-      coordinates[1] + 0.03  // Increased latitude offset
-    ];
-    console.log('Adjusted coordinates due to activity at same location:', adjustedCoordinates);
+  if (hasActivity || ambassador.location.toLowerCase().includes('lakewood')) {
+    // Apply a larger offset for Lakewood specifically
+    if (ambassador.location.toLowerCase().includes('lakewood')) {
+      adjustedCoordinates = [
+        coordinates[0] + 0.05, // Extra large longitude offset for Lakewood
+        coordinates[1] + 0.05  // Extra large latitude offset for Lakewood
+      ];
+      console.log('Applied LAKEWOOD SPECIFIC offset to coordinates:', adjustedCoordinates);
+    } else {
+      // Standard offset for other locations with activities
+      adjustedCoordinates = [
+        coordinates[0] + 0.03, // Increased longitude offset
+        coordinates[1] + 0.03  // Increased latitude offset
+      ];
+      console.log('Applied standard offset due to activity at same location:', adjustedCoordinates);
+    }
   }
 
   try {
     // Create marker with possibly adjusted coordinates
-    return new mapboxgl.Marker({ element: el })
+    const marker = new mapboxgl.Marker({ element: el })
       .setLngLat(adjustedCoordinates)
       .setPopup(popup)
       .addTo(map);
+    
+    console.log('Successfully created marker for ambassador at:', adjustedCoordinates);
+    return marker;
   } catch (error) {
     console.error('Error creating ambassador marker:', error);
     return null;

@@ -29,11 +29,32 @@ export const getCoordinates = (location: string): [number, number] | null => {
 
   // Log the location being searched for
   console.log('Looking up coordinates for location:', location);
+  
+  if (!location) {
+    console.log('Empty location provided');
+    return null;
+  }
 
-  // Try to match the location
+  // First try exact match
+  if (locationMap[location]) {
+    console.log('Exact match found for', location, 'with coordinates', locationMap[location]);
+    return locationMap[location];
+  }
+
+  // Then try case-insensitive exact match
+  const locationLower = location.toLowerCase();
   for (const [key, value] of Object.entries(locationMap)) {
-    if (location.toLowerCase().includes(key.toLowerCase())) {
-      console.log('Found match for', location, ':', key, 'with coordinates', value);
+    if (key.toLowerCase() === locationLower) {
+      console.log('Case-insensitive exact match found for', location, ':', key, 'with coordinates', value);
+      return value;
+    }
+  }
+  
+  // Finally try includes match
+  for (const [key, value] of Object.entries(locationMap)) {
+    if (location.toLowerCase().includes(key.toLowerCase()) || 
+        key.toLowerCase().includes(location.toLowerCase())) {
+      console.log('Partial match found for', location, ':', key, 'with coordinates', value);
       return value;
     }
   }
