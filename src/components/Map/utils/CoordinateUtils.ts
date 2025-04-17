@@ -1,3 +1,4 @@
+
 import { Activity } from '@/types/activity';
 
 // Function to convert location strings to coordinates
@@ -20,18 +21,26 @@ export const getCoordinates = (location: string): [number, number] | null => {
     'Barcelona': [2.1734, 41.3851],
     'Hyderabad': [78.4861, 17.3850],
     'Lakewood, Ohio': [-81.7996, 41.4819],
+    'Lakewood': [-81.7996, 41.4819], // Adding just 'Lakewood' as an alias
     'Remote': [0, 0],
     'Virtual': [0, 0],
     'Online': [0, 0]
   };
 
+  // Log the location being searched for
+  console.log('Looking up coordinates for location:', location);
+
   // Try to match the location
   for (const [key, value] of Object.entries(locationMap)) {
     if (location.toLowerCase().includes(key.toLowerCase())) {
+      console.log('Found match for', location, ':', key, 'with coordinates', value);
       return value;
     }
   }
 
+  // Log if no location was found
+  console.log('No coordinates found for location:', location);
+  
   // Default to center of map if location not found
   return null;
 };
@@ -67,6 +76,7 @@ export const groupActivitiesByLocation = (activities: Activity[]): Record<string
     
     // Mark this location as having an activity
     locationHasActivity.set(coordKey, true);
+    console.log('Marked location as having activity:', coordKey, activity.location);
   });
   
   return groupedActivities;

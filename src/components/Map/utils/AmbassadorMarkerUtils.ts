@@ -4,8 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
 import { UserRound } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
-import { getCoordinates } from './CoordinateUtils';
-import { locationHasActivity } from './CoordinateUtils';
+import { getCoordinates, locationHasActivity } from './CoordinateUtils';
 
 // Create ambassador markers on the map
 export const createAmbassadorMarker = (
@@ -14,11 +13,20 @@ export const createAmbassadorMarker = (
 ): mapboxgl.Marker | null => {
   if (!ambassador.location) return null;
   
+  // Log the ambassador location for debugging
+  console.log('Creating ambassador marker for location:', ambassador.location);
+  
   const coordinates = getCoordinates(ambassador.location);
-  if (!coordinates) return null;
+  if (!coordinates) {
+    console.log('No coordinates found for location:', ambassador.location);
+    return null;
+  }
 
   // Skip adding markers for Remote/Virtual/Online activities at [0,0]
   if (coordinates[0] === 0 && coordinates[1] === 0) return null;
+  
+  // Log the coordinates for this ambassador
+  console.log('Ambassador coordinates:', coordinates, 'for', ambassador.first_name, ambassador.last_name);
   
   // Create popup content
   const popupContent = `
@@ -65,11 +73,13 @@ export const createAmbassadorMarker = (
   // If there's an activity at this location, add a slight offset to the ambassador marker
   let adjustedCoordinates = [...coordinates] as [number, number];
   if (hasActivity) {
+    // Adjust the offset to ensure it's visible for all locations including Lakewood
     // Add a slight offset to the north-east (up and right)
     adjustedCoordinates = [
-      coordinates[0] + 0.016, // Small longitude offset
-      coordinates[1] + 0.08  // Small latitude offset
+      coordinates[0] + 0.03, // Increased longitude offset
+      coordinates[1] + 0.03  // Increased latitude offset
     ];
+    console.log('Adjusted coordinates due to activity at same location:', adjustedCoordinates);
   }
 
   try {
