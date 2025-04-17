@@ -19,6 +19,7 @@ export const getCoordinates = (location: string): [number, number] | null => {
     'Bangalore': [77.5946, 12.9716],
     'Barcelona': [2.1734, 41.3851],
     'Hyderabad': [78.4861, 17.3850],
+    'Lakewood, Ohio': [-81.7996, 41.4819],
     'Remote': [0, 0],
     'Virtual': [0, 0],
     'Online': [0, 0]
