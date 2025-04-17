@@ -5,7 +5,66 @@ import { UserRound } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
 import { getCoordinates, locationHasActivity } from './CoordinateUtils';
 
-// Create ambassador markers for a single ambassador
+// Shared function to create consistent marker element
+const createAmbassadorMarkerElement = (
+  iconSize: number = 16, 
+  hasCounter: boolean = false, 
+  ambassadorCount?: number
+): HTMLDivElement => {
+  // Convert UserRound icon to SVG string
+  const userIconSvg = renderToString(
+    React.createElement(UserRound, {
+      color: "white", 
+      size: iconSize,
+      strokeWidth: 1.5,
+      fill: "#FF6B6B",
+      className: "ambassador-icon"
+    })
+  );
+
+  // Create custom marker element with consistent dimensions
+  const el = document.createElement('div');
+  el.className = 'ambassador-marker';
+  el.innerHTML = userIconSvg;
+  el.style.cursor = 'pointer';
+  el.style.borderRadius = '50%';
+  el.style.background = '#FF6B6B';
+  el.style.padding = '2px';
+  el.style.display = 'flex';
+  el.style.alignItems = 'center';
+  el.style.justifyContent = 'center';
+  el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
+  el.style.width = '28px';
+  el.style.height = '28px';
+  el.style.position = 'relative';
+
+  // Add counter badge if needed
+  if (hasCounter && ambassadorCount && ambassadorCount > 1) {
+    const badge = document.createElement('div');
+    badge.className = 'ambassador-count';
+    badge.textContent = ambassadorCount.toString();
+    badge.style.position = 'absolute';
+    badge.style.top = '-5px';
+    badge.style.right = '-5px';
+    badge.style.backgroundColor = '#FF3E00';
+    badge.style.color = 'white';
+    badge.style.borderRadius = '50%';
+    badge.style.width = '14px';
+    badge.style.height = '14px';
+    badge.style.fontSize = '9px';
+    badge.style.fontWeight = 'bold';
+    badge.style.display = 'flex';
+    badge.style.justifyContent = 'center';
+    badge.style.alignItems = 'center';
+    badge.style.border = '1px solid white';
+    
+    el.appendChild(badge);
+  }
+
+  return el;
+};
+
+// Existing functions remain the same, just replace marker element creation
 const createSingleAmbassadorMarker = (
   ambassador: Ambassador,
   map: mapboxgl.Map,
@@ -25,29 +84,8 @@ const createSingleAmbassadorMarker = (
   const popup = new mapboxgl.Popup({ offset: 25 })
     .setHTML(popupContent);
 
-  // Convert UserRound icon to SVG string with smaller size
-  const userIconSvg = renderToString(
-    React.createElement(UserRound, {
-      color: "white", 
-      size: 16,
-      strokeWidth: 1.5,
-      fill: "#FF6B6B",
-      className: "ambassador-icon"
-    })
-  );
-
-  // Create custom marker element
-  const el = document.createElement('div');
-  el.className = 'ambassador-marker';
-  el.innerHTML = userIconSvg;
-  el.style.cursor = 'pointer';
-  el.style.borderRadius = '50%';
-  el.style.background = '#FF6B6B';
-  el.style.padding = '2px';
-  el.style.display = 'flex';
-  el.style.alignItems = 'center';
-  el.style.justifyContent = 'center';
-  el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
+  // Create marker element with consistent sizing
+  const el = createAmbassadorMarkerElement(16, false);
   
   // Create marker with position adjustment if needed
   const coordKey = `${coordinates[0]},${coordinates[1]}`;
@@ -91,7 +129,6 @@ const createSingleAmbassadorMarker = (
   }
 };
 
-// Create marker for multiple ambassadors at the same location
 const createGroupAmbassadorMarker = (
   ambassadors: Ambassador[],
   map: mapboxgl.Map,
@@ -117,54 +154,8 @@ const createGroupAmbassadorMarker = (
   const popup = new mapboxgl.Popup({ offset: 25 })
     .setHTML(popupContent);
 
-  // Convert UserRound icon to SVG string - Fixed size issue here
-  const userIconSvg = renderToString(
-    React.createElement(UserRound, {
-      color: "white", 
-      size: 20,  // Slightly larger for group markers
-      strokeWidth: 1.5,
-      fill: "#FF6B6B",
-      className: "ambassador-icon"
-    })
-  );
-
-  // Create custom marker element with fixed dimensions
-  const el = document.createElement('div');
-  el.className = 'ambassador-marker';
-  el.innerHTML = userIconSvg;
-  el.style.cursor = 'pointer';
-  el.style.borderRadius = '50%';
-  el.style.background = '#FF6B6B';
-  el.style.padding = '2px';
-  el.style.display = 'flex';
-  el.style.alignItems = 'center';
-  el.style.justifyContent = 'center';
-  el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
-  el.style.position = 'relative';
-  el.style.width = '28px'; // Add fixed width
-  el.style.height = '28px'; // Add fixed height
-  
-  // Add badge showing the number of ambassadors
-  const badge = document.createElement('div');
-  badge.className = 'ambassador-count';
-  badge.textContent = ambassadors.length.toString();
-  badge.style.position = 'absolute';
-  badge.style.top = '-5px';
-  badge.style.right = '-5px';
-  badge.style.backgroundColor = '#FF3E00';
-  badge.style.color = 'white';
-  badge.style.borderRadius = '50%';
-  badge.style.width = '14px';
-  badge.style.height = '14px';
-  badge.style.fontSize = '9px';
-  badge.style.fontWeight = 'bold';
-  badge.style.display = 'flex';
-  badge.style.justifyContent = 'center';
-  badge.style.alignItems = 'center';
-  badge.style.border = '1px solid white';
-  
-  // Add the badge to the marker element
-  el.appendChild(badge);
+  // Create marker element with counter
+  const el = createAmbassadorMarkerElement(16, true, ambassadors.length);
   
   // Apply offset if there's an activity at this location
   const coordKey = `${coordinates[0]},${coordinates[1]}`;
@@ -194,7 +185,7 @@ const createGroupAmbassadorMarker = (
   }
 };
 
-// Create ambassador markers on the map
+// Existing createAmbassadorMarker function remains unchanged
 export const createAmbassadorMarker = (
   ambassador: Ambassador | Ambassador[],
   map: mapboxgl.Map
