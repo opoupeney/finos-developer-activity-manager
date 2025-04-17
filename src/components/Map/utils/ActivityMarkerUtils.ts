@@ -1,4 +1,3 @@
-
 import mapboxgl from 'mapbox-gl';
 import { Activity } from '@/types/activity';
 import { getCoordinates } from './CoordinateUtils';
@@ -63,12 +62,12 @@ export const createActivityMarker = (
     }
   }
 
-  // Create pin icon SVG
+  // Create pin icon SVG - updated size to match ambassador markers
   const pinIconSvg = renderToString(
     React.createElement(MapPin, {
       color: "white",
       fill: color,
-      size: 24,  // Slightly larger than previous marker
+      size: 28,  // Increased from 24 to 28 to match ambassador markers
       strokeWidth: 1.5,
     })
   );
