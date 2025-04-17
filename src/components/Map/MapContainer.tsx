@@ -9,7 +9,8 @@ import {
   createActivityMarker, 
   createAmbassadorMarker, 
   resetMarkerPositions, 
-  groupActivitiesByLocation 
+  groupActivitiesByLocation,
+  groupAmbassadorsByLocation
 } from './MapUtils';
 
 interface MapContainerProps {
@@ -61,9 +62,13 @@ const MapContainer: React.FC<MapContainerProps> = ({ activities, ambassadors = [
     // Add ambassador markers if filter is enabled
     if (filters.showAmbassadors) {
       console.log('Adding ambassador markers...');
-      ambassadors.forEach(ambassador => {
-        console.log('Processing ambassador:', ambassador.first_name, ambassador.last_name, ambassador.location);
-        const marker = createAmbassadorMarker(ambassador, map.current!);
+      
+      // Group ambassadors by location
+      const groupedAmbassadors = groupAmbassadorsByLocation(ambassadors);
+      
+      // Create markers for each location group
+      Object.values(groupedAmbassadors).forEach(ambassadorsAtLocation => {
+        const marker = createAmbassadorMarker(ambassadorsAtLocation, map.current!);
         if (marker) {
           markersRef.current.push(marker);
         }

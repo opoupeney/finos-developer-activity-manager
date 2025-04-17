@@ -1,5 +1,6 @@
 
 import { Activity } from '@/types/activity';
+import { Ambassador } from '@/types/ambassador';
 
 // Function to convert location strings to coordinates
 // This is a simplified version - in a real app you would use a geocoding service
@@ -101,4 +102,31 @@ export const groupActivitiesByLocation = (activities: Activity[]): Record<string
   });
   
   return groupedActivities;
+};
+
+// Group ambassadors by location
+export const groupAmbassadorsByLocation = (ambassadors: Ambassador[]): Record<string, Ambassador[]> => {
+  const groupedAmbassadors: Record<string, Ambassador[]> = {};
+  
+  ambassadors.forEach(ambassador => {
+    if (!ambassador.location) return;
+    
+    const coordinates = getCoordinates(ambassador.location);
+    if (!coordinates) return;
+    
+    // Skip adding Remote/Virtual/Online ambassadors at [0,0]
+    if (coordinates[0] === 0 && coordinates[1] === 0) return;
+    
+    const coordKey = `${coordinates[0]},${coordinates[1]}`;
+    
+    if (!groupedAmbassadors[coordKey]) {
+      groupedAmbassadors[coordKey] = [];
+    }
+    
+    groupedAmbassadors[coordKey].push(ambassador);
+    
+    console.log('Grouped ambassador at location:', coordKey, ambassador.first_name, ambassador.last_name);
+  });
+  
+  return groupedAmbassadors;
 };

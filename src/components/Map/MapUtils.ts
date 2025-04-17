@@ -4,6 +4,7 @@ export {
   getCoordinates,
   resetMarkerPositions,
   groupActivitiesByLocation,
+  groupAmbassadorsByLocation,
   locationHasActivity
 } from './utils/CoordinateUtils';
 
