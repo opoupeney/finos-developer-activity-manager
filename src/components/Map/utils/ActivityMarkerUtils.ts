@@ -78,8 +78,6 @@ export const createActivityMarker = (
   el.className = 'activity-marker';
   el.innerHTML = pinIconSvg;
   el.style.cursor = 'pointer';
-  el.style.position = 'relative';
-  el.style.transform = 'translate(-50%, -50%)';
   
   // If multiple activities, add a badge showing the number
   if (activities.length > 1) {
@@ -103,10 +101,9 @@ export const createActivityMarker = (
     el.appendChild(badge);
   }
   
-  // Create marker with proper anchor point
+  // Create marker with default anchor point
   return new mapboxgl.Marker({ 
     element: el,
-    anchor: 'center' // Use center anchor to fix positioning
   })
     .setLngLat(coordinates)
     .setPopup(popup)

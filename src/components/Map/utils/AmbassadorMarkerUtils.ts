@@ -39,10 +39,6 @@ const createAmbassadorMarkerElement = (
   el.style.width = '28px';
   el.style.height = '28px';
   
-  // Important: Fix positioning to be relative and center the marker properly
-  el.style.position = 'relative';
-  el.style.transform = 'translate(-50%, -50%)';
-
   // Add counter badge if needed
   if (hasCounter && ambassadorCount && ambassadorCount > 1) {
     const badge = document.createElement('div');
@@ -95,10 +91,9 @@ const createSingleAmbassadorMarker = (
   const el = createAmbassadorMarkerElement(16, false);
   
   try {
-    // Create marker at exact coordinates with correct anchor
+    // Create marker at exact coordinates - removed custom anchor
     const marker = new mapboxgl.Marker({ 
-      element: el,
-      anchor: 'center' // Use center anchor to fix positioning
+      element: el
     })
       .setLngLat(coordinates)
       .setPopup(popup)
@@ -146,10 +141,9 @@ const createGroupAmbassadorMarker = (
   const el = createAmbassadorMarkerElement(16, true, ambassadors.length);
   
   try {
-    // Create marker at exact coordinates (no offset)
+    // Create marker at exact coordinates - removed custom anchor
     const marker = new mapboxgl.Marker({ 
-      element: el,
-      anchor: 'center' // Use center anchor to fix positioning
+      element: el
     })
       .setLngLat(coordinates)
       .setPopup(popup)
