@@ -1,4 +1,3 @@
-
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -90,41 +89,14 @@ const createSingleAmbassadorMarker = (
   // Create marker element with consistent sizing
   const el = createAmbassadorMarkerElement(16, false);
   
-  // Create marker with position adjustment if needed
-  const coordKey = `${coordinates[0]},${coordinates[1]}`;
-  console.log('Checking if location has activity:', coordKey, 'Has activity:', locationHasActivity.get(coordKey));
-  
-  // Check if there's already an activity at this location
-  const hasActivity = locationHasActivity.get(coordKey) || false;
-  
-  // Always apply an offset for Lakewood, OH locations to make sure they're visible
-  let adjustedCoordinates = [...coordinates] as [number, number];
-  if (hasActivity || ambassador.location?.toLowerCase().includes('lakewood')) {
-    // Apply a larger offset for Lakewood specifically
-    if (ambassador.location?.toLowerCase().includes('lakewood')) {
-      adjustedCoordinates = [
-        coordinates[0] + 0.05, // Extra large longitude offset for Lakewood
-        coordinates[1] + 0.05  // Extra large latitude offset for Lakewood
-      ];
-      console.log('Applied LAKEWOOD SPECIFIC offset to coordinates:', adjustedCoordinates);
-    } else {
-      // Standard offset for other locations with activities
-      adjustedCoordinates = [
-        coordinates[0] + 0.03, // Increased longitude offset
-        coordinates[1] + 0.03  // Increased latitude offset
-      ];
-      console.log('Applied standard offset due to activity at same location:', adjustedCoordinates);
-    }
-  }
-
   try {
-    // Create marker with possibly adjusted coordinates
+    // Create marker at exact coordinates (no offset)
     const marker = new mapboxgl.Marker({ element: el })
-      .setLngLat(adjustedCoordinates)
+      .setLngLat(coordinates)
       .setPopup(popup)
       .addTo(map);
     
-    console.log('Successfully created marker for ambassador at:', adjustedCoordinates);
+    console.log('Successfully created marker for ambassador at:', coordinates);
     return marker;
   } catch (error) {
     console.error('Error creating ambassador marker:', error);
@@ -164,27 +136,14 @@ const createGroupAmbassadorMarker = (
   // Create marker element with counter
   const el = createAmbassadorMarkerElement(16, true, ambassadors.length);
   
-  // Apply offset if there's an activity at this location
-  const coordKey = `${coordinates[0]},${coordinates[1]}`;
-  const hasActivity = locationHasActivity.get(coordKey) || false;
-  
-  let adjustedCoordinates = [...coordinates] as [number, number];
-  if (hasActivity) {
-    adjustedCoordinates = [
-      coordinates[0] + 0.03,
-      coordinates[1] + 0.03
-    ];
-    console.log('Applied offset to group of ambassadors due to activity at same location:', adjustedCoordinates);
-  }
-
   try {
-    // Create marker
+    // Create marker at exact coordinates (no offset)
     const marker = new mapboxgl.Marker({ element: el })
-      .setLngLat(adjustedCoordinates)
+      .setLngLat(coordinates)
       .setPopup(popup)
       .addTo(map);
     
-    console.log('Successfully created group marker for', ambassadors.length, 'ambassadors at:', adjustedCoordinates);
+    console.log('Successfully created group marker for', ambassadors.length, 'ambassadors at:', coordinates);
     return marker;
   } catch (error) {
     console.error('Error creating group ambassador marker:', error);
