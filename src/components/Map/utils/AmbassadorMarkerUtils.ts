@@ -117,7 +117,7 @@ const createGroupAmbassadorMarker = (
   const popup = new mapboxgl.Popup({ offset: 25 })
     .setHTML(popupContent);
 
-  // Convert UserRound icon to SVG string
+  // Convert UserRound icon to SVG string - Fixed size issue here
   const userIconSvg = renderToString(
     React.createElement(UserRound, {
       color: "white", 
@@ -128,7 +128,7 @@ const createGroupAmbassadorMarker = (
     })
   );
 
-  // Create custom marker element
+  // Create custom marker element with fixed dimensions
   const el = document.createElement('div');
   el.className = 'ambassador-marker';
   el.innerHTML = userIconSvg;
@@ -141,8 +141,10 @@ const createGroupAmbassadorMarker = (
   el.style.justifyContent = 'center';
   el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
   el.style.position = 'relative';
+  el.style.width = '28px'; // Add fixed width
+  el.style.height = '28px'; // Add fixed height
   
-  // Add badge showing the number of ambassadors - FIX THE SIZE HERE
+  // Add badge showing the number of ambassadors
   const badge = document.createElement('div');
   badge.className = 'ambassador-count';
   badge.textContent = ambassadors.length.toString();
