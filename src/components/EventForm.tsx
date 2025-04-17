@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity } from '@/types/activity';
@@ -92,10 +91,8 @@ const EventForm: React.FC<EventFormProps> = ({
     return undefined;
   };
 
-  // Initialize the MDEditor state with the description from initialData
   const [mdDescription, setMdDescription] = useState<string>('');
   
-  // Make sure we correctly initialize the form with the existing data
   const defaultValues: Partial<EventFormValues> = {
     title: initialData?.title || '',
     type: initialData?.type || '',
@@ -132,7 +129,6 @@ const EventForm: React.FC<EventFormProps> = ({
     defaultValues
   });
 
-  // Set the initial description when initialData changes or is loaded
   useEffect(() => {
     if (initialData?.marketingDescription) {
       console.log("Setting initial description from initialData:", initialData.marketingDescription);
@@ -140,9 +136,7 @@ const EventForm: React.FC<EventFormProps> = ({
     }
   }, [initialData]);
 
-  // Sync the MDEditor content with the form field
   useEffect(() => {
-    // Update the form value when the MD editor changes
     form.setValue("marketingDescription", mdDescription, { 
       shouldValidate: true,
       shouldDirty: true,
@@ -352,8 +346,7 @@ const EventForm: React.FC<EventFormProps> = ({
                     <DatePicker 
                       date={field.value} 
                       onDateChange={field.onChange}
-                      placeholder="Select activity month/year" 
-                      dateFormat="MMMM yyyy"
+                      placeholder="Select activity date" 
                     />
                     <FormMessage />
                   </FormItem>
