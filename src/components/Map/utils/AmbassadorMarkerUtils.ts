@@ -1,3 +1,4 @@
+
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -34,6 +35,8 @@ const createAmbassadorMarkerElement = (
   el.style.alignItems = 'center';
   el.style.justifyContent = 'center';
   el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
+  
+  // Set exact same dimensions for both single and group markers
   el.style.width = '28px';
   el.style.height = '28px';
   el.style.position = 'relative';
@@ -133,7 +136,7 @@ const createGroupAmbassadorMarker = (
     maxWidth: '280px'
   }).setHTML(popupContent);
 
-  // Create marker element with counter
+  // Use exact same size for group markers as for single markers
   const el = createAmbassadorMarkerElement(16, true, ambassadors.length);
   
   try {
