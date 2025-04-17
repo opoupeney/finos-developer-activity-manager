@@ -1,4 +1,3 @@
-
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -143,7 +142,7 @@ const createGroupAmbassadorMarker = (
   el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
   el.style.position = 'relative';
   
-  // Add badge showing the number of ambassadors
+  // Add badge showing the number of ambassadors - FIX THE SIZE HERE
   const badge = document.createElement('div');
   badge.className = 'ambassador-count';
   badge.textContent = ambassadors.length.toString();
@@ -161,6 +160,8 @@ const createGroupAmbassadorMarker = (
   badge.style.justifyContent = 'center';
   badge.style.alignItems = 'center';
   badge.style.border = '1px solid white';
+  
+  // Add the badge to the marker element
   el.appendChild(badge);
   
   // Apply offset if there's an activity at this location
