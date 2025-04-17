@@ -18,8 +18,8 @@ const Breadcrumb: React.FC<BreadcrumbProps> = () => {
   const pathnames = location.pathname.split('/').filter((path) => path);
 
   return (
-    <UIBreadcrumb className="py-2">
-      <BreadcrumbList>
+    <UIBreadcrumb className="py-2 w-full overflow-hidden">
+      <BreadcrumbList className="flex-wrap">
         <BreadcrumbItem key="home">
           <BreadcrumbLink asChild>
             <Link to="/">Dashboard</Link>
@@ -40,18 +40,22 @@ const Breadcrumb: React.FC<BreadcrumbProps> = () => {
           if (path === 'activity') displayName = 'Activities';
           
           return (
-            <div key={route}>
+            <React.Fragment key={route}>
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage>{displayName}</BreadcrumbPage>
+                  <BreadcrumbPage className="truncate max-w-[200px] md:max-w-[300px]">
+                    {displayName}
+                  </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link to={route}>{displayName}</Link>
+                    <Link to={route} className="truncate max-w-[150px] md:max-w-[200px] inline-block">
+                      {displayName}
+                    </Link>
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}
-            </div>
+            </React.Fragment>
           );
         })}
       </BreadcrumbList>
