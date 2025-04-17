@@ -21,10 +21,11 @@ export const createActivityMarker = (
   if (coordinates[0] === 0 && coordinates[1] === 0) return null;
   
   // Create popup content for all activities at this location
+  // Limit visible items to 2 and make the rest scrollable
   const popupContent = `
     <div class="p-2">
       <h3 class="font-bold text-sm mb-2">${activities.length > 1 ? `${activities.length} Activities at this location` : activities[0].title}</h3>
-      <div class="space-y-2 max-h-60 overflow-y-auto">
+      <div class="space-y-2 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
         ${activities.map(activity => `
           <div class="p-1.5 border-b border-border last:border-0">
             <p class="font-semibold text-xs">${activity.title}</p>
@@ -35,12 +36,15 @@ export const createActivityMarker = (
           </div>
         `).join('')}
       </div>
+      ${activities.length > 2 ? `<div class="text-xs text-muted-foreground mt-1 text-center">Scroll to see more</div>` : ''}
     </div>
   `;
 
   // Create a popup
-  const popup = new mapboxgl.Popup({ offset: 25 })
-    .setHTML(popupContent);
+  const popup = new mapboxgl.Popup({ 
+    offset: 25,
+    maxWidth: '280px'
+  }).setHTML(popupContent);
 
   // Set marker color - if multiple activities, use a special color
   let color;

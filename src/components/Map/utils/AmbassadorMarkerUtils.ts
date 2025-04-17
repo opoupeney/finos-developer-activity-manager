@@ -1,3 +1,4 @@
+
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -81,8 +82,10 @@ const createSingleAmbassadorMarker = (
   `;
 
   // Create a popup
-  const popup = new mapboxgl.Popup({ offset: 25 })
-    .setHTML(popupContent);
+  const popup = new mapboxgl.Popup({ 
+    offset: 25,
+    maxWidth: '280px'
+  }).setHTML(popupContent);
 
   // Create marker element with consistent sizing
   const el = createAmbassadorMarkerElement(16, false);
@@ -135,10 +138,11 @@ const createGroupAmbassadorMarker = (
   coordinates: [number, number]
 ): mapboxgl.Marker | null => {
   // Create popup content for all ambassadors at this location
+  // Limit visible items to 2 and make the rest scrollable
   const popupContent = `
     <div class="p-2">
       <h3 class="font-bold text-sm mb-2">${ambassadors.length} Ambassadors at this location</h3>
-      <div class="space-y-2 max-h-60 overflow-y-auto">
+      <div class="space-y-2 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
         ${ambassadors.map(ambassador => `
           <div class="p-1.5 border-b border-border last:border-0">
             <p class="font-semibold text-xs">${ambassador.first_name} ${ambassador.last_name}</p>
@@ -147,12 +151,15 @@ const createGroupAmbassadorMarker = (
           </div>
         `).join('')}
       </div>
+      ${ambassadors.length > 2 ? `<div class="text-xs text-muted-foreground mt-1 text-center">Scroll to see more</div>` : ''}
     </div>
   `;
 
   // Create a popup
-  const popup = new mapboxgl.Popup({ offset: 25 })
-    .setHTML(popupContent);
+  const popup = new mapboxgl.Popup({ 
+    offset: 25,
+    maxWidth: '280px'
+  }).setHTML(popupContent);
 
   // Create marker element with counter
   const el = createAmbassadorMarkerElement(16, true, ambassadors.length);
