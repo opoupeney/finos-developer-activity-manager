@@ -21,12 +21,12 @@ const ambassadorFormSchema = z.object({
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
   location: z.string().nullable().optional(),
-  linkedin_profile: z.string().url('Must be a valid URL').nullable().optional(),
+  linkedin_profile: z.string().nullable().optional(),
   github_id: z.string().nullable().optional(),
   company: z.string().nullable().optional(),
   title: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
-  headshot_url: z.string().url('Must be a valid URL').nullable().optional(),
+  headshot_url: z.string().nullable().optional(),
 });
 
 type AmbassadorFormValues = z.infer<typeof ambassadorFormSchema>;
