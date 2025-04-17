@@ -25,7 +25,7 @@ export const createActivityMarker = (
   const popupContent = `
     <div class="p-2">
       <h3 class="font-bold text-sm mb-2">${activities.length > 1 ? `${activities.length} Activities at this location` : activities[0].title}</h3>
-      <div class="space-y-2 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
+      <div class="activity-popup-content space-y-2 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
         ${activities.map(activity => `
           <div class="p-1.5 border-b border-border last:border-0">
             <p class="font-semibold text-xs">${activity.title}</p>
@@ -43,7 +43,8 @@ export const createActivityMarker = (
   // Create a popup
   const popup = new mapboxgl.Popup({ 
     offset: 25,
-    maxWidth: '280px'
+    maxWidth: '280px',
+    className: 'activity-popup'
   }).setHTML(popupContent);
 
   // Set marker color - if multiple activities, use a special color
@@ -77,6 +78,8 @@ export const createActivityMarker = (
   el.className = 'activity-marker';
   el.innerHTML = pinIconSvg;
   el.style.cursor = 'pointer';
+  el.style.position = 'relative';
+  el.style.transform = 'translate(-50%, -50%)';
   
   // If multiple activities, add a badge showing the number
   if (activities.length > 1) {
@@ -100,8 +103,11 @@ export const createActivityMarker = (
     el.appendChild(badge);
   }
   
-  // Create marker at exact coordinates without any offset
-  return new mapboxgl.Marker({ element: el })
+  // Create marker with proper anchor point
+  return new mapboxgl.Marker({ 
+    element: el,
+    anchor: 'center' // Use center anchor to fix positioning
+  })
     .setLngLat(coordinates)
     .setPopup(popup)
     .addTo(map);

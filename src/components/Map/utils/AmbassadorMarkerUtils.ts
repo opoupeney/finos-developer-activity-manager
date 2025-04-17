@@ -1,4 +1,3 @@
-
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -39,7 +38,10 @@ const createAmbassadorMarkerElement = (
   // Set exact same dimensions for both single and group markers
   el.style.width = '28px';
   el.style.height = '28px';
+  
+  // Important: Fix positioning to be relative and center the marker properly
   el.style.position = 'relative';
+  el.style.transform = 'translate(-50%, -50%)';
 
   // Add counter badge if needed
   if (hasCounter && ambassadorCount && ambassadorCount > 1) {
@@ -67,7 +69,6 @@ const createAmbassadorMarkerElement = (
   return el;
 };
 
-// Existing functions remain the same, just replace marker element creation
 const createSingleAmbassadorMarker = (
   ambassador: Ambassador,
   map: mapboxgl.Map,
@@ -86,15 +87,19 @@ const createSingleAmbassadorMarker = (
   // Create a popup
   const popup = new mapboxgl.Popup({ 
     offset: 25,
-    maxWidth: '280px'
+    maxWidth: '280px',
+    className: 'ambassador-popup'
   }).setHTML(popupContent);
 
   // Create marker element with consistent sizing
   const el = createAmbassadorMarkerElement(16, false);
   
   try {
-    // Create marker at exact coordinates (no offset)
-    const marker = new mapboxgl.Marker({ element: el })
+    // Create marker at exact coordinates with correct anchor
+    const marker = new mapboxgl.Marker({ 
+      element: el,
+      anchor: 'center' // Use center anchor to fix positioning
+    })
       .setLngLat(coordinates)
       .setPopup(popup)
       .addTo(map);
@@ -117,7 +122,7 @@ const createGroupAmbassadorMarker = (
   const popupContent = `
     <div class="p-2">
       <h3 class="font-bold text-sm mb-2">${ambassadors.length} Ambassadors at this location</h3>
-      <div class="space-y-2 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
+      <div class="ambassador-popup-content space-y-2 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
         ${ambassadors.map(ambassador => `
           <div class="p-1.5 border-b border-border last:border-0">
             <p class="font-semibold text-xs">${ambassador.first_name} ${ambassador.last_name}</p>
@@ -133,7 +138,8 @@ const createGroupAmbassadorMarker = (
   // Create a popup
   const popup = new mapboxgl.Popup({ 
     offset: 25,
-    maxWidth: '280px'
+    maxWidth: '280px',
+    className: 'ambassador-popup'
   }).setHTML(popupContent);
 
   // Use exact same size for group markers as for single markers
@@ -141,7 +147,10 @@ const createGroupAmbassadorMarker = (
   
   try {
     // Create marker at exact coordinates (no offset)
-    const marker = new mapboxgl.Marker({ element: el })
+    const marker = new mapboxgl.Marker({ 
+      element: el,
+      anchor: 'center' // Use center anchor to fix positioning
+    })
       .setLngLat(coordinates)
       .setPopup(popup)
       .addTo(map);
@@ -154,7 +163,6 @@ const createGroupAmbassadorMarker = (
   }
 };
 
-// Existing createAmbassadorMarker function remains unchanged
 export const createAmbassadorMarker = (
   ambassador: Ambassador | Ambassador[],
   map: mapboxgl.Map

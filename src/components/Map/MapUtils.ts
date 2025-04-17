@@ -34,6 +34,15 @@ const addMapPopupStyles = () => {
       }
       .mapboxgl-popup-content {
         max-width: 280px !important;
+        overflow: visible !important;
+      }
+      .ambassador-popup .mapboxgl-popup-content,
+      .activity-popup .mapboxgl-popup-content {
+        overflow: visible !important;
+      }
+      .activity-popup-content,
+      .ambassador-popup-content {
+        position: relative !important;
       }
     `;
     document.head.appendChild(styleEl);
