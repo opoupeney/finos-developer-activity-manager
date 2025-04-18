@@ -1,4 +1,3 @@
-
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -36,7 +35,7 @@ const createAmbassadorMarkerElement = (
   el.style.justifyContent = 'center';
   el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
   
-  // Set marker dimensions to 20px width and height
+  // Keep marker dimensions at 20px width and height for ambassadors
   el.style.width = '20px';
   el.style.height = '20px';
   

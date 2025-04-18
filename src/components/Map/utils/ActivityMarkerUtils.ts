@@ -1,11 +1,10 @@
+import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Activity } from '@/types/activity';
 import { getCoordinates } from './CoordinateUtils';
 import { renderToString } from 'react-dom/server';
 import { MapPin } from 'lucide-react';
-import React from 'react';
 
-// Create activity markers on the map
 export const createActivityMarker = (
   activities: Activity[], 
   map: mapboxgl.Map
@@ -62,12 +61,12 @@ export const createActivityMarker = (
     }
   }
 
-  // Create pin icon SVG - updated size to match ambassador markers
+  // Create pin icon SVG - set size back to 28px
   const pinIconSvg = renderToString(
     React.createElement(MapPin, {
       color: "white",
       fill: color,
-      size: 20,  // Reduced from 28 to 20 to match ambassador markers
+      size: 28,  // Increased back to 28px
       strokeWidth: 1.5,
     })
   );
@@ -78,9 +77,9 @@ export const createActivityMarker = (
   el.innerHTML = pinIconSvg;
   el.style.cursor = 'pointer';
   
-  // Set marker dimensions to 20px width and height
-  el.style.width = '20px';
-  el.style.height = '20px';
+  // Set marker dimensions to 28px width and height
+  el.style.width = '28px';
+  el.style.height = '28px';
   
   // If multiple activities, add a badge showing the number
   if (activities.length > 1) {
