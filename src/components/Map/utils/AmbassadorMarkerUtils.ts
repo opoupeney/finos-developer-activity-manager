@@ -1,3 +1,4 @@
+
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Ambassador } from '@/types/ambassador';
@@ -35,9 +36,9 @@ const createAmbassadorMarkerElement = (
   el.style.justifyContent = 'center';
   el.style.boxShadow = '0 0 4px rgba(0, 0, 0, 0.3)';
   
-  // Set exact same dimensions for both single and group markers
-  el.style.width = '28px';
-  el.style.height = '28px';
+  // Set marker dimensions to 20px width and height
+  el.style.width = '20px';
+  el.style.height = '20px';
   
   // Add counter badge if needed
   if (hasCounter && ambassadorCount && ambassadorCount > 1) {

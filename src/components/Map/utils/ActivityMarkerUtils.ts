@@ -67,7 +67,7 @@ export const createActivityMarker = (
     React.createElement(MapPin, {
       color: "white",
       fill: color,
-      size: 28,  // Increased from 24 to 28 to match ambassador markers
+      size: 20,  // Reduced from 28 to 20 to match ambassador markers
       strokeWidth: 1.5,
     })
   );
@@ -77,6 +77,10 @@ export const createActivityMarker = (
   el.className = 'activity-marker';
   el.innerHTML = pinIconSvg;
   el.style.cursor = 'pointer';
+  
+  // Set marker dimensions to 20px width and height
+  el.style.width = '20px';
+  el.style.height = '20px';
   
   // If multiple activities, add a badge showing the number
   if (activities.length > 1) {
