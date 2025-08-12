@@ -22,7 +22,7 @@ interface ActivityTableProps {
   isAdmin: boolean;
 }
 
-type SortField = 'title' | 'type' | 'date' | 'location' | 'status' | 'finosLead';
+type SortField = 'title' | 'type' | 'date' | 'location' | 'status' | 'currentRegistrations';
 type SortDirection = 'asc' | 'desc';
 
 const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) => {
@@ -102,9 +102,9 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
         valueA = a.status?.toLowerCase() || '';
         valueB = b.status?.toLowerCase() || '';
         break;
-      case 'finosLead':
-        valueA = a.ownership?.finosLead?.toLowerCase() || '';
-        valueB = b.ownership?.finosLead?.toLowerCase() || '';
+      case 'currentRegistrations':
+        valueA = a.metrics?.currentRegistrations || 0;
+        valueB = b.metrics?.currentRegistrations || 0;
         break;
       default:
         valueA = '';
@@ -164,7 +164,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
             <SortableTableHead field="date">Date</SortableTableHead>
             <SortableTableHead field="location">Location</SortableTableHead>
             <SortableTableHead field="status">Status</SortableTableHead>
-            <SortableTableHead field="finosLead">Lead</SortableTableHead>
+            <SortableTableHead field="currentRegistrations">Current Registrations</SortableTableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -183,7 +183,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ activities, isAdmin }) =>
                 <TableCell>{activity.date ? formatDate(activity.date) : 'TBD'}</TableCell>
                 <TableCell>{activity.location}</TableCell>
                 <TableCell><StatusBadge status={activity.status} /></TableCell>
-                <TableCell>{activity.ownership.finosLead}</TableCell>
+                <TableCell>{activity.metrics?.currentRegistrations || 0}</TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="ghost" size="sm">
                     <Link to={`/activity/${activity.id}`}>
