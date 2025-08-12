@@ -86,7 +86,13 @@ const Dashboard = () => {
 
   const pipelineActivities = activities?.filter(activity => 
     activity.status !== 'Done' && activity.status !== 'Rejected'
-  ) || [];
+  ).sort((a, b) => {
+    // Sort by date (earliest first), with null dates at the end
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  }) || [];
 
   const archivedActivities = activities?.filter(activity => 
     activity.status === 'Done' || activity.status === 'Rejected'
