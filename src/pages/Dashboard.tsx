@@ -15,18 +15,18 @@ import AnalyticsSection from '@/components/Dashboard/AnalyticsSection';
 import DashboardFooter from '@/components/Dashboard/DashboardFooter';
 
 const typeToIconMap: Record<string, React.ReactNode> = {
-  'Workshop': <PenTool className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Hackathon': <Code className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Conference': <Building className="h-5 w-5 mr-2 text-finos-blue" />,
-  'TechTalk': <MessageSquareCode className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Masterclass': <GraduationCap className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Meetup': <Activity className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Webinar': <Mic className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Training': <BookOpen className="h-5 w-5 mr-2 text-finos-blue" />,
-  'Awards': <Star className="h-5 w-5 mr-2 text-finos-blue" />,
+  'Workshop': <PenTool className="h-6 w-6 mr-2 text-finos-blue" />,
+  'Hackathon': <Code className="h-6 w-6 mr-2 text-finos-blue" />,
+  'Conference': <Building className="h-6 w-6 mr-2 text-finos-blue" />,
+  'TechTalk': <MessageSquareCode className="h-6 w-6 mr-2 text-finos-blue" />,
+  'Masterclass': <GraduationCap className="h-6 w-6 mr-2 text-finos-blue" />,
+  'Meetup': <Activity className="h-6 w-6 mr-2 text-finos-blue" />,
+  'Webinar': <Mic className="h-6 w-6 mr-2 text-finos-blue" />,
+  'Training': <BookOpen className="h-6 w-6 mr-2 text-finos-blue" />,
+  'Awards': <Star className="h-6 w-6 mr-2 text-finos-blue" />,
 };
 
-const DefaultIcon = <Activity className="h-5 w-5 mr-2 text-finos-blue" />;
+const DefaultIcon = <Activity className="h-6 w-6 mr-2 text-finos-blue" />;
 
 const Dashboard = () => {
   const { user, userDetails, loading: authLoading } = useAuth();
